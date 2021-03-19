@@ -11,6 +11,7 @@ const useStyles = makeStyles((theme) => ({
       color: "#fff",
       borderRadius:"15px",
       fontWeight: 'bold',
+      fontFamily:'Montserrat, sans-serif'
     },
     program: {
       paddingLeft: theme.spacing(4),
@@ -21,9 +22,11 @@ const useStyles = makeStyles((theme) => ({
     coreInput: {
         backgroundColor:'transparent',
         padding:15,
-        borderRadius:10,
-        fontSize:18,
-        color:"#fff"
+        borderRadius:20,
+        fontSize:14,
+        color:"#fff",
+        border:'solid 0.5px',
+        borderColor:'#636970',
     }
   }));
 
@@ -37,14 +40,17 @@ const Program:React.FC<ProgramProps> = ({coreOpen}) => {
 
     return (
         <>
-        <Collapse in={coreOpen} timeout="auto" unmountOnExit>
-        <input type="text" style={{marginLeft:"1rem"}} className={classes.coreInput} placeholder="Core name"/>
+          <div style={{display:'flex', flexDirection:'column'}}>
+          <label style={{color:"#fff", marginLeft:'2rem', marginRight:'1rem', marginBottom:5, fontFamily:'Montserrat, sans-serif'}}>Enter the name of the core</label>
+          <input type="text" style={{marginLeft:"1rem", marginRight:'1rem'}} className={classes.coreInput} placeholder="Core name"/>
+          </div>
         <ListItem button className={classes.program} onClick={()=>setProgramOpen(!programOpen)}>
           <ListItemText primary="Program" />
-          {programOpen ? <ExpandLess /> : <ExpandMore />}
         </ListItem>
-        </Collapse>
-        <Task programOpen={programOpen}/>
+        <ListItem className={classes.task} button >
+          <ListItemText primary="Task" />
+        </ListItem>
+        {/* <Task programOpen={programOpen}/> */}
         </>
     )
 }

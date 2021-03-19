@@ -28,12 +28,9 @@ const Task:React.FC<TaskProps> = ({programOpen}) => {
     const [taskOpen, setTaskOpen] = React.useState(false)
 
     return (
-        <Collapse in={programOpen} timeout="auto" unmountOnExit>
-        <ListItem className={classes.task} button onClick={()=>setTaskOpen(!taskOpen)}>
+        <ListItem className={classes.task} button >
           <ListItemText primary="Task" />
-          {taskOpen ? <ExpandLess /> : <ExpandMore />}
         </ListItem>
-        </Collapse>
     )
 }
 
