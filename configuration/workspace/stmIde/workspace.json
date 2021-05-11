@@ -1,6 +1,6 @@
 {
-    "mcuCfgPath" : "Cosmos/CustomBox/system/mcuCfg.json",
-    "systemModelCfgPath" : "Cosmos/CustomBox/system/systemModelCfg.json",
+    "mcuCfgPath" : "Cosmos/CustomBox/configuration/mcu/stm32h7xx/mcuCfg.json",
+    "systemModelCfgPath" : "Cosmos/CustomBox/configuration/system/systemModelCfg.json",
     "CosmOSCorePath" : "Cosmos/Core",
     "CosmOSIntegrationLayerPath" : "Cosmos/IntegrationLayer",
     "CosmOSApplicationLayerPath" : "Cosmos/ApplicationLayer",
@@ -9,9 +9,9 @@
     "CosmOSApplicationLayerTemplatesPath" : "Cosmos/CustomBox/generator/templates/ApplicationLayer",
     "CosmOSApplicationLayerSourceTemplateName" : "program.c.j2",
     "CosmOSApplicationLayerHeaderTemplateName" : "program.h.j2",
-    "LinkerScriptTemplatePath" : "Cosmos/CustomBox/generator/templates/Linker",
-    "LinkerTemplateName" : "STM32H755ZITX_FLASH.ld.j2",
-    "compilerCfgPath" : "Cosmos/CustomBox/system/compilerCfg.json",
+    "LinkerScriptTemplatePath" : "Cosmos/CustomBox/generator/templates/Linker/stm32h7xx",
+    "LinkerTemplateName" : "linker.ld.j2",
+    "compilerCfgPath" : "Cosmos/CustomBox/configuration/mcu/stm32h7xx/compilerCfg.json",
     "stmProject" : true,
     "cprojectPaths" :[
         "CM4/.cproject",
