@@ -1,0 +1,8 @@
+[
+    "buffer_readArray",                
+    "buffer_writeArray",               
+    "deviceIO_togglePin",              
+    "osInit_init",                     
+    "os_start",                        
+    "schedulable_setExecutionStateToFinished"
+]
