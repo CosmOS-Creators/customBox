@@ -238,7 +238,12 @@ def generateLinkerScript(systemModel,workspace):
 
         ldScriptName = "{}.{}".format(core.name,"ld")
 
-        codePath = os.path.join(workspace.LinkerScriptTemplatePath,ldScriptName)
+        codePath = os.path.join(workspace.LinkerScriptTemplatePath,"output",ldScriptName)
+
+        outputDirectory = os.path.dirname(codePath)
+
+        if not os.path.exists(outputDirectory):
+            os.mkdir(outputDirectory)
 
         generatedOutput = templateInstance.render(os = systemModel.os, mcu = systemModel.mcu, tasks=systemModel.os.tasks, \
         programs = systemModel.os.programs,core = core,version = systemModel.CosmOSVersion,date=date.today())
