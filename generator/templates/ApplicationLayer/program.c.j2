@@ -31,13 +31,21 @@
 /********************************************************************************
 **                         Function Prototypes | Start                         **
 ********************************************************************************/
-/* TASKS IN PROGRAM {{program.name}} */
+/* Task in the program {{program.name}} */
 {% for task in program.tasks -%}
+{% if not task.isSysJob -%}
+{% if task.isIdle and switches.performanceScheduling -%}
+{% else -%}
 extern void {{task.name}}(void);
+{% endif -%}
+{% endif -%}
 {% endfor -%}
-/* THREADS IN PROGRAM {{program.name}} */
+/* Threads in the program {{program.name}} */
 {% for thread in program.threads -%}
+{% if thread.isIdle and not switches.performanceScheduling-%}
+{% else -%}
 extern void {{thread.name}}(void);
+{% endif -%}
 {% endfor -%}
 /********************************************************************************
 **                         Function Prototypes | Stop                          **
@@ -85,6 +93,8 @@ __SEC_STOP(__{{program.name.upper()}}_INIT_SECTION_STOP)
 
 {% for task in program.tasks -%}
 {% if not task.isSysJob -%}
+{% if task.isIdle and switches.performanceScheduling -%}
+{% else -%}
 /********************************************************************************
 ** Task ID macro = TASK_{{task.taskId}}_PROGRAM_{{task.programId}}_CORE_{{task.coreId}}_ID
 ** Program ID macro = PROGRAM_{{task.programId}}_CORE_{{task.coreId}}_ID
@@ -110,9 +120,12 @@ void {{task.name}}(void)
 ********************************************************************************/
 };
 {% endif -%}
+{% endif -%}
 {% endfor -%}
 
 {% for thread in program.threads -%}
+{% if thread.isIdle and not switches.performanceScheduling-%}
+{% else -%}
 /********************************************************************************
 ** Thread ID macro = THREAD_{{thread.threadId}}_PROGRAM_{{thread.programId}}_CORE_{{thread.coreId}}_ID
 ** Program ID macro = PROGRAM_{{thread.programId}}_CORE_{{thread.coreId}}_ID
@@ -135,6 +148,7 @@ void {{thread.name}}(void)
 ** DO NOT MODIFY THIS COMMENT !                      USER SECTION | Stop       **
 ********************************************************************************/
 };
+{% endif -%}
 {% endfor -%}
 /********************************************************************************
 **                           END OF THE SOURCE FILE                            **

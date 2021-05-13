@@ -124,7 +124,8 @@ def generateCosmOSApplicationLayer(systemModel,workspace):
     if not os.path.exists(pathToHeaderFiles):
         os.makedirs(pathToHeaderFiles)
         for program in systemModel.programs:
-            generatedOutput = headerTemplateInstance.render(program = program, sections = headerSections ,version = systemModel.CosmOSVersion, date=date.today())
+            generatedOutput = headerTemplateInstance.render(program = program, sections = headerSections ,version = systemModel.CosmOSVersion,\
+                switches  = systemModel.os.switches, date=date.today())
             headerName = "{}{}".format(program.name,".h")
             headerPath = os.path.join(pathToHeaderFiles,headerName)
 
@@ -159,7 +160,8 @@ def generateCosmOSApplicationLayer(systemModel,workspace):
                 headerSections.append(Section(name[:-1],tempLines[:]))
 
         for program in systemModel.programs:
-            generatedOutput = headerTemplateInstance.render(program = program, sections = headerSections ,version = systemModel.CosmOSVersion, date=date.today())
+            generatedOutput = headerTemplateInstance.render(program = program, sections = headerSections ,version = systemModel.CosmOSVersion, \
+                switches  = systemModel.os.switches, date=date.today())
             headerName = "{}{}".format(program.name,".h")
             headerPath = os.path.join(pathToHeaderFiles,headerName)
 
@@ -181,7 +183,8 @@ def generateCosmOSApplicationLayer(systemModel,workspace):
     if not os.path.exists(pathToSourceFiles):
         os.makedirs(pathToSourceFiles)
         for program in systemModel.programs:
-            generatedOutput = sourceTemplateInstance.render(program = program, sections = sourceSections ,version = systemModel.CosmOSVersion, date=date.today())
+            generatedOutput = sourceTemplateInstance.render(program = program, sections = sourceSections ,version = systemModel.CosmOSVersion, \
+                switches  = systemModel.os.switches, date=date.today())
             sourceName = "{}{}".format(program.name,".c")
             sourcePath = os.path.join(pathToSourceFiles,sourceName)
 
@@ -217,7 +220,8 @@ def generateCosmOSApplicationLayer(systemModel,workspace):
                 os.remove(os.path.join(pathToSourceFiles,f))
 
         for program in systemModel.programs:
-            generatedOutput = sourceTemplateInstance.render(program = program, sections = sourceSections ,version = systemModel.CosmOSVersion, date=date.today())
+            generatedOutput = sourceTemplateInstance.render(program = program, sections = sourceSections ,version = systemModel.CosmOSVersion, \
+                switches  = systemModel.os.switches, date=date.today())
             sourceName = "{}{}".format(program.name,".c")
             sourcePath = os.path.join(pathToSourceFiles,sourceName)
 
