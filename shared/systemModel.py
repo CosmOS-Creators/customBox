@@ -130,7 +130,10 @@ class SystemModel():
                     period = systemModelCfg['cores'][core]['programs'][program]['tasks'][task]['period']
                     taskStackSize = systemModelCfg['cores'][core]['programs'][program]['tasks'][task]['stack']['size']
                     floatingPoint = systemModelCfg['cores'][core]['programs'][program]['tasks'][task]['floatingPoint']
-                    tasksTemp.append(Task(taskName,int(wcet),period,coreIterator,programIterator,taskIterator,taskStackIterator,int(taskStackSize),floatingPoint,schedulableIterator))
+                    isIdle = systemModelCfg['cores'][core]['programs'][program]['tasks'][task]['isIdle']
+                    isSysJob = systemModelCfg['cores'][core]['programs'][program]['tasks'][task]['isSysJob']
+                    tasksTemp.append(Task(taskName,int(wcet),period,coreIterator,programIterator,taskIterator,taskStackIterator,\
+                        int(taskStackSize),floatingPoint,schedulableIterator,isIdle,isSysJob))
                     taskStackIterator+=1
                     taskIterator+=1
                     schedulableIterator+=1
@@ -138,7 +141,10 @@ class SystemModel():
                     threadName = systemModelCfg['cores'][core]['programs'][program]['threads'][thread]['name']
                     threadStackSize = systemModelCfg['cores'][core]['programs'][program]['threads'][thread]['stack']['size']
                     floatingPoint = systemModelCfg['cores'][core]['programs'][program]['threads'][thread]['floatingPoint']
-                    threadsTemp.append(Thread(threadName,coreIterator,programIterator,threadIterator,threadStackIterator,int(threadStackSize),floatingPoint,schedulableIterator))
+                    isIdle = systemModelCfg['cores'][core]['programs'][program]['threads'][thread]['isIdle']
+                    isSysJob = False
+                    threadsTemp.append(Thread(threadName,coreIterator,programIterator,threadIterator,threadStackIterator,\
+                        int(threadStackSize),floatingPoint,schedulableIterator,isIdle,isSysJob))
                     threadStackIterator+=1
                     threadIterator+=1
                     schedulableIterator+=1
@@ -202,11 +208,12 @@ class SystemModel():
 
         for route in systemModelCfg['sysCalls']['routed_funcs']:
             name = systemModelCfg['sysCalls']['routed_funcs'][route]['name']
+            apiHeader = systemModelCfg['sysCalls']['routed_funcs'][route]['api_header']
             sysCall = systemModelCfg['sysCalls']['routed_funcs'][route]['sysCall']
             userVisible = systemModelCfg['sysCalls']['routed_funcs'][route]['user_visible']
             isMappedToEntity = systemModelCfg['sysCalls']['routed_funcs'][route]['is_mapped_to_entity']
             args = systemModelCfg['sysCalls']['routed_funcs'][route]['args']
-            currentRoute = Route(name,sysCall,userVisible,isMappedToEntity,args)
+            currentRoute = Route(name,apiHeader,sysCall,userVisible,isMappedToEntity,args)
             routes.append(currentRoute)
 
         self.cores = cores

@@ -6,6 +6,7 @@
     "routed_funcs": {
         "func_0": {
             "name": "buffer_readArray",
+            "api_header": "buffer.h",
             "sysCall": "sysCalls_readWrite",
             "user_visible": true,
             "is_mapped_to_entity": true,
@@ -16,6 +17,7 @@
         },
         "func_1": {
             "name": "buffer_writeArray",
+            "api_header": "buffer.h",
             "sysCall": "sysCalls_readWrite",
             "user_visible": true,
             "is_mapped_to_entity": true,
@@ -26,6 +28,7 @@
         },
         "func_2": {
             "name": "deviceIO_togglePin",
+            "api_header": "deviceIO.h",
             "sysCall": "sysCalls_readWrite",
             "user_visible": true,
             "is_mapped_to_entity": false,
@@ -36,6 +39,7 @@
         },
         "func_3": {
             "name": "osInit_init",
+            "api_header": "osInit.h",
             "sysCall": "sysCalls_os",
             "user_visible": true,
             "is_mapped_to_entity": false,
@@ -43,6 +47,7 @@
         },
         "func_4": {
             "name": "os_start",
+            "api_header": "os.h",
             "sysCall": "sysCalls_os",
             "user_visible": true,
             "is_mapped_to_entity": false,
@@ -50,6 +55,15 @@
         },
         "func_5": {
             "name": "schedulable_setExecutionStateToFinished",
+            "api_header": "schedulable.h",
+            "sysCall": "sysCalls_os",
+            "user_visible": false,
+            "is_mapped_to_entity": false,
+            "args": []
+        },
+        "func_6": {
+            "name": "sysJobs_dispatcher",
+            "api_header": "sysJobs.h",
             "sysCall": "sysCalls_os",
             "user_visible": false,
             "is_mapped_to_entity": false,

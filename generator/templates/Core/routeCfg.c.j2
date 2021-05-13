@@ -22,11 +22,9 @@
 ********************************************************************************/
 /* CORE interfaces */
 #include "routeCfg.h"
-#include "buffer.h"
-#include "os.h"
-#include "schedulable.h"
-#include "osInit.h"
-#include "deviceIO.h"
+{% for item in os.routes -%}
+#include "{{item.apiHeader}}"
+{% endfor -%}
 /********************************************************************************
 **                            Include Files | Stop                             **
 ********************************************************************************/

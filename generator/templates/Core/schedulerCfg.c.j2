@@ -74,7 +74,7 @@ IS_INITIALIZED_TO
         LAST_TO_FIRST_TASK_TICK_SCHEDULER_{{item.coreId}},            /* const BitWidthType lastToFirstTaskTicks                         */
         SYNCTICKS_SCHEDULER_{{item.coreId}},                          /* const BitWidthType syncTicks                                    */
         FIRST_SYNC_TASK_STARTTICK_SCHEDULER_{{item.coreId}},          /* const BitWidthType firstSyncTaskStartTick                       */
-        &TasksProgram0Core{{item.coreId}}Var[TASK_0_PROGRAM_0_CORE_{{item.coreId}}_ID],                                   /* void * const                                                    */
+        {% for program in item.programs -%}{% for task in program.tasks -%}{% if task.isIdle and task.coreId == item.coreId -%}&TasksProgram{{task.programId}}Core{{task.coreId}}Var[TASK_{{task.taskId}}_PROGRAM_{{task.programId}}_CORE_{{task.coreId}}_ID]{% endif -%}{% endfor -%}{% endfor -%},                                   /* void * const                                                    */
     },
 {% endfor -%}
 };
