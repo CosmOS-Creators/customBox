@@ -1,8 +1,59 @@
-[
-    "buffer_readArray",                
-    "buffer_writeArray",               
-    "deviceIO_togglePin",              
-    "osInit_init",                     
-    "os_start",                        
-    "schedulable_setExecutionStateToFinished"
-]
+{
+    "syscalls": [
+        "sysCalls_os",
+        "sysCalls_readWrite"
+    ],
+    "routed_funcs": {
+        "func_0": {
+            "name": "buffer_readArray",
+            "sysCall": "sysCalls_readWrite",
+            "user_visible": true,
+            "is_mapped_to_entity": true,
+            "args": [
+                "arrayPointer",
+                "size"
+            ]
+        },
+        "func_1": {
+            "name": "buffer_writeArray",
+            "sysCall": "sysCalls_readWrite",
+            "user_visible": true,
+            "is_mapped_to_entity": true,
+            "args": [
+                "arrayPointer",
+                "size"
+            ]
+        },
+        "func_2": {
+            "name": "deviceIO_togglePin",
+            "sysCall": "sysCalls_readWrite",
+            "user_visible": true,
+            "is_mapped_to_entity": false,
+            "args": [
+                "gpio",
+                "pin"
+            ]
+        },
+        "func_3": {
+            "name": "osInit_init",
+            "sysCall": "sysCalls_os",
+            "user_visible": true,
+            "is_mapped_to_entity": false,
+            "args": []
+        },
+        "func_4": {
+            "name": "os_start",
+            "sysCall": "sysCalls_os",
+            "user_visible": true,
+            "is_mapped_to_entity": false,
+            "args": []
+        },
+        "func_5": {
+            "name": "schedulable_setExecutionStateToFinished",
+            "sysCall": "sysCalls_os",
+            "user_visible": false,
+            "is_mapped_to_entity": false,
+            "args": []
+        }
+    }
+}

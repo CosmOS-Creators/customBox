@@ -65,8 +65,8 @@ __SEC_START(__OS_CONST_SECTION_START)
 const CosmOS_GenericVoidType RoutesFuncConst[ROUTES_FUNC_NUM] __OS_CONST_SECTION
 IS_INITIALIZED_TO
 {
-{% for item in os.sysCalls -%}
-{{"\t\t"}}(CosmOS_GenericVoidType){{item}},
+{% for item in os.routes -%}
+{{"\t\t"}}(CosmOS_GenericVoidType){{item.name}},
 {% endfor -%}
 };
 
@@ -77,9 +77,9 @@ IS_INITIALIZED_TO
 {{"\t\t"}}BUFFER_READARRAY, 
 {{"\t\t"}}BUFFER_WRITEARRAY,
 {% endfor -%}
-{% for item in os.sysCalls -%}
-{% if item != "buffer_readArray" and item != "buffer_writeArray" -%}
-{{"\t\t"}}{{item.upper()}},
+{% for item in os.routes -%}
+{% if item.name != "buffer_readArray" and item.name != "buffer_writeArray" -%}
+{{"\t\t"}}{{item.name.upper()}},
 {% endif -%}
 {% endfor -%}
 };
@@ -91,8 +91,8 @@ IS_INITIALIZED_TO
 {{"\t\t"}}BUFFER_{{item.bufferId}}_ID,
 {{"\t\t"}}BUFFER_{{item.bufferId}}_ID,
 {% endfor -%}
-{% for item in os.sysCalls -%}
-{% if item != "buffer_readArray" and item != "buffer_writeArray" -%}
+{% for item in os.routes -%}
+{% if item.name != "buffer_readArray" and item.name != "buffer_writeArray" -%}
 {{"\t\t"}}ROUTES_ID_TO_ENTITY_DUMMY,
 {% endif -%}
 {% endfor -%}

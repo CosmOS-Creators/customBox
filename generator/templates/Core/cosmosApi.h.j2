@@ -182,10 +182,12 @@
   * @ingroup Apis_cosmosApi_h                                            
   * @{                                                                           
 ********************************************************************************/
+{% for item in os.routes -%}
+{% if item.userVisible and item.name != "buffer_readArray" and item.name != "buffer_writeArray" -%}
+#define cosmosApi_{{item.name}}({% for arg in item.args -%}{% if loop.index > 1 -%} ,{% endif -%}{{arg}}{% endfor -%}) {{item.sysCall}}(SYSCALL_{{item.name.upper()}}{% for arg in item.args -%},{{arg}}{% endfor -%})
+{% endif -%}
+{% endfor -%}
 #define cosmosApi_boot() sysCalls_osBoot()
-#define cosmosApi_init() sysCalls_os(SYSCALL_OSINIT_INIT)
-#define cosmosApi_start() sysCalls_os(SYSCALL_OS_START)
-#define cosmosApi_togglePin(gpio, pin) (void)sysCalls_readWrite(SYSCALL_DEVICEIO_TOGGLEPIN, gpio, pin)
 
 {% for item in buffers -%}
 #define cosmosApi_read_buffer_{{item.name}}(array, size) (cosmos_BufferStateType)sysCalls_readWrite(SYSCALL_READ_BUFFER_{{item.bufferId}}_ID, array, size)

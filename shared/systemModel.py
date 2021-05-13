@@ -16,6 +16,7 @@ from chunk import Chunk
 from mcu import Mcu
 from core import Core
 from task import Task
+from route import Route
 from switch import Switch
 from buffer import Buffer
 from cosmos import Cosmos
@@ -50,9 +51,9 @@ class SystemModel():
         self.buffers = []
         self.buffersDouble = []
         self.memories = []
+        self.routes = []
         
         self.switches = None
-        self.sysCalls = None
         self.mcu = None
         self.os = None
         self.CosmOSVersion = None
@@ -85,6 +86,7 @@ class SystemModel():
         tasks = []
         buffers = []
         threads = []
+        routes = []
 
         programsTemp = []
         tasksTemp = []
@@ -198,16 +200,24 @@ class SystemModel():
                 readPermissionCoreGroupsTemp[iterator] = []
                 writePermissionCoreGroupsTemp[iterator] = []
 
+        for route in systemModelCfg['sysCalls']['routed_funcs']:
+            name = systemModelCfg['sysCalls']['routed_funcs'][route]['name']
+            sysCall = systemModelCfg['sysCalls']['routed_funcs'][route]['sysCall']
+            userVisible = systemModelCfg['sysCalls']['routed_funcs'][route]['user_visible']
+            isMappedToEntity = systemModelCfg['sysCalls']['routed_funcs'][route]['is_mapped_to_entity']
+            args = systemModelCfg['sysCalls']['routed_funcs'][route]['args']
+            currentRoute = Route(name,sysCall,userVisible,isMappedToEntity,args)
+            routes.append(currentRoute)
+
         self.cores = cores
         self.programs = programs
         self.tasks = tasks
         self.threads = threads
         self.buffers = buffers
+        self.routes = routes
         self.switches = Switch( systemModelCfg['switches']['memoryProtection'],\
                                 systemModelCfg['switches']['coreSync'],\
                                 systemModelCfg['switches']['performanceScheduling'])
-
-        self.sysCalls = systemModelCfg['sysCalls']
 
     def parseMcuCfg(self):
 
@@ -451,4 +461,4 @@ class SystemModel():
                 maxTaskOnOneCore = core.numOfTasks
 
         self.os = Cosmos(self.cores,self.programs,self.tasks,self.buffers,self.switches,maxTaskOnOneCore,\
-            len(self.cores),len(self.buffers),self.sysCalls,self.buffersDouble,self.threads)
+            len(self.cores),len(self.buffers),self.routes,self.buffersDouble,self.threads)
