@@ -194,10 +194,13 @@ void wrapped_{{task.name}}(void)
 {
     {% if task.isSysJob -%}
     sysCalls_os(SYSCALL_SYSJOBS_DISPATCHER);
+    sysCalls_os(SYSCALL_SCHEDULABLE_SETEXECUTIONSTATETOFINISHED);
+    {% elif task.isIdle -%}
+    {{task.name}}();
     {% else -%}
     {{task.name}}();
-    {% endif -%}
     sysCalls_os(SYSCALL_SCHEDULABLE_SETEXECUTIONSTATETOFINISHED);
+    {% endif -%}
     for(;;);
 };
 {% endfor -%}
