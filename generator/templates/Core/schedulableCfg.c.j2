@@ -190,6 +190,18 @@ __SEC_STOP(__OS_VAR_SECTION_STOP)
 ********************************************************************************/
 {% for item in programs -%}
 {% for task in item.tasks -%}
+__WEAK void {{task.name}}(void){};
+{% endfor -%}
+{% endfor -%}
+
+{% for item in programs -%}
+{% for thread in item.threads -%}
+__WEAK void {{thread.name}}(void){};
+{% endfor -%}
+{% endfor -%}
+
+{{"\n"}}{% for item in programs -%}
+{% for task in item.tasks -%}
 void wrapped_{{task.name}}(void)
 {
     {% if task.isSysJob -%}
