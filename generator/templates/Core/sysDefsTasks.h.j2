@@ -61,7 +61,6 @@
   * @ingroup Global_sysDefsTasks  
   * @{    
 ********************************************************************************/
-#define MAX_TASKS_ON_ONE_CORE                 (BitWidthType){{os.maxTaskOnOneCore}}        /* Maximal number of configurated tasks on the one core  */{{"\n"}}
 {% for item in cores -%}
 #define TASK_NUM_CORE_{{item.coreId}}                       (BitWidthType){{item.numOfTasks}}        /* Number of configurated tasks for the core {{item.name}} */
 {% endfor -%}

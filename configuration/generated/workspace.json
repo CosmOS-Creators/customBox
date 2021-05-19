@@ -1,6 +1,6 @@
 {
     "mcuCfgPath" : "Cosmos/CustomBox/configuration/mcu/stm32h755/mcuCfg.json",
-    "systemModelCfgPath" : "Cosmos/CustomBox/configuration/system/systemModelCfg.json",
+    "systemModelCfgPath" : "Cosmos/CustomBox/configuration/generated/systemModelCfg.json",
     "CosmOSCorePath" : "Cosmos/Core",
     "CosmOSIntegrationLayerPath" : "Cosmos/IntegrationLayer",
     "CosmOSApplicationLayerPath" : "Cosmos/ApplicationLayer",

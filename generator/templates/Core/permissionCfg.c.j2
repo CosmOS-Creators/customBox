@@ -75,10 +75,10 @@
 /* @cond S */
 __SEC_START(__OS_CONST_SECTION_START)
 /* @endcond*/
-const BitWidthType TaskIdToBitLock[MAX_TASKS_ON_ONE_CORE*sizeof(BitWidthType)*8] __OS_CONST_SECTION
+const uint8_t SchedulableIdToBitLock[((MAX_SCHEDULABLES_ON_ONE_CORE/(sizeof(BitWidthType)*8)) + 1)*(sizeof(BitWidthType)*8)] __OS_CONST_SECTION
 IS_INITIALIZED_TO
 {
-{% for iterator in range(os.maxTaskOnOneCore) -%}
+{% for iterator in range((os.maxSchedulablesOnOneCore/mcu.bitWidth)|int +1) -%}
 {{"\t\t"}}BITLOCK_ID_PLACEMENT_{{mcu.bitWidth}}BIT({{iterator}})
 {% endfor -%}
 };
@@ -86,7 +86,7 @@ IS_INITIALIZED_TO
 {% for item in buffers -%}
 {% set count = namespace(value=0) -%}
 {% for permissionArray in item.compressedReadPermission -%}
-const BitWidthType BitLockBuffer{{item.bufferId}}TasksCore{{count.value}}ReadCfgConst[((TASK_NUM_CORE_{{count.value}}/sizeof(BitWidthType)) + 1)] __OS_CONST_SECTION
+const BitWidthType BitLockBuffer{{item.bufferId}}SchedulablesCore{{count.value}}ReadCfgConst[((TASK_NUM_CORE_{{count.value}}/(sizeof(BitWidthType)*8)) + 1)] __OS_CONST_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in permissionArray -%}
@@ -99,7 +99,7 @@ IS_INITIALIZED_TO
 {% for item in buffers -%}
 {% set count = namespace(value=0) -%}
 {% for permissionArray in item.compressedWritePermission -%}
-const BitWidthType BitLockBuffer{{item.bufferId}}TasksCore{{count.value}}WriteCfgConst[((TASK_NUM_CORE_{{count.value}}/sizeof(BitWidthType)) + 1)] __OS_CONST_SECTION
+const BitWidthType BitLockBuffer{{item.bufferId}}SchedulablesCore{{count.value}}WriteCfgConst[((TASK_NUM_CORE_{{count.value}}/(sizeof(BitWidthType)*8)) + 1)] __OS_CONST_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in permissionArray -%}
@@ -112,7 +112,7 @@ IS_INITIALIZED_TO
 {% for item in buffers -%}
 {% set count = namespace(value=0) -%}
 {% for permissionArray in item.compressedReadPermissionInverted -%}
-const BitWidthType BitLockBuffer{{item.bufferId}}TasksCore{{count.value}}ReadCfgInvertedConst[((TASK_NUM_CORE_{{count.value}}/sizeof(BitWidthType)) + 1)] __OS_CONST_SECTION
+const BitWidthType BitLockBuffer{{item.bufferId}}SchedulablesCore{{count.value}}ReadCfgInvertedConst[((TASK_NUM_CORE_{{count.value}}/(sizeof(BitWidthType)*8)) + 1)] __OS_CONST_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in permissionArray -%}
@@ -125,7 +125,7 @@ IS_INITIALIZED_TO
 {% for item in buffers -%}
 {% set count = namespace(value=0) -%}
 {% for permissionArray in item.compressedWritePermissionInverted -%}
-const BitWidthType BitLockBuffer{{item.bufferId}}TasksCore{{count.value}}WriteCfgInvertedConst[((TASK_NUM_CORE_{{count.value}}/sizeof(BitWidthType)) + 1)] __OS_CONST_SECTION
+const BitWidthType BitLockBuffer{{item.bufferId}}SchedulablesCore{{count.value}}WriteCfgInvertedConst[((TASK_NUM_CORE_{{count.value}}/(sizeof(BitWidthType)*8)) + 1)] __OS_CONST_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in permissionArray -%}
@@ -141,8 +141,8 @@ IS_INITIALIZED_TO
 {
 {% for core in cores -%}
 {{"\t\t"}}{   /* CORE_{{core.coreId}}_ID */
-        BitLockBuffer{{item.bufferId}}TasksCore{{core.coreId}}ReadCfgConst,
-        BitLockBuffer{{item.bufferId}}TasksCore{{core.coreId}}ReadCfgInvertedConst,
+        BitLockBuffer{{item.bufferId}}SchedulablesCore{{core.coreId}}ReadCfgConst,
+        BitLockBuffer{{item.bufferId}}SchedulablesCore{{core.coreId}}ReadCfgInvertedConst,
     },
 {% endfor -%}
 };
@@ -153,8 +153,8 @@ IS_INITIALIZED_TO
 {
 {% for core in cores -%}
 {{"\t\t"}}{   /* CORE_{{core.coreId}}_ID */
-        BitLockBuffer{{item.bufferId}}TasksCore{{core.coreId}}WriteCfgConst,
-        BitLockBuffer{{item.bufferId}}TasksCore{{core.coreId}}WriteCfgInvertedConst,
+        BitLockBuffer{{item.bufferId}}SchedulablesCore{{core.coreId}}WriteCfgConst,
+        BitLockBuffer{{item.bufferId}}SchedulablesCore{{core.coreId}}WriteCfgInvertedConst,
     },
 {% endfor -%}
 };

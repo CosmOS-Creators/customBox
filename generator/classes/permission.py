@@ -1,4 +1,5 @@
 class Permission():
-    def __init__(self,paramCoreId,paramTaskId):
+    def __init__(self,paramCoreId,paramProgramId,paramSchedulableId):
         self.coreId = paramCoreId
-        self.taskId = paramTaskId
+        self.programId = paramProgramId
+        self.schedulableId = paramSchedulableId

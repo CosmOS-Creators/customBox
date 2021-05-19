@@ -14,16 +14,19 @@
     "compilerCfgPath" : "Cosmos/CustomBox/configuration/mcu/{{mcu}}/compilerCfg.json",
     "stmProject" : true,
     "linkerScriptPaths" :[
-        "CM4/STM32H755ZITX_FLASH.ld",
-        "CM7/STM32H755ZITX_FLASH.ld"
+        {% for core in cores -%}
+        "{{core.name}}/{{mcu}}.upper()_FLASH.ld"
+        {% endfor -%}
     ],
     "cprojectPaths" :[
-        "CM4/.cproject",
-        "CM7/.cproject"
+        {% for core in cores -%}
+        "{{core.name}}/.cproject"
+        {% endfor -%}
     ],
     "projectPaths" :[
-        "CM4/.project",
-        "CM7/.project"
+        {% for core in cores -%}
+        "{{core.name}}/.project"
+        {% endfor -%}
     ]
 }
 

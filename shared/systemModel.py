@@ -197,14 +197,30 @@ class SystemModel():
             bufferSize = systemModelCfg['buffers'][buffer]['size']
             bufferName = systemModelCfg['buffers'][buffer]['name']
             bufferIsDouble = systemModelCfg['buffers'][buffer]['isDoubleBuffer']
-            for element in systemModelCfg['buffers'][buffer]['readPermissions']:
-                coreId = systemModelCfg['buffers'][buffer]['readPermissions'][element]['core']
-                taskId = systemModelCfg['buffers'][buffer]['readPermissions'][element]['task']
-                readPermissionCoreGroupsTemp[int(coreId)].append(Permission(int(coreId),int(taskId)))
-            for element in systemModelCfg['buffers'][buffer]['writePermissions']:
-                coreId = systemModelCfg['buffers'][buffer]['writePermissions'][element]['core']
-                taskId = systemModelCfg['buffers'][buffer]['writePermissions'][element]['task']
-                writePermissionCoreGroupsTemp[int(coreId)].append(Permission(int(coreId),int(taskId)))
+            for element in systemModelCfg['buffers'][buffer]['tasksReadPermissions']:
+                coreId = int(systemModelCfg['buffers'][buffer]['tasksReadPermissions'][element]['core'])
+                programId = int(systemModelCfg['buffers'][buffer]['tasksReadPermissions'][element]['program'])
+                taskId = int(systemModelCfg['buffers'][buffer]['tasksReadPermissions'][element]['task'])
+                schedulableId = self.getTaskSchedulableId(tasks,taskId,programId,coreId)
+                readPermissionCoreGroupsTemp[coreId].append(Permission(coreId,programId,schedulableId))
+            for element in systemModelCfg['buffers'][buffer]['tasksWritePermissions']:
+                coreId = int(systemModelCfg['buffers'][buffer]['tasksWritePermissions'][element]['core'])
+                programId = int(systemModelCfg['buffers'][buffer]['tasksWritePermissions'][element]['program'])
+                taskId = int(systemModelCfg['buffers'][buffer]['tasksWritePermissions'][element]['task'])
+                schedulableId = self.getTaskSchedulableId(tasks,taskId,programId,coreId)
+                writePermissionCoreGroupsTemp[coreId].append(Permission(coreId,programId,schedulableId))
+            for element in systemModelCfg['buffers'][buffer]['threadsReadPermissions']:
+                coreId = int(systemModelCfg['buffers'][buffer]['threadsReadPermissions'][element]['core'])
+                programId = int(systemModelCfg['buffers'][buffer]['threadsReadPermissions'][element]['program'])
+                threadId = int(systemModelCfg['buffers'][buffer]['threadsReadPermissions'][element]['thread'])
+                schedulableId = self.getThreadSchedulableId(threads,threadId,programId,coreId)
+                readPermissionCoreGroupsTemp[coreId].append(Permission(coreId,programId,schedulableId))
+            for element in systemModelCfg['buffers'][buffer]['threadsWritePermissions']:
+                coreId = int(systemModelCfg['buffers'][buffer]['threadsWritePermissions'][element]['core'])
+                programId = int(systemModelCfg['buffers'][buffer]['threadsWritePermissions'][element]['program'])
+                threadId = int(systemModelCfg['buffers'][buffer]['threadsWritePermissions'][element]['thread'])
+                schedulableId = self.getThreadSchedulableId(threads,threadId,programId,coreId)
+                writePermissionCoreGroupsTemp[coreId].append(Permission(coreId,programId,schedulableId))
             currentBuffer = Buffer(bufferIterator,bufferName,readPermissionCoreGroupsTemp[:],writePermissionCoreGroupsTemp[:],bufferSize,bufferIsDouble)
             if bufferIsDouble :
                 currentBuffer.doubleName = bufferIsDouble = systemModelCfg['buffers'][buffer]['double']['name']
@@ -404,13 +420,13 @@ class SystemModel():
         for buffer in self.buffers:
             for coreId in range(len(self.cores)):
                 if((len(buffer.readPermission[coreId]))):
-                    buffer.readPermission[coreId].sort(key=lambda x: x.taskId, reverse=False)
+                    buffer.readPermission[coreId].sort(key=lambda x: x.schedulableId, reverse=False)
                     
                     readPermissionTemp = [0] * self.getPermissionArraySize(self.cores[coreId].numOfTasks)
 
                     for permission in buffer.readPermission[int(coreId)]:
-                        arrayIterator = self.getPermissionArrayIterator(permission.taskId)
-                        readPermissionTemp[arrayIterator] = (readPermissionTemp[arrayIterator] | (1 << (permission.taskId - (self.mcu.bitWidth * arrayIterator))))
+                        arrayIterator = self.getPermissionArrayIterator(permission.schedulableId)
+                        readPermissionTemp[arrayIterator] = (readPermissionTemp[arrayIterator] | (1 << (permission.schedulableId - (self.mcu.bitWidth * arrayIterator))))
 
                     buffer.compressedReadPermission[coreId] = readPermissionTemp[:]
 
@@ -425,13 +441,13 @@ class SystemModel():
                     buffer.compressedReadPermissionInverted[coreId] = [''.join('1' if x == '0' else '0' for x in element) for element in buffer.compressedReadPermission[coreId]]
 
                 if((len(buffer.writePermission[coreId]))):
-                    buffer.writePermission[coreId].sort(key=lambda x: x.taskId, reverse=False)
+                    buffer.writePermission[coreId].sort(key=lambda x: x.schedulableId, reverse=False)
 
                     writePermissionTemp = [0] * self.getPermissionArraySize(self.cores[coreId].numOfTasks)
 
                     for permission in buffer.writePermission[int(coreId)]:
-                        arrayIterator = self.getPermissionArrayIterator(permission.taskId)
-                        writePermissionTemp[arrayIterator] = (writePermissionTemp[arrayIterator] | (1 << (permission.taskId - (self.mcu.bitWidth * arrayIterator))))
+                        arrayIterator = self.getPermissionArrayIterator(permission.schedulableId)
+                        writePermissionTemp[arrayIterator] = (writePermissionTemp[arrayIterator] | (1 << (permission.schedulableId - (self.mcu.bitWidth * arrayIterator))))
 
                     buffer.compressedWritePermission[coreId] = writePermissionTemp[:]
 
@@ -477,12 +493,22 @@ class SystemModel():
                     if not apiHeader in sysJobsApiHeadersSet:
                         self.sysJobsApiHeaders.append(apiHeader)
 
-    def initOs(self):
-        maxTaskOnOneCore = 0
-        for core in self.cores:
-            if core.numOfTasks > maxTaskOnOneCore:
-                maxTaskOnOneCore = core.numOfTasks
+    def getTaskSchedulableId(self,tasks,taskId,programId,coreId):
+        for task in tasks:
+            if (task.taskId == taskId) and (task.programId == programId) and (task.coreId == coreId):
+                return task.schedulableId
 
-        self.os = Cosmos(self.cores,self.programs,self.tasks,self.buffers,self.switches,maxTaskOnOneCore,\
+    def getThreadSchedulableId(self,threads,threadId,programId,coreId):
+        for thread in threads:
+            if (thread.threadId == threadId) and (thread.programId == programId) and (thread.coreId == coreId):
+                return thread.schedulableId
+
+    def initOs(self):
+        maxSchedulablesOnOneCore = 0
+        for core in self.cores:
+            if (core.numOfTasks +  core.numOfThreads) > maxSchedulablesOnOneCore:
+                maxSchedulablesOnOneCore = (core.numOfTasks +  core.numOfThreads)
+
+        self.os = Cosmos(self.cores,self.programs,self.tasks,self.buffers,self.switches,maxSchedulablesOnOneCore,\
             len(self.cores),len(self.buffers),self.routes,self.buffersDouble,self.threads,\
             self.routesApiHeaders,self.sysJobsApiHeaders)
