@@ -1,5 +1,5 @@
 class Core():
-    def __init__(self,paramName,paramPrograms,paramCoreId,paramScheduler,paramUnmapped,paramBootOs,paramSysJobGroups):
+    def __init__(self,paramName,paramPrograms,paramCoreId,paramScheduler,paramUnmapped,paramBootOs,paramSysJobGroups, paramSysJobsHyperTick):
         self.kernelStackSize = 1024
         self.name = paramName
         self.scheduler = paramScheduler
@@ -8,6 +8,7 @@ class Core():
         self.unmapped = paramUnmapped
         self.bootOs = paramBootOs
         self.sysJobGroups = paramSysJobGroups
+        self.sysJobsHyperTick = paramSysJobsHyperTick
         self.numOfTasks = 0
         self.numOfThreads = 0
         self.eStackAddress = None
@@ -16,4 +17,3 @@ class Core():
         self.kernelLowAddress = None
         self.lowestTaskStackAddress = None
         self.stackMemoryName = None
-        self.MaxSysJobsTickMultiplicator = 0

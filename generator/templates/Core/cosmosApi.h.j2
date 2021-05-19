@@ -184,14 +184,14 @@
 ********************************************************************************/
 {% for item in os.routes -%}
 {% if item.userVisible and item.name != "buffer_readArray" and item.name != "buffer_writeArray" -%}
-#define cosmosApi_{{item.name}}({% for arg in item.args -%}{% if loop.index > 1 -%} ,{% endif -%}{{arg}}{% endfor -%}) {{item.sysCall}}(SYSCALL_{{item.name.upper()}}{% for arg in item.args -%},{{arg}}{% endfor -%})
+#define cosmosApi_{{item.name}}({% for arg in item.args -%}{% if loop.index > 1 -%} ,{% endif -%}{{arg}}{% endfor -%}) ({{item.returnType}}){{item.sysCall}}(SYSCALL_{{item.name.upper()}}{% for arg in item.args -%},{{arg}}{% endfor -%})
 {% endif -%}
 {% endfor -%}
 #define cosmosApi_boot() sysCalls_osBoot()
 
 {% for item in buffers -%}
-#define cosmosApi_read_buffer_{{item.name}}(array, size) (cosmos_BufferStateType)sysCalls_readWrite(SYSCALL_READ_BUFFER_{{item.bufferId}}_ID, array, size)
-#define cosmosApi_write_buffer_{{item.name}}(array, size) (cosmos_BufferStateType)sysCalls_readWrite(SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID, array, size)
+#define cosmosApi_read_buffer_{{item.name}}(array, size) (CosmOS_BufferStateType)sysCalls_readWrite(SYSCALL_READ_BUFFER_{{item.bufferId}}_ID, array, size)
+#define cosmosApi_write_buffer_{{item.name}}(array, size) (CosmOS_BufferStateType)sysCalls_readWrite(SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID, array, size)
 {% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **

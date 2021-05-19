@@ -52,6 +52,9 @@ class SystemModel():
         self.buffersDouble = []
         self.memories = []
         self.routes = []
+
+        self.routesApiHeaders = []
+        self.sysJobsApiHeaders = []
         
         self.switches = None
         self.mcu = None
@@ -71,7 +74,8 @@ class SystemModel():
         self.schedulerLastToFirstTaskTick()
         self.permissionCompression()
         self.doubleBuffersInit()
-        self.getMaxSysJobsTickMultiplicator()
+        self.removeDuplicateRoutesApiHeaders()
+        self.removeDuplicateSysJobsApiHeaders()
         self.initOs()
 
     def parseSystemModelCfg(self):
@@ -156,23 +160,27 @@ class SystemModel():
                 programIterator+=1
                 taskIterator = 0
                 threadIterator = 0
-            for sysJobGroup in systemModelCfg['cores'][core]['sysJobs']:
-                handlers = systemModelCfg['cores'][core]['sysJobs'][sysJobGroup]['handlers']
-                tickMultiplicator = int(systemModelCfg['cores'][core]['sysJobs'][sysJobGroup]['tickMultiplicator'])
-                sysJobGroupsTemp.append(SysJobGroup(sysJobGroupIterator,coreIterator,handlers,tickMultiplicator))
+            for sysJobGroup in systemModelCfg['cores'][core]['sysJobs']['groups']:
+                handlers = systemModelCfg['cores'][core]['sysJobs']['groups'][sysJobGroup]['handlers']
+                tickMultiplicator = int(systemModelCfg['cores'][core]['sysJobs']['groups'][sysJobGroup]['tickMultiplicator'])
+                apiHeaders = systemModelCfg['cores'][core]['sysJobs']['groups'][sysJobGroup]['api_headers']
+                sysJobGroupsTemp.append(SysJobGroup(sysJobGroupIterator,coreIterator,handlers,tickMultiplicator,apiHeaders))
                 sysJobGroupIterator+=1
             sysJobGroupIterator = 0
+
             schedulerHyperTick = systemModelCfg['cores'][core]['scheduler']['hyperTick']
+            sysJobsHyperTick = systemModelCfg['cores'][core]['sysJobs']['hyperTick']
             syncTicks = systemModelCfg['cores'][core]['scheduler']['syncTicks']
             firstSyncTaskStartTick = systemModelCfg['cores'][core]['scheduler']['firstSyncTaskStartTick']
             preemptTick = systemModelCfg['cores'][core]['scheduler']['preemptTick']
             unmappedSize = int(systemModelCfg['cores'][core]['unmapped']['size'])
             unmappedMemory = systemModelCfg['cores'][core]['unmapped']['memory']
+
             cores.append(Core(coreName,programsTemp,coreIterator,\
                 Scheduler(int(schedulerHyperTick),tableTemp,coreIterator,len(tableTemp),syncTicks,firstSyncTaskStartTick,preemptTick),\
                 Unmapped(unmappedSize,unmappedMemory,coreIterator),\
-                    bootOs,\
-                        sysJobGroupsTemp))
+                bootOs,\
+                sysJobGroupsTemp, sysJobsHyperTick))
             sysJobGroupsTemp = []
             tableTemp = []
             programs += programsTemp
@@ -213,7 +221,8 @@ class SystemModel():
             userVisible = systemModelCfg['sysCalls']['routed_funcs'][route]['user_visible']
             isMappedToEntity = systemModelCfg['sysCalls']['routed_funcs'][route]['is_mapped_to_entity']
             args = systemModelCfg['sysCalls']['routed_funcs'][route]['args']
-            currentRoute = Route(name,apiHeader,sysCall,userVisible,isMappedToEntity,args)
+            returnType = systemModelCfg['sysCalls']['routed_funcs'][route]['return_type']
+            currentRoute = Route(name,apiHeader,sysCall,userVisible,isMappedToEntity,args,returnType)
             routes.append(currentRoute)
 
         self.cores = cores
@@ -454,12 +463,19 @@ class SystemModel():
         
         return iterator
 
-    def getMaxSysJobsTickMultiplicator(self):
+    def removeDuplicateRoutesApiHeaders(self):
+        for route in self.routes:
+            routesApiHeadersSet = set(self.routesApiHeaders)
+            if not route.apiHeader in routesApiHeadersSet:
+                self.routesApiHeaders.append(route.apiHeader)
+
+    def removeDuplicateSysJobsApiHeaders(self):
         for core in self.cores:
-            for sysJobGroup in core.sysJobGroups:
-                currentGroupTickMultiplicator = sysJobGroup.tickMultiplicator
-                if core.MaxSysJobsTickMultiplicator < currentGroupTickMultiplicator:
-                    core.MaxSysJobsTickMultiplicator = currentGroupTickMultiplicator
+            for sysJobsGroup in core.sysJobGroups:
+                for apiHeader in sysJobsGroup.apiHeaders:
+                    sysJobsApiHeadersSet = set(self.sysJobsApiHeaders)
+                    if not apiHeader in sysJobsApiHeadersSet:
+                        self.sysJobsApiHeaders.append(apiHeader)
 
     def initOs(self):
         maxTaskOnOneCore = 0
@@ -468,4 +484,5 @@ class SystemModel():
                 maxTaskOnOneCore = core.numOfTasks
 
         self.os = Cosmos(self.cores,self.programs,self.tasks,self.buffers,self.switches,maxTaskOnOneCore,\
-            len(self.cores),len(self.buffers),self.routes,self.buffersDouble,self.threads)
+            len(self.cores),len(self.buffers),self.routes,self.buffersDouble,self.threads,\
+            self.routesApiHeaders,self.sysJobsApiHeaders)

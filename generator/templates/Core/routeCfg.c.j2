@@ -22,8 +22,9 @@
 ********************************************************************************/
 /* CORE interfaces */
 #include "routeCfg.h"
-{% for item in os.routes -%}
-#include "{{item.apiHeader}}"
+/* GENERATED interfaces */
+{% for item in os.routesApiHeaders -%}
+#include "{{item}}"
 {% endfor -%}
 /********************************************************************************
 **                            Include Files | Stop                             **

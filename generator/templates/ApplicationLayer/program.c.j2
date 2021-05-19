@@ -18,15 +18,23 @@
 **          during generating of the new CosmOS configuration
 ********************************************************************************/
 /********************************************************************************
-**                            Include Files | Start                            **
+** DO NOT MODIFY THIS COMMENT ! Include Files        USER SECTION | Start      **
+** start_name ={{program.name}}_includeFiles
 ********************************************************************************/
-#include "sysDefs.h"
-#include "cosmosApi.h"
-#include "stm32h7xx_hal.h"
-#include "memoryMapping.h"
-#include "cosmosTypesStd.h"
+{% set programDefine = '#include \"' + program.name + '.h\"' -%}
+{% for section in sections -%}
+{% if section.name == program.name+"_includeFiles" -%}
+{% for line in section.lines -%}
+{% if line != programDefine -%}
+{{line}}
+{% endif -%}
+{% endfor -%}
+{% endif -%}
+{% endfor -%}
+#include "{{program.name}}.h"
 /********************************************************************************
-**                            Include Files | Stop                             **
+** stop_name ={{program.name}}_includeFiles
+** DO NOT MODIFY THIS COMMENT ! Include Files        USER SECTION | Stop       **
 ********************************************************************************/
 /********************************************************************************
 **                         Function Prototypes | Start                         **

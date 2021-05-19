@@ -22,9 +22,10 @@
 ********************************************************************************/
 /* CORE interfaces */
 #include "sysJobsCfg.h"
-
-/* CIL interfaces */
-#include "CIL_uart.h"
+/* GENERATED interfaces */
+{% for item in os.sysJobsApiHeaders -%}
+#include "{{item}}"
+{% endfor -%}
 /********************************************************************************
 **                            Include Files | Stop                             **
 ********************************************************************************/
@@ -93,7 +94,7 @@ IS_INITIALIZED_TO
     {
         SysJobsGroupsCore{{core.coreId}}ConstCfg,                   /* const CosmOS_SysJobsGroupConfigurationType * const groups    */
         SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM,                    /* const BitWidthType numOfGroups                               */
-        SYSJOBS_CORE_{{core.coreId}}_MAX_TICK_MULTIPLICATOR         /* const BitWidthType maxTickMultiplicator                      */
+        SYSJOBS_CORE_{{core.coreId}}_HYPERTICK                      /* const BitWidthType hyperTick                                 */
     },
 {% endfor -%}
 };

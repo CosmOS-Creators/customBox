@@ -63,7 +63,7 @@
 ********************************************************************************/
 {% for core in cores -%}
 #define SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM    (BitWidthType){{core.sysJobGroups | length}}        /* Number of configurated sysJob groups on the core {{core.name}}  */
-#define SYSJOBS_CORE_{{core.coreId}}_MAX_TICK_MULTIPLICATOR    (BitWidthType){{core.MaxSysJobsTickMultiplicator}}        /* Maximal tick multiplicator on the {{core.name}}  */
+#define SYSJOBS_CORE_{{core.coreId}}_HYPERTICK    (BitWidthType){{core.sysJobsHyperTick}}              /* HyperTick on the {{core.name}}  */
 
 {% for sysJobGroup in core.sysJobGroups -%}
 #define SYSJOBS_HANDLERS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.coreId}}_NUM    (BitWidthType){{sysJobGroup.handlers | length}}        /* Number of configurated handlers in group ID {{sysJobGroup.groupId}}  */
