@@ -64,7 +64,7 @@
 #define BOOT_ARGS_NUM    (BitWidthType)3
 #define SECTION_NUM_OS    (BitWidthType)2
 {% for core in cores -%}
-#define SECTION_NUM_CORE_{{core.coreId}}    (BitWidthType){{core.programs|length}}
+#define SECTION_NUM_CORE_{{core.coreId}}    (BitWidthType){% if core.bootOs -%}{{(core.programs|length) + 2}}{% else %}{{(core.programs|length)}}{% endif %}
 {% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **

@@ -82,7 +82,7 @@
   * @ingroup Global_permissionCfg  
   * @{    
 ********************************************************************************/
-extern const uint8_t SchedulableIdToBitLock[((MAX_SCHEDULABLES_ON_ONE_CORE/(sizeof(BitWidthType)*8)) + 1)*(sizeof(BitWidthType)*8)];
+extern const unsigned char SchedulableIdToBitLock[((MAX_SCHEDULABLES_ON_ONE_CORE/(sizeof(BitWidthType)*8)) + 1)*(sizeof(BitWidthType)*8)];
 
 {% for item in buffers -%}
 extern const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}ReadCfgConst[CORE_NUM];
