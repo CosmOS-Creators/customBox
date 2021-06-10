@@ -259,8 +259,8 @@ def generateCode(systemModel,workspace):
 
     print("{}{}".format(LINE, "-> Generating the CosmOS Core code"))
     generateCosmOSCore(systemModel,workspace)
-    print("{}{}".format(LINE, "-> Generating the CosmOS Integration Layer code"))
-    generateCosmOSIntegrationLayer(systemModel,workspace)
+    #print("{}{}".format(LINE, "-> Generating the CosmOS Integration Layer code"))
+    #generateCosmOSIntegrationLayer(systemModel,workspace)
     print("{}{}".format(LINE, "-> Generating the CosmOS Application Layer code"))
     generateCosmOSApplicationLayer(systemModel,workspace)
     print("{}{}".format(LINE, "-> Generating the Linker Scripts"))
