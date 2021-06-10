@@ -21,6 +21,7 @@ class Workspace():
         self.systemModelCfgPath = workspace['systemModelCfgPath']
         self.compilerCfgPath = workspace['compilerCfgPath']
         self.LinkerTemplateName = workspace['LinkerTemplateName']
+        self.linkerScriptPaths = workspace['linkerScriptPaths']
 
         if ( workspace['stmProject'] == True ):
             self.cprojectPaths = workspace['cprojectPaths']

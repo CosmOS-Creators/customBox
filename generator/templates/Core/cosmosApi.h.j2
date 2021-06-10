@@ -54,6 +54,7 @@
 ********************************************************************************/
 /* CORE interfaces */
 #include "sysCalls.h"
+#include "osBoot.h"
 /********************************************************************************
 **                            Include Files | Stop                             **
 ********************************************************************************/
@@ -187,7 +188,7 @@
 #define cosmosApi_{{item.name}}({% for arg in item.args -%}{% if loop.index > 1 -%} ,{% endif -%}{{arg}}{% endfor -%}) ({{item.returnType}}){{item.sysCall}}(SYSCALL_{{item.name.upper()}}{% for arg in item.args -%},{{arg}}{% endfor -%})
 {% endif -%}
 {% endfor -%}
-#define cosmosApi_boot() sysCalls_osBoot()
+#define cosmosApi_boot() osBoot_boot()
 
 {% for item in buffers -%}
 #define cosmosApi_read_buffer_{{item.name}}(array, size) (CosmOS_BufferStateType)sysCalls_readWrite(SYSCALL_READ_BUFFER_{{item.bufferId}}_ID, array, size)

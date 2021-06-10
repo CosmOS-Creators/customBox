@@ -17,3 +17,5 @@ class Core():
         self.kernelLowAddress = None
         self.lowestTaskStackAddress = None
         self.stackMemoryName = None
+        self.flashLowAddress = None
+        self.flashSize = None

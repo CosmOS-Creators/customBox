@@ -1,32 +1,44 @@
 {
-    "mcuCfgPath" : "Cosmos/CustomBox/configuration/mcu/{{mcu}}/mcuCfg.json",
-    "systemModelCfgPath" : "Cosmos/CustomBox/configuration/system/systemModelCfg.json",
+    "mcuCfgPath" : "Cosmos/{{mcu}}_integration/configuration/handwritten/mcuCfg.json",
+    "systemModelCfgPath" : "Cosmos/{{mcu}}_integration/configuration/generated/systemModelCfg.json",
     "CosmOSCorePath" : "Cosmos/Core",
-    "CosmOSIntegrationLayerPath" : "Cosmos/IntegrationLayer",
+    "CosmOSIntegrationLayerPath" : "Cosmos/{{mcu}}_integration/CIL",
     "CosmOSApplicationLayerPath" : "Cosmos/ApplicationLayer",
     "CosmOSCoreTemplatesPath" : "Cosmos/CustomBox/generator/templates/Core",
     "CosmOSIntegrationLayerTemplatesPath" : "Cosmos/CustomBox/generator/templates/IntegrationLayer",
     "CosmOSApplicationLayerTemplatesPath" : "Cosmos/CustomBox/generator/templates/ApplicationLayer",
     "CosmOSApplicationLayerSourceTemplateName" : "program.c.j2",
     "CosmOSApplicationLayerHeaderTemplateName" : "program.h.j2",
-    "LinkerScriptTemplatePath" : "Cosmos/CustomBox/generator/templates/Linker/{{mcu}}",
+    "LinkerScriptTemplatePath" : "Cosmos/CustomBox/generator/templates/Linker/gnu/arm",
     "LinkerTemplateName" : "linker.ld.j2",
-    "compilerCfgPath" : "Cosmos/CustomBox/configuration/mcu/{{mcu}}/compilerCfg.json",
+    "compilerCfgPath" : "Cosmos/{{mcu}}_integration/configuration/handwritten/compilerCfg.json",
     "stmProject" : true,
     "linkerScriptPaths" :[
+        {% if cores|length > 1 -%}
         {% for core in cores -%}
-        "{{core.name}}/{{mcu}}.upper()_FLASH.ld"
+        "{{core.name}}/{{core.linkerScriptName}}"
         {% endfor -%}
+        {% else -%}
+        "{{linkerScriptName}}"
+        {% endif -%}
     ],
     "cprojectPaths" :[
+        {% if cores|length > 1 -%}
         {% for core in cores -%}
         "{{core.name}}/.cproject"
         {% endfor -%}
+        {% else -%}
+        ".cproject"
+        {% endif -%}
     ],
     "projectPaths" :[
+        {% if cores|length > 1 -%}
         {% for core in cores -%}
         "{{core.name}}/.project"
         {% endfor -%}
+        {% else -%}
+        ".project"
+        {% endif -%}
     ]
 }
 

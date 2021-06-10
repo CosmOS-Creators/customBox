@@ -232,7 +232,7 @@ def generateCosmOSApplicationLayer(systemModel,workspace):
 def generateLinkerScript(systemModel,workspace):
     fileIsSame = False
 
-    for core in systemModel.cores:
+    for core,linkerScriptPath in zip(systemModel.cores,workspace.linkerScriptPaths):
         templatePath = os.path.join(workspace.LinkerScriptTemplatePath,workspace.LinkerTemplateName)
 
         with open(templatePath, 'r') as templateFile:
@@ -240,11 +240,7 @@ def generateLinkerScript(systemModel,workspace):
 
         templateInstance = Template(template)
 
-        ldScriptName = "{}.{}".format(core.name,"ld")
-
-        codePath = os.path.join(workspace.LinkerScriptTemplatePath,"output",ldScriptName)
-
-        outputDirectory = os.path.dirname(codePath)
+        outputDirectory = os.path.dirname(linkerScriptPath)
 
         if not os.path.exists(outputDirectory):
             os.mkdir(outputDirectory)
@@ -252,12 +248,12 @@ def generateLinkerScript(systemModel,workspace):
         generatedOutput = templateInstance.render(os = systemModel.os, mcu = systemModel.mcu, tasks=systemModel.os.tasks, \
         programs = systemModel.os.programs,core = core,version = systemModel.CosmOSVersion,date=date.today())
 
-        fileIsSame = compareFiles(codePath,generatedOutput)
+        fileIsSame = compareFiles(linkerScriptPath,generatedOutput)
 
         if(not fileIsSame):
-            with open(codePath, 'w+') as source:
+            with open(linkerScriptPath, 'w+') as source:
                 source.write(generatedOutput)
-                print("{}{}{}{}".format(LINE, "-> ",codePath," was generated successfully"))
+                print("{}{}{}{}".format(LINE, "-> ",linkerScriptPath," was generated successfully"))
 
 def generateCode(systemModel,workspace):
 

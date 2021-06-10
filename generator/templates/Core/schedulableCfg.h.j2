@@ -196,6 +196,18 @@ void wrapped_{{thread.name}}(void);
   * @ingroup Apis_schedulableCfg_h                                            
   * @{                                                                           
 ********************************************************************************/
+{% for item in programs -%}
+{% for task in item.tasks -%}
+__WEAK void {{task.name}}(void){};
+{% endfor -%}
+{% endfor -%}
+
+{% for item in programs -%}
+{% for thread in item.threads -%}
+__WEAK void {{thread.name}}(void){};
+{% endfor -%}
+{% endfor -%}
+
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**

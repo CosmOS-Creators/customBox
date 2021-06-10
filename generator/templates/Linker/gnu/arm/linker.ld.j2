@@ -9,7 +9,7 @@
 *********************************************************************************
 <!--                      Linker Local Group Definition                       -->
 *********************************************************************************	
-** @brief {{core.name}} linker script
+** @brief {{core.name}} arm gnu linker script
 ** @details lorem 
 *********************************************************************************	
 <!--                           Version Information                            -->
@@ -25,13 +25,9 @@ _estack = 0x{{'%04x' % core.eStackAddress}};
 
 MEMORY
 {
-{% if 0 == core.coreId -%}
-FLASH (rx)      : ORIGIN = 0x08000000, LENGTH = 1024K
-{% else -%}
-FLASH (rx)      : ORIGIN = 0x08100000, LENGTH = 1024K
-{% endif -%}
-AHB_SRAM4_CONSTS_PARTITION (xr)     : ORIGIN = 0x38000000, LENGTH = 32K
-AHB_SRAM4_VARS_PARTITION (xrw)     : ORIGIN = 0x38008000, LENGTH = 32K
+FLASH (rx)      : ORIGIN = {{core.flashLowAddress}}, LENGTH = {{core.flashSize}}
+OS_CONSTS_PARTITION (xr)     : ORIGIN = {{os.constsLowAddress}}, LENGTH = {{os.constsSize}}
+OS_VARS_PARTITION (xrw)     : ORIGIN = {{os.varsLowAddress}}, LENGTH = {{os.varsSize}}
 UNMAPPED_PARTITION_IN_{{core.unmapped.memory.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % core.unmapped.lowAddress}}, LENGTH = {{core.unmapped.size}}
 {% for item in programs -%}
 PROGRAM_{{item.name.upper()}}_PARTITION_IN_{{item.memory.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % item.memoryLowAddress}}, LENGTH = {{item.size}}
@@ -82,7 +78,7 @@ SECTIONS
     _e_consts_align_helper = .;        /* create a helper for log2 alignment */
     . = ALIGN((0x2 << (LOG2CEIL (_e_consts_align_helper) - 1)));
     _e_os_section_consts = .;          /* create a global symbol at data end */
-  } >AHB_SRAM4_CONSTS_PARTITION AT> FLASH
+  } >OS_CONSTS_PARTITION AT> FLASH
 
   _flash_os_section_vars_start = LOADADDR(.os_section_vars);
 
@@ -95,7 +91,7 @@ SECTIONS
     _e_vars_align_helper = .;        /* create a helper for log2 alignment */
     . = ALIGN((0x2 << (LOG2CEIL (_e_vars_align_helper) - 1)));
     _e_os_section_vars = .;          /* define a global symbol at data end */
-  } >AHB_SRAM4_VARS_PARTITION AT> FLASH
+  } >OS_VARS_PARTITION AT> FLASH
 
   /* FLASH */
     .os_section_funcs : 

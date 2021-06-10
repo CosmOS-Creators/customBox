@@ -1,7 +1,7 @@
 class Cosmos():
     def __init__(self,paramCores,paramPrograms,paramTasks,paramBuffers,paramSwitches,paramMaxSchedulablesOnOneCore,\
         paramNumOfInitializedCores,paramNumOfInitializedBuffers,routesParam,paramBuffersDouble,paramThreads,\
-        paramRoutesApiHeaders,paramSysJobsApiHeaders):
+        paramRoutesApiHeaders,paramSysJobsApiHeaders,paramConstsLowAddress,paramConstsSize,paramVarsLowAddress,paramVarsSize):
         self.cores = paramCores
         self.programs = paramPrograms
         self.tasks = paramTasks
@@ -15,3 +15,7 @@ class Cosmos():
         self.threads = paramThreads
         self.routesApiHeaders = paramRoutesApiHeaders
         self.sysJobsApiHeaders = paramSysJobsApiHeaders
+        self.constsLowAddress = paramConstsLowAddress
+        self.constsSize = paramConstsSize
+        self.varsLowAddress = paramVarsLowAddress
+        self.varsSize = paramVarsSize

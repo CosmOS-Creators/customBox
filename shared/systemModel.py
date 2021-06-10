@@ -64,6 +64,11 @@ class SystemModel():
         self.systemModelCfg = paramSystemModelCfgPath
         self.mcuCfg = paramMcuCfgPath
 
+        self.constsLowAddress = None
+        self.constsSize = None
+        self.varsLowAddress = None
+        self.varsSize = None
+
         #the order cannot be changed
         self.parseSystemModelCfg()
         self.parseMcuCfg()
@@ -265,9 +270,11 @@ class SystemModel():
 
         for core in mcuCfg['cores']:
             coreName = mcuCfg['cores'][core]['name']
-            estackAddress = mcuCfg['cores'][core]['e_stack_address']
-            stackRamSize = mcuCfg['cores'][core]['stack_ram_size']
-            stackMemory = mcuCfg['cores'][core]['stack_memory']
+            estackAddress = mcuCfg['cores'][core]['stack_memory_partition']['e_stack_address']
+            stackRamSize = mcuCfg['cores'][core]['stack_memory_partition']['stack_ram_size']
+            stackMemory = mcuCfg['cores'][core]['stack_memory_partition']['name']
+            flashLowAddress = mcuCfg['cores'][core]['flash_partition']['low_address']
+            flashSize = mcuCfg['cores'][core]['flash_partition']['size']
             for coreItem in self.cores:
                 if coreItem.name == coreName:
                     coreItem.stackMemoryName = stackMemory
@@ -278,6 +285,8 @@ class SystemModel():
                     coreItem.lowestTaskStackAddress = int(estackAddress)
                     coreItem.kernelHighAddress = hex(coreItem.kernelHighAddress)
                     coreItem.kernelLowAddress = hex(coreItem.kernelLowAddress)
+                    coreItem.flashLowAddress = hex(int(flashLowAddress))
+                    coreItem.flashSize = hex(int(flashSize))
 
         tempChunks = []
 
@@ -290,6 +299,11 @@ class SystemModel():
             tempChunks.append(Chunk(memoryLowAddress,highAddress,memorySize))
             self.memories.append(Memory(memoryName,memorySize,memoryLowAddress,memoryCores,tempChunks[:]))
             tempChunks = []
+
+        self.constsLowAddress = hex(int(mcuCfg['os_memory_sections']['consts_partition']['low_address']))
+        self.constsSize = hex(int(mcuCfg['os_memory_sections']['consts_partition']['size']))
+        self.varsLowAddress = hex(int(mcuCfg['os_memory_sections']['vars_partition']['low_address']))
+        self.varsSize = hex(int(mcuCfg['os_memory_sections']['vars_partition']['size']))
 
     def updateFreeMemory(self, memoryName , size):
         lowAddress = None
@@ -511,4 +525,4 @@ class SystemModel():
 
         self.os = Cosmos(self.cores,self.programs,self.tasks,self.buffers,self.switches,maxSchedulablesOnOneCore,\
             len(self.cores),len(self.buffers),self.routes,self.buffersDouble,self.threads,\
-            self.routesApiHeaders,self.sysJobsApiHeaders)
+            self.routesApiHeaders,self.sysJobsApiHeaders,self.constsLowAddress,self.constsSize,self.varsLowAddress,self.constsSize)
