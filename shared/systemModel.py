@@ -2,8 +2,6 @@ import json
 import importlib.util
 import sys
 
-from numpy import invert
-
 module_name = 'chunk'
 file_path = 'Cosmos/CustomBox/generator/classes/chunk.py'
 
@@ -55,7 +53,7 @@ class SystemModel():
 
         self.routesApiHeaders = []
         self.sysJobsApiHeaders = []
-        
+
         self.switches = None
         self.mcu = None
         self.os = None
@@ -435,7 +433,7 @@ class SystemModel():
             for coreId in range(len(self.cores)):
                 if((len(buffer.readPermission[coreId]))):
                     buffer.readPermission[coreId].sort(key=lambda x: x.schedulableId, reverse=False)
-                    
+
                     readPermissionTemp = [0] * self.getPermissionArraySize(self.cores[coreId].numOfTasks)
 
                     for permission in buffer.readPermission[int(coreId)]:
@@ -448,7 +446,7 @@ class SystemModel():
                     buffer.compressedReadPermissionInverted[coreId] = [''.join('1' if x == '0' else '0' for x in element) for element in buffer.compressedReadPermission[coreId]]
                 else:
                     readPermissionTemp = [0] * self.getPermissionArraySize(self.cores[coreId].numOfTasks)
-                    
+
                     buffer.compressedReadPermission[coreId] = readPermissionTemp[:]
 
                     buffer.compressedReadPermission[coreId] = ['{0:0{1}b}'.format(element,self.mcu.bitWidth) for element in buffer.compressedReadPermission[coreId]]
@@ -481,7 +479,7 @@ class SystemModel():
         while elementSize <= taskId:
             iterator+=1
             elementSize = self.mcu.bitWidth * iterator
-        
+
         return iterator-1
 
     def getPermissionArraySize(self, highestTaskId):
@@ -490,7 +488,7 @@ class SystemModel():
         while elementSize <= highestTaskId:
             iterator+=1
             elementSize = self.mcu.bitWidth * iterator
-        
+
         return iterator
 
     def removeDuplicateRoutesApiHeaders(self):
