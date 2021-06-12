@@ -58,9 +58,12 @@ def generateCosmOSCore(systemModel,workspace):
             unitName = "{}{}".format(unitName,unitNameAdd)
 
         if re.split(r'\.',fileName)[1] == 'h':
-            codePath = os.path.join(workspace.CosmOSCorePath,unitName,"inc",fileName)
+            codePath = os.path.join(workspace.CosmOSGeneratedCorePath,unitName,"inc",fileName)
+            codeDir = os.path.join(workspace.CosmOSGeneratedCorePath,unitName,"inc")
+
         else:
-            codePath = os.path.join(workspace.CosmOSCorePath,unitName,"src",fileName)
+            codePath = os.path.join(workspace.CosmOSGeneratedCorePath,unitName,"src",fileName)
+            codeDir = os.path.join(workspace.CosmOSGeneratedCorePath,unitName,"src")
 
         with open(templatePath, 'r') as templateFile:
             template=templateFile.read()
@@ -74,6 +77,8 @@ def generateCosmOSCore(systemModel,workspace):
         fileIsSame = compareFiles(codePath,generatedOutput)
 
         if(not fileIsSame):
+            if not os.path.exists(codeDir):
+                os.makedirs(codeDir)
             with open(codePath, 'w+') as source:
                 source.write(generatedOutput)
                 print("{}{}{}{}".format(LINE, "-> ",codePath," was generated successfully"))
@@ -81,30 +86,6 @@ def generateCosmOSCore(systemModel,workspace):
 
 def generateCosmOSIntegrationLayer(systemModel,workspace):
     fileIsSame = False
-
-    for templateName in os.listdir(workspace.CosmOSIntegrationLayerTemplatesPath):
-        fileName = os.path.splitext(templateName)[0]
-        templatePath = os.path.join(workspace.CosmOSIntegrationLayerTemplatesPath,templateName)
-
-        if re.split(r'\.',fileName)[1] == 'h':
-            codePath = os.path.join(workspace.CosmOSIntegrationLayerPath,"inc",fileName)
-        else:
-            codePath = os.path.join(workspace.CosmOSIntegrationLayerPath,"src",fileName)
-
-        with open(templatePath, 'r') as templateFile:
-            template=templateFile.read()
-
-        templateInstance = Template(template)
-
-        generatedOutput = templateInstance.render(os = systemModel.os, mcu = systemModel.mcu, tasks=systemModel.os.tasks, \
-        programs = systemModel.os.programs,cores = systemModel.os.cores,buffers = systemModel.os.buffers,switches  = systemModel.os.switches,version = systemModel.CosmOSVersion,date=date.today())
-
-        fileIsSame = compareFiles(codePath,generatedOutput)
-
-        if(not fileIsSame):
-            with open(codePath, 'w+') as source:
-                source.write(generatedOutput)
-                print("{}{}{}{}".format(LINE, "-> ",codePath," was generated successfully"))
 
 def generateCosmOSApplicationLayer(systemModel,workspace):
 

@@ -5,6 +5,7 @@ import re
 import json
 import argparse
 from jinja2 import Template
+from itertools import zip_longest
 
 import sys
 sys.path.append('Cosmos/CustomBox/shared')
@@ -140,8 +141,11 @@ def injectConfig(workspace,compilerCfg):
         #inject includes
         for line in inputFile:
             if (startIncludesSection and re.search(regexEndOfSection, line)):
-                for unit in workspace.CosmOSCoreUnits:
+                for unit in workspace.CosmOSCoreModules:
                     newDefLine = incTemplateInstance.render(pathToUnit = "{}/{}".format(workspace.CosmOSCorePath,unit))
+                    writeFile.write(newDefLine)
+                for unit in workspace.CosmOSGeneratedCoreModules:
+                    newDefLine = incTemplateInstance.render(pathToUnit = "{}/{}".format(workspace.CosmOSGeneratedCorePath,unit))
                     writeFile.write(newDefLine)
                 newDefLine = incTemplateInstance.render(pathToUnit = workspace.CosmOSIntegrationLayerPath)
                 writeFile.write(newDefLine)
@@ -151,9 +155,11 @@ def injectConfig(workspace,compilerCfg):
                 startIncludesSection = False
             elif (startIncludesSection):
                 matchDefine = False
-                for unit in workspace.CosmOSCoreUnits:
-                    if ( (re.search("{}/{}".format(workspace.CosmOSCorePath,unit), line)) or \
-                        (re.search(workspace.CosmOSIntegrationLayerPath, line)) or (re.search(workspace.CosmOSApplicationLayerPath, line))):
+                for unit,generatedUnit in zip_longest(workspace.CosmOSCoreModules,workspace.CosmOSGeneratedCoreModules):
+                    if ((re.search("{}/{}".format(workspace.CosmOSCorePath,unit), line)) or \
+                        (re.search(workspace.CosmOSIntegrationLayerPath, line)) or \
+                        (re.search(workspace.CosmOSApplicationLayerPath, line)) or \
+                        (re.search("{}/{}".format(workspace.CosmOSGeneratedCorePath,generatedUnit), line))):
                         matchDefine = True 
                 if (not(matchDefine)):
                     writeFile.write(line)
@@ -179,12 +185,16 @@ def injectConfig(workspace,compilerCfg):
                 writeFile.write(newDefLine)
                 newDefLine = sourceTemplateInstance.render(sourcePath = workspace.CosmOSCorePath)
                 writeFile.write(newDefLine)
+                newDefLine = sourceTemplateInstance.render(sourcePath = workspace.CosmOSGeneratedCorePath)
+                writeFile.write(newDefLine)
                 writeFile.write(line)
                 startSourcesSection = False
             elif (startSourcesSection):
                 matchDefine = False
-                if ( (re.search(workspace.CosmOSCorePath, line)) or (re.search(workspace.CosmOSApplicationLayerPath, line))\
-                    or (re.search(workspace.CosmOSIntegrationLayerPath, line))):
+                if ((re.search(workspace.CosmOSCorePath, line)) or \
+                    (re.search(workspace.CosmOSGeneratedCorePath, line)) or \
+                    (re.search(workspace.CosmOSApplicationLayerPath, line)) or \
+                    (re.search(workspace.CosmOSIntegrationLayerPath, line))):
                     matchDefine = True 
                 if (not(matchDefine)):
                     writeFile.write(line)
@@ -208,13 +218,16 @@ def injectConfig(workspace,compilerCfg):
 
             cachedLines = []
             matchNameCorePath = False
+            matchNameGeneratedCorePath = False
             matchNameAL = False
             matchNameCIL = False
             matchUriCorePath = False
+            matchUriGeneratedCorePath = False
             matchUriAL = False
             matchUriCIL = False
 
             corePathIsLinked = False
+            generatedCorePathIsLinked = False
             CILPathIsLinked = False
             ALPathIsLinked = False
 
@@ -227,6 +240,9 @@ def injectConfig(workspace,compilerCfg):
                     if( not(corePathIsLinked) ):
                         newDefLine = linkedResourcesTemplateInstance.render(sourcePath = workspace.CosmOSCorePath)
                         writeFile.write(newDefLine)
+                    if( not(generatedCorePathIsLinked) ):
+                        newDefLine = linkedResourcesTemplateInstance.render(sourcePath = workspace.CosmOSGeneratedCorePath)
+                        writeFile.write(newDefLine)
                     if( not(ALPathIsLinked) ):
                         newDefLine = linkedResourcesTemplateInstance.render(sourcePath = workspace.CosmOSApplicationLayerPath)
                         writeFile.write(newDefLine)
@@ -237,23 +253,23 @@ def injectConfig(workspace,compilerCfg):
                 elif ( startLinkedResourcesSection ):
                     
                     if ( re.search(regexStartName, line) ):
-                        matchNameCorePath = False
-                        matchNameCIL = False
                         startNameSection = True
                         startUriSection = False
                         if ( re.search(workspace.CosmOSCorePath, line) ):
                             matchNameCorePath = True
+                        elif ( re.search(workspace.CosmOSGeneratedCorePath, line) ):
+                            matchNameGeneratedCorePath = True
                         elif( re.search(workspace.CosmOSApplicationLayerPath, line) ):
                             matchNameAL = True 
                         elif( re.search(workspace.CosmOSIntegrationLayerPath, line) ):
                             matchNameCIL = True 
 
                     if ( re.search(regexStartLocationUri, line) ):
-                        matchUriCorePath = False
-                        matchUriCIL = False
                         startUriSection = True
                         if ( re.search(workspace.CosmOSCorePath, line) ):
                             matchUriCorePath = True
+                        elif ( re.search(workspace.CosmOSGeneratedCorePath, line) ):
+                            matchUriGeneratedCorePath = True
                         elif( re.search(workspace.CosmOSApplicationLayerPath, line) ):
                             matchUriAL = True 
                         elif( re.search(workspace.CosmOSIntegrationLayerPath, line) ):
@@ -261,6 +277,9 @@ def injectConfig(workspace,compilerCfg):
 
                     if ( matchNameCorePath == matchUriCorePath and matchNameCorePath):
                         corePathIsLinked = True
+
+                    if ( matchNameGeneratedCorePath == matchUriGeneratedCorePath and matchNameGeneratedCorePath):
+                        generatedCorePathIsLinked = True
 
                     if ( matchNameCIL == matchUriCIL and matchNameCIL):
                         CILPathIsLinked = True
@@ -278,6 +297,12 @@ def injectConfig(workspace,compilerCfg):
                         writeFile.write(newDefLine)
                         startNameSection = False
                         corePathIsLinked = True
+                        cachedLines = []
+                    if( startUriSection and matchNameGeneratedCorePath != matchUriGeneratedCorePath and not(generatedCorePathIsLinked)):
+                        newDefLine = linkedResourcesFoundTemplateInstance.render(sourcePath = workspace.CosmOSGeneratedCorePath)
+                        writeFile.write(newDefLine)
+                        startNameSection = False
+                        generatedCorePathIsLinked = True
                         cachedLines = []
                     elif( startUriSection and matchNameAL != matchUriAL and not(ALPathIsLinked)):
                         newDefLine = linkedResourcesFoundTemplateInstance.render(sourcePath = workspace.CosmOSApplicationLayerPath)
