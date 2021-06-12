@@ -86,7 +86,7 @@ IS_INITIALIZED_TO
 {% for item in buffers -%}
 {% set count = namespace(value=0) -%}
 {% for permissionArray in item.compressedReadPermission -%}
-const BitWidthType BitLockBuffer{{item.bufferId}}SchedulablesCore{{count.value}}ReadCfgConst[((TASK_NUM_CORE_{{count.value}}/(sizeof(BitWidthType)*8)) + 1)] __OS_CONST_SECTION
+const BitWidthType BitLockBuffer{{item.bufferId}}SchedulablesCore{{count.value}}ReadCfgConst[((SCHEDULABLE_NUM_CORE_{{count.value}}/(sizeof(BitWidthType)*8)) + 1)] __OS_CONST_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in permissionArray -%}
@@ -99,7 +99,7 @@ IS_INITIALIZED_TO
 {% for item in buffers -%}
 {% set count = namespace(value=0) -%}
 {% for permissionArray in item.compressedWritePermission -%}
-const BitWidthType BitLockBuffer{{item.bufferId}}SchedulablesCore{{count.value}}WriteCfgConst[((TASK_NUM_CORE_{{count.value}}/(sizeof(BitWidthType)*8)) + 1)] __OS_CONST_SECTION
+const BitWidthType BitLockBuffer{{item.bufferId}}SchedulablesCore{{count.value}}WriteCfgConst[((SCHEDULABLE_NUM_CORE_{{count.value}}/(sizeof(BitWidthType)*8)) + 1)] __OS_CONST_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in permissionArray -%}
@@ -112,7 +112,7 @@ IS_INITIALIZED_TO
 {% for item in buffers -%}
 {% set count = namespace(value=0) -%}
 {% for permissionArray in item.compressedReadPermissionInverted -%}
-const BitWidthType BitLockBuffer{{item.bufferId}}SchedulablesCore{{count.value}}ReadCfgInvertedConst[((TASK_NUM_CORE_{{count.value}}/(sizeof(BitWidthType)*8)) + 1)] __OS_CONST_SECTION
+const BitWidthType BitLockBuffer{{item.bufferId}}SchedulablesCore{{count.value}}ReadCfgInvertedConst[((SCHEDULABLE_NUM_CORE_{{count.value}}/(sizeof(BitWidthType)*8)) + 1)] __OS_CONST_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in permissionArray -%}
@@ -125,7 +125,7 @@ IS_INITIALIZED_TO
 {% for item in buffers -%}
 {% set count = namespace(value=0) -%}
 {% for permissionArray in item.compressedWritePermissionInverted -%}
-const BitWidthType BitLockBuffer{{item.bufferId}}SchedulablesCore{{count.value}}WriteCfgInvertedConst[((TASK_NUM_CORE_{{count.value}}/(sizeof(BitWidthType)*8)) + 1)] __OS_CONST_SECTION
+const BitWidthType BitLockBuffer{{item.bufferId}}SchedulablesCore{{count.value}}WriteCfgInvertedConst[((SCHEDULABLE_NUM_CORE_{{count.value}}/(sizeof(BitWidthType)*8)) + 1)] __OS_CONST_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in permissionArray -%}

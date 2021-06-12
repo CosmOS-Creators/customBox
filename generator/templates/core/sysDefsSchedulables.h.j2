@@ -61,8 +61,11 @@
   * @ingroup Global_sysDefsSchedulables  
   * @{    
 ********************************************************************************/
-#define MAX_SCHEDULABLES_ON_ONE_CORE                 (BitWidthType){{os.maxSchedulablesOnOneCore}}        /* Maximal number of configurated schedulables on one core  */{{"\n"}}
-{% for item in tasks -%}
+#define MAX_SCHEDULABLES_ON_ONE_CORE                 (BitWidthType){{os.maxSchedulablesOnOneCore}}        /* Maximal number of configurated schedulables on one core  */
+{{"\n"}}{% for item in cores -%}
+#define SCHEDULABLE_NUM_CORE_{{item.coreId}}                       (BitWidthType){{item.numOfTasks + item.numOfThreads}}        /* Number of configurated schedulables for the core {{item.name}} */
+{% endfor -%}
+{{"\n"}}{% for item in tasks -%}
 #define SCHEDULABLE_TASK_{{item.taskId}}_PROGRAM_{{item.programId}}_CORE_{{item.coreId}}_ID              (BitWidthType){{ loop.index - 1 }}    /* Task {{item.name}} schedulable identificator */
 {% endfor -%}
 {{"\n"}}{% for item in threads -%}
