@@ -4,14 +4,12 @@ import json
 import argparse
 
 import sys
-sys.path.append('Cosmos/CustomBox/shared')
-sys.path.append('Cosmos/CustomBox/generator/classes')
 
 from datetime import date
-from section import Section
+from classes.section import Section
 from jinja2 import Template
-from workspace import Workspace
-from systemModel import SystemModel
+from shared.workspace import Workspace
+from shared.systemModel import SystemModel
 
 
 LINE = "----------------------------------------------------------------------\n"

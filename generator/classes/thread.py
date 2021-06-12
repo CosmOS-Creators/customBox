@@ -1,5 +1,5 @@
-from stack import Stack
-from schedulable import Schedulable
+from classes.stack import Stack
+from classes.schedulable import Schedulable
 
 class Thread(Stack):
     def __init__(self,paramName,paramCoreId,paramProgramId,paramThreadId,paramStackId,paramStackSize,paramFloatingPoint,paramSchedulableId,paramIsIdle,paramIsSysJob):

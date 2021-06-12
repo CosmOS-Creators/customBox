@@ -1,32 +1,22 @@
 import json
-import importlib.util
-import sys
 
-module_name = 'chunk'
-file_path = 'Cosmos/CustomBox/generator/classes/chunk.py'
-
-spec = importlib.util.spec_from_file_location(module_name, file_path)
-module = importlib.util.module_from_spec(spec)
-sys.modules[module_name] = module
-spec.loader.exec_module(module)
-
-from chunk import Chunk
-from mcu import Mcu
-from core import Core
-from task import Task
-from route import Route
-from switch import Switch
-from buffer import Buffer
-from cosmos import Cosmos
-from memory import Memory
-from thread import Thread
-from program import Program
-from unmapped import Unmapped
-from scheduler import Scheduler
-from permission import Permission
-from sysJobGroup import SysJobGroup
-from bufferDouble import BufferDouble
-from scheduleTableElement import ScheduleTableElement
+from classes.chunk import Chunk
+from classes.mcu import Mcu
+from classes.core import Core
+from classes.task import Task
+from classes.route import Route
+from classes.switch import Switch
+from classes.buffer import Buffer
+from classes.cosmos import Cosmos
+from classes.memory import Memory
+from classes.thread import Thread
+from classes.program import Program
+from classes.unmapped import Unmapped
+from classes.scheduler import Scheduler
+from classes.permission import Permission
+from classes.sysJobGroup import SysJobGroup
+from classes.bufferDouble import BufferDouble
+from classes.scheduleTableElement import ScheduleTableElement
 
 
 def closestLowerNumber(n, m) :
