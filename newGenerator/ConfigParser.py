@@ -3,6 +3,8 @@ import os
 from types import SimpleNamespace
 from pathlib import Path
 import AttributeTypes
+from AttributeTypes import AttributeType
+from typing import Dict, List, Union, NewType
 
 ELEMENTS_KEY				= "elements"
 ATTRIBUTES_KEY				= "attributes"
@@ -21,10 +23,13 @@ OBJECT_ITERATOR_ATTRIBUTE	= "iterator"
 
 required_json_config_keys	= [ELEMENTS_KEY, ATTRIBUTES_KEY, VERSION_KEY]
 
+# type definitions for better linting
+jsonConfigType 				= NewType('jsonConfigType', Dict[str, object])
+AttributeCollectionType 	= NewType('AttributeCollectionType', Dict[str, AttributeType])
 
-def processAttributes(config: dict) -> dict:
-	attributeCollection = {}
-	AttributesToInherit = {}
+def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
+	attributeCollection: AttributeCollectionType = {}
+	AttributesToInherit: Dict[str, AttributeType] = {}
 	for configName in config:
 		for attribute in config[configName][ATTRIBUTES_KEY]:
 			currentAttribute = config[configName][ATTRIBUTES_KEY][attribute]
@@ -47,9 +52,7 @@ def processAttributes(config: dict) -> dict:
 
 	return attributeCollection
 
-
-
-def processConfig(config: dict, configName: str, completeConfig: object, attributeCollection: dict):
+def processConfig(config: dict, configName: str, completeConfig: SimpleNamespace, attributeCollection: AttributeCollectionType):
 	for element in config[ELEMENTS_KEY]:
 		currentElement = config[ELEMENTS_KEY][element]
 		if(not hasattr(completeConfig, configName)):
@@ -64,23 +67,25 @@ def processConfig(config: dict, configName: str, completeConfig: object, attribu
 		setattr(newElement, OBJECT_ID_ATTRIBUTE, element) # add the key of the element as an id inside the object so that it can be accessed also when iterating over the elements
 		iterator = getattr(currentConfig, OBJECT_ITERATOR_ATTRIBUTE)
 		iterator.append(newElement)
+		if(not type(currentElement) is list):
+			raise Exception(f"In config {configName} the {ELEMENTS_KEY} property is required to be a list but found {type(currentElement)}")
 		for attributeInstance in currentElement:
 			if(TARGET_KEY in attributeInstance and VALUE_KEY in attributeInstance): # this is a normal attribute instance
 				attribute = resolveAttributeLink(attributeCollection, configName, attributeInstance[TARGET_KEY])
 				propertyName = attributeInstance[TARGET_KEY]
 				if(TARGET_NAME_OVERWRITE_KEY in attributeInstance):
 					propertyName = attributeInstance[TARGET_NAME_OVERWRITE_KEY]
-				setattr(newElement, propertyName, attributeInstance[VALUE_KEY])
+				setattr(newElement, propertyName, attribute.checkValue(attributeInstance[VALUE_KEY]))
 			elif(TARGET_KEY in attributeInstance): # might be a placeholder instance
 				attribute = resolveAttributeLink(attributeCollection, configName, attributeInstance[TARGET_KEY])
 				if(attribute.is_placeholder):
-					setattr(newElement, attributeInstance[TARGET_KEY], 0) # TODO: Add the default value according to the current type
+					setattr(newElement, attributeInstance[TARGET_KEY], attribute.getDefault())
 				else:
 					raise Exception(f"Invalid attribute instance formatting in {configName} config. The following property is missing the {VALUE_KEY} property: {attributeInstance}")
 			elif(not PARENT_REFERENCE_KEY in attributeInstance): # this is parent reference special attribute instance
 				raise Exception(f"Invalid attribute instance formatting in {configName} config. The following property is invalid: {attributeInstance}")
 
-def resolveElementLink(globalConfig: object, localConfig: object, link: str):
+def resolveElementLink(globalConfig: SimpleNamespace, localConfig: SimpleNamespace, link: str):
 	if('/' in link):
 		config, target = link.split('/')
 		try:
@@ -98,18 +103,18 @@ def resolveElementLink(globalConfig: object, localConfig: object, link: str):
 			raise AttributeError(f"Configuration has no element named {link}")
 	return linkTarget
 
-def resolveAttributeLink(attributeCollection: dict, localConfig: str, link: str) -> AttributeTypes.AttributeType:
+def resolveAttributeLink(attributeCollection: AttributeCollectionType, localConfig: str, link: str) -> AttributeType:
 	if('/' in link):
 		try:
 			linkTarget = attributeCollection[link]
 		except KeyError:
-			raise KeyError(f"Could not find a target for {link} in {localConfig} config")
+			raise KeyError(f"Could not find a target attribute for {link} in {localConfig} config")
 	else:
 		globalLink = getGlobalLink(localConfig, link)
 		try:
 			linkTarget = attributeCollection[globalLink]
 		except KeyError:
-			raise KeyError(f"Could not find a target for {link} in {localConfig} config")
+			raise KeyError(f"Could not find a target attribute for {link} in {localConfig} config")
 	return linkTarget
 
 def getGlobalLink(location: str, target: str):
@@ -118,7 +123,7 @@ def getGlobalLink(location: str, target: str):
 def getConfigNameFromLink(globalLink: str):
 	return globalLink.split("/")[0]
 
-def linkParents(jsonConfigs: dict, objConfigs: object):
+def linkParents(jsonConfigs: jsonConfigType, objConfigs: SimpleNamespace, attributeCollection: AttributeCollectionType):
 	for config in jsonConfigs:
 		for element in jsonConfigs[config][ELEMENTS_KEY]:
 			for attributeInstance in jsonConfigs[config][ELEMENTS_KEY][element]:
@@ -140,53 +145,61 @@ def linkParents(jsonConfigs: dict, objConfigs: object):
 					iterator.append(element_obj)
 					if(PARENT_REFERENCE_NAME_KEY in attributeInstance):
 						setattr(element_obj, attributeInstance[PARENT_REFERENCE_NAME_KEY], parentObject)
+				else:
+					attribTarget = attributeCollection[getGlobalLink(config, attributeInstance[TARGET_KEY])]
+					if(attribTarget.needsLinking):
+						None
 
 def config_file_sanity_check(config: dict):
 	for required_key in required_json_config_keys:
 		if(not required_key in config):
 			raise KeyError(f"Every config file must have a key named {required_key}")
 
-def discoverConfigFiles(configPath: str):
-	if(not os.path.exists(configPath) or not os.path.isdir(configPath)):
-		raise FileNotFoundError("Input path was not valid or not a directory")
+def discoverConfigFiles(configPath: Union[str,List[str]]) -> List[str]:
+	configPaths: List[str] = []
+	if(type(configPath) is str):
+		configPaths = [configPath]
+	elif(type(configPath) is list):
+		configPaths = configPath
 	configFiles = []
-	for path in Path(configPath).rglob('*.json'):
-		configFiles.append(path.absolute())
+	for currentConfigPath in configPaths:
+		if(not os.path.exists(currentConfigPath) or not os.path.isdir(currentConfigPath)):
+			raise FileNotFoundError("Input path was not valid or not a directory")
+		for path in Path(currentConfigPath).rglob('*.json'):
+			configFiles.append(path.absolute())
 	return configFiles
 
-def loadConfig(configPath: str):
+def loadConfig(configPath: Union[str,List[str]]) -> SimpleNamespace:
 	configuration = SimpleNamespace()
 	configFiles = discoverConfigFiles(configPath)
 
 	jsonConfigs = {}
 	for configFile in configFiles:
-		relativeConfigFilePath = Path(configFile).relative_to(configPath)
 		with open(configFile, "r") as currentFile:
 			try:
 				loaded_json_config = json.load(currentFile)
 			except json.JSONDecodeError as e:
-				raise Exception(f"Config file \"{relativeConfigFilePath}\" is not a valid json: {str(e)}")
+				raise Exception(f"Config file \"{configFile}\" is not a valid json: {str(e)}")
 			try:
 				config_file_sanity_check(loaded_json_config)
 			except KeyError as e:
-				raise KeyError(f"Error in config file \"{relativeConfigFilePath}\": {str(e)}")
+				raise KeyError(f"Error in config file \"{configFile}\": {str(e)}")
 			configCleanName = Path(configFile).stem
 			jsonConfigs[configCleanName] = loaded_json_config
 
 	# make sure to load all attributes before loading all configs
 	attributeCollection = processAttributes(jsonConfigs)
 
-
 	for config in jsonConfigs:
 		processConfig(jsonConfigs[config], config, configuration, attributeCollection)
-	linkParents(jsonConfigs, configuration)
+	linkParents(jsonConfigs, configuration, attributeCollection)
 	return configuration
 
 if __name__ == "__main__":
 	from pretty_simple_namespace import pprint
 	import argparse
 	parser = argparse.ArgumentParser()
-	parser.add_argument("INPUT", help="Input config file path")
+	parser.add_argument("INPUT", help="Input config file path", type=str, metavar='N', nargs='+')
 	args = parser.parse_args()
 	fullConfig = loadConfig(args.INPUT)
 	pprint(fullConfig)
