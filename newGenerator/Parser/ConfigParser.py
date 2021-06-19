@@ -2,8 +2,8 @@ import json
 import os
 from types import SimpleNamespace
 from pathlib import Path
-import AttributeTypes
-from AttributeTypes import AttributeType
+import Parser.AttributeTypes as AttributeTypes
+from Parser.AttributeTypes import AttributeType
 from typing import Dict, List, Union, NewType
 
 ELEMENTS_KEY				= "elements"

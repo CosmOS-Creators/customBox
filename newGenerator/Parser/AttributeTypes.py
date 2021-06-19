@@ -1,5 +1,3 @@
-from types import SimpleNamespace
-
 LABEL_KEY 		= "label"
 TYPE_KEY 		= "type"
 TOOLTIP_KEY		= "tooltip"
