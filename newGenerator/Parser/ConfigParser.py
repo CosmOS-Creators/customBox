@@ -1,6 +1,6 @@
 import json
 import os
-from types import SimpleNamespace
+from Parser.ConfigTypes import Configuration, Subconfig, ConfigElement
 from pathlib import Path
 import Parser.AttributeTypes as AttributeTypes
 from Parser.AttributeTypes import AttributeType
@@ -27,15 +27,6 @@ required_json_config_keys	= [ELEMENTS_KEY, ATTRIBUTES_KEY, VERSION_KEY]
 jsonConfigType 				= NewType('jsonConfigType', Dict[str, object])
 AttributeCollectionType 	= NewType('AttributeCollectionType', Dict[str, AttributeType])
 
-class Configuration(SimpleNamespace):
-	pass
-
-class Subconfig(SimpleNamespace):
-	pass
-
-class ConfigElement(SimpleNamespace):
-	pass
-
 def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 	attributeCollection: AttributeCollectionType = {}
 	AttributesToInherit: Dict[str, AttributeType] = {}
@@ -48,7 +39,8 @@ def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 				AttributesToInherit[getGlobalLink(configName, attribute)] = currentAttribute
 			else:
 				try:
-					attributeCollection[getGlobalLink(configName, attribute)] = AttributeTypes.parseAttribute(currentAttribute)
+					globalIdentifier = getGlobalLink(configName, attribute)
+					attributeCollection[globalIdentifier] = AttributeTypes.parseAttribute(currentAttribute, globalIdentifier)
 				except KeyError as e:
 					raise KeyError(f"Invalid attribute in config {configName} for attribute {attribute}: {e}")
 	for attribLink in AttributesToInherit:
@@ -57,7 +49,7 @@ def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 		baseAttribute = attributeCollection[attrib[INHERIT_KEY]]
 		if(baseAttribute.is_inherited):
 			raise Exception(f"In config {configName} it was tried to inherit from {attrib[INHERIT_KEY]} but this attribute is already inherited and inheritance nesting is not supported at the moment.")
-		attributeCollection[attribLink] = baseAttribute.create_inheritor(attrib)
+		attributeCollection[attribLink] = baseAttribute.create_inheritor(attrib, attribLink)
 
 	return attributeCollection
 
