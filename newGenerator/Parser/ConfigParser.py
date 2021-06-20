@@ -27,6 +27,15 @@ required_json_config_keys	= [ELEMENTS_KEY, ATTRIBUTES_KEY, VERSION_KEY]
 jsonConfigType 				= NewType('jsonConfigType', Dict[str, object])
 AttributeCollectionType 	= NewType('AttributeCollectionType', Dict[str, AttributeType])
 
+class Configuration(SimpleNamespace):
+	pass
+
+class Subconfig(SimpleNamespace):
+	pass
+
+class ConfigElement(SimpleNamespace):
+	pass
+
 def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 	attributeCollection: AttributeCollectionType = {}
 	AttributesToInherit: Dict[str, AttributeType] = {}
@@ -52,17 +61,17 @@ def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 
 	return attributeCollection
 
-def processConfig(config: dict, configName: str, completeConfig: SimpleNamespace, attributeCollection: AttributeCollectionType):
+def processConfig(config: dict, configName: str, completeConfig: Configuration, attributeCollection: AttributeCollectionType):
 	for element in config[ELEMENTS_KEY]:
 		currentElement = config[ELEMENTS_KEY][element]
 		if(not hasattr(completeConfig, configName)):
-			setattr(completeConfig, configName, SimpleNamespace())
+			setattr(completeConfig, configName, Subconfig())
 			currentConfig = getattr(completeConfig, configName)
 			setattr(currentConfig, OBJECT_ITERATOR_ATTRIBUTE, [])
 		else:
 			currentConfig = getattr(completeConfig, configName)
 
-		newElement = SimpleNamespace()
+		newElement = ConfigElement()
 		setattr(currentConfig, element, newElement)
 		setattr(newElement, OBJECT_ID_ATTRIBUTE, element) # add the key of the element as an id inside the object so that it can be accessed also when iterating over the elements
 		iterator = getattr(currentConfig, OBJECT_ITERATOR_ATTRIBUTE)
@@ -85,7 +94,7 @@ def processConfig(config: dict, configName: str, completeConfig: SimpleNamespace
 			elif(not PARENT_REFERENCE_KEY in attributeInstance): # this is parent reference special attribute instance
 				raise Exception(f"Invalid attribute instance formatting in {configName} config. The following property is invalid: {attributeInstance}")
 
-def resolveElementLink(globalConfig: SimpleNamespace, localConfig: SimpleNamespace, link: str):
+def resolveElementLink(globalConfig: Configuration, localConfig: Subconfig, link: str):
 	if('/' in link):
 		config, target = link.split('/')
 		try:
@@ -123,7 +132,7 @@ def getGlobalLink(location: str, target: str):
 def getConfigNameFromLink(globalLink: str):
 	return globalLink.split("/")[0]
 
-def linkParents(jsonConfigs: jsonConfigType, objConfigs: SimpleNamespace, attributeCollection: AttributeCollectionType):
+def linkParents(jsonConfigs: jsonConfigType, objConfigs: Configuration, attributeCollection: AttributeCollectionType):
 	for config in jsonConfigs:
 		for element in jsonConfigs[config][ELEMENTS_KEY]:
 			for attributeInstance in jsonConfigs[config][ELEMENTS_KEY][element]:
@@ -134,7 +143,7 @@ def linkParents(jsonConfigs: jsonConfigType, objConfigs: SimpleNamespace, attrib
 					except AttributeError as e:
 						raise AttributeError(f"Error in {config} config. Target link was invalid: " + str(e))
 					if(not hasattr(parentObject, config)):
-						setattr(parentObject, config, SimpleNamespace())
+						setattr(parentObject, config, Subconfig())
 						parentLink_obj = getattr(parentObject, config)
 						setattr(parentLink_obj, OBJECT_ITERATOR_ATTRIBUTE, [])
 					else:
@@ -169,8 +178,8 @@ def discoverConfigFiles(configPath: Union[str,List[str]]) -> List[str]:
 			configFiles.append(path.absolute())
 	return configFiles
 
-def loadConfig(configPath: Union[str,List[str]]) -> SimpleNamespace:
-	configuration = SimpleNamespace()
+def loadConfig(configPath: Union[str,List[str]]) -> Configuration:
+	configuration = Configuration()
 	configFiles = discoverConfigFiles(configPath)
 
 	jsonConfigs = {}
@@ -196,10 +205,11 @@ def loadConfig(configPath: Union[str,List[str]]) -> SimpleNamespace:
 	return configuration
 
 if __name__ == "__main__":
+	from Parser.WorkspaceParser import Workspace
 	from pretty_simple_namespace import pprint
-	import argparse
-	parser = argparse.ArgumentParser()
-	parser.add_argument("INPUT", help="Input config file path", type=str, metavar='N', nargs='+')
+	parser = Workspace.getReqiredArgparse()
 	args = parser.parse_args()
-	fullConfig = loadConfig(args.INPUT)
+	workspace = Workspace(args.WORKSPACE)
+	workspace.require(["config"])
+	fullConfig = loadConfig(workspace.config)
 	pprint(fullConfig)

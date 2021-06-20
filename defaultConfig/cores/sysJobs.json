@@ -1,0 +1,20 @@
+{
+    "version": "1.0.0",
+    "attributes": {
+        "hyperTick": {
+            "label": "",
+            "type": "int",
+            "min": 0,
+            "max": 2048
+        },
+        "handlers": {
+            "label": "",
+            "type": "referenceList"
+        },
+        "api_headers": {
+            "label": "API header files",
+            "type": "stringList"
+        }
+    },
+    "elements": {}
+}

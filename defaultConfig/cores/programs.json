@@ -1,0 +1,21 @@
+{
+    "version": "1.0.0",
+    "attributes": {
+        "ProgramName": {
+            "label": "Name of the program",
+            "type": "string",
+            "validation": "^[A-Za-z][A-Za-z0-9_]*$"
+        },
+        "size": {
+            "label": "?",
+            "type": "int",
+            "min": 0,
+            "max": 2048
+        },
+        "memory": {
+            "inherit": "memories/memory",
+            "label": "Memory location of the Program"
+        }
+    },
+    "elements": {}
+}

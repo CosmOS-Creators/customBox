@@ -1,0 +1,10 @@
+{
+    "version": "1.0.0",
+    "attributes": {
+        "state": {
+            "label": "State of the switch",
+            "type": "bool"
+        }
+    },
+    "elements": {}
+}

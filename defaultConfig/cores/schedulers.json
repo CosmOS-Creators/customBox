@@ -1,0 +1,34 @@
+{
+    "version": "1.0.0",
+    "attributes": {
+        "hyperTick": {
+            "label": "Hyper tick of this scheduler",
+            "type": "int",
+            "min": 0,
+            "max": 2048
+        },
+        "sync": {
+            "label": "synchronization",
+            "type": "bool"
+        },
+        "syncTicks": {
+            "label": "",
+            "type": "int",
+            "min": 0,
+            "max": 2048
+        },
+        "firstSyncTaskStartTick": {
+            "label": "",
+            "type": "int",
+            "min": 0,
+            "max": 2048
+        },
+        "preemptTick": {
+            "label": "",
+            "type": "int",
+            "min": 0,
+            "max": 2048
+        }
+    },
+    "elements": {}
+}

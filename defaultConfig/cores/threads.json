@@ -1,0 +1,25 @@
+{
+    "version": "1.0.0",
+    "attributes": {
+        "ThreadName": {
+            "label": "Name of the thread",
+            "type": "string",
+            "validation": "^[A-Za-z][A-Za-z0-9_]*$"
+        },
+        "floatingPoint": {
+            "label": "Enable floating point for this thread",
+            "type": "bool"
+        },
+        "isIdle": {
+            "label": "Is the thread an idle thread",
+            "type": "bool"
+        },
+        "stackSize": {
+            "label": "Stack size of the thread",
+            "type": "int",
+            "min": 0,
+            "max": 2048
+        }
+    },
+    "elements": {}
+}

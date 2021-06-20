@@ -1,0 +1,37 @@
+{
+    "version": "1.0.0",
+    "attributes": {
+        "name": {
+            "label": "Name of the buffer",
+            "type": "string",
+            "validation": "^[A-Za-z][A-Za-z0-9_]+$"
+        },
+        "size": {
+            "label": "Buffer size",
+            "type": "int",
+            "min": 0,
+            "max": 1024
+        },
+        "isDoubleBuffer": {
+            "label": "",
+            "type": "bool"
+        },
+        "tasksReadPermissions": {
+            "label": "List of tasks which have read access to this buffer",
+            "type": "referenceList"
+        },
+        "tasksWritePermissions": {
+            "label": "List of tasks which have write access to this buffer",
+            "type": "referenceList"
+        },
+        "threadsReadPermissions": {
+            "label": "List of threads which have read access to this buffer",
+            "type": "referenceList"
+        },
+        "threadsWritePermissions": {
+            "label": "List of threads which have write access to this buffer",
+            "type": "referenceList"
+        }
+    },
+    "elements": {}
+}

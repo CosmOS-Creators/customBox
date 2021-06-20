@@ -1,0 +1,12 @@
+{
+    "version": "1.0.0",
+    "attributes": {
+        "executionTick": {
+            "label": "",
+            "type": "int",
+            "min": 0,
+            "max": 2048
+        }
+    },
+    "elements": {}
+}
