@@ -22,8 +22,10 @@ class Workspace():
 				for path in workspaceFile[key]:
 					resolvedPathsList.append(path)
 				setattr(self, key, resolvedPathsList)
-			else:
+			elif(type(workspaceFile[key]) is str):
 				setattr(self, key, workspaceFile[key])
+			else:
+				raise TypeError(f"Format of the workspace file \"{WorkspaceFile}\" is invalid. The only supported items are list and str but found {type(workspaceFile[key])}.")
 			self.placeholders.append(key)
 		# then do placeholder replacement
 		for key in workspaceFile:
@@ -34,13 +36,14 @@ class Workspace():
 						property[i] = self.resolvePath(path)
 					except TypeError as e:
 						raise TypeError(f"Error while replacing placeholders in \"{key}\" config: {str(e)}")
-			else:
+			elif(type(property) is str):
 				try:
 					setattr(self, key, self.resolvePath(property))
 				except TypeError as e:
-						raise TypeError(f"Error while replacing placeholders in \"{key}\" config: {str(e)}")
+					raise TypeError(f"Error while replacing placeholders in \"{key}\" config: {str(e)}")
+			else:
+				raise TypeError(f"Format of the workspace file \"{WorkspaceFile}\" is invalid. The only supported items are list and str but found {type(property)}.")
 			self.placeholders.append(key)
-		None
 
 	def resolvePath(self, path: str):
 		resolvedPath = path

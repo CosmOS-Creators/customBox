@@ -54,7 +54,7 @@ if __name__ == "__main__":
 				CoreConfig = json.load(file1)
 			CoreConfig[ELEMENTS_KEY] = {}
 			if(defaultConfig != CoreConfig):
-				raise Exception(f"Default config \"{DefaultConfigPath}\" does not match with Core config \"{allConfigFiles[i]}\". Check FAILED")
+				raise Exception(f"Default config \"{DefaultConfigPath}\" does not match with Core config \"{allConfigFiles[i]}\". Check FAILED\nConsider running the Default config script with the generation option.")
 		print("Default config is inline with Core config. Check was SUCCESSFUL")
 	else:
 		raise NotImplementedError("Either check or generate option must have to be selected.")
