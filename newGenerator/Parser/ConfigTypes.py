@@ -21,7 +21,9 @@ class Configuration(SimpleNamespace):
 						raise AttributeError(f"Element \"{element.id}\" has no attribute called \"{attribStr}\" but it was listed as being required")
 
 class Subconfig(SimpleNamespace):
-	pass
+	def __init__(self):
+		self.iterator = []
 
 class ConfigElement(SimpleNamespace):
-	pass
+	def __init__(self):
+		self.id = None

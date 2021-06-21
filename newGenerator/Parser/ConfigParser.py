@@ -1,10 +1,12 @@
 import json
 import os
-from Parser.ConfigTypes import Configuration, Subconfig, ConfigElement
 from pathlib import Path
-import Parser.AttributeTypes as AttributeTypes
-from Parser.AttributeTypes import AttributeType
 from typing import Dict, List, Union, NewType
+
+import Parser.AttributeTypes as AttributeTypes
+from Parser.ConfigTypes import Configuration, Subconfig, ConfigElement
+from Parser.AttributeTypes import AttributeType
+from Parser.helpers import getConfigNameFromLink, getGlobalLink, isGlobalLink, splitGlobalLink
 
 ELEMENTS_KEY				= "elements"
 ATTRIBUTES_KEY				= "attributes"
@@ -17,9 +19,6 @@ INHERIT_KEY					= "inherit"
 PARENT_REFERENCE_KEY		= "parentReference"
 PARENT_REFERENCE_NAME_KEY	= "name"
 TARGET_NAME_OVERWRITE_KEY	= "targetNameOverwrite"
-
-OBJECT_ID_ATTRIBUTE			= "id"
-OBJECT_ITERATOR_ATTRIBUTE	= "iterator"
 
 required_json_config_keys	= [ELEMENTS_KEY, ATTRIBUTES_KEY, VERSION_KEY]
 
@@ -34,7 +33,7 @@ def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 		for attribute in config[configName][ATTRIBUTES_KEY]:
 			currentAttribute = config[configName][ATTRIBUTES_KEY][attribute]
 			if(INHERIT_KEY in currentAttribute):
-				if(not "/" in currentAttribute[INHERIT_KEY]):
+				if(not isGlobalLink(currentAttribute[INHERIT_KEY])):
 					currentAttribute[INHERIT_KEY] = getGlobalLink(configName, currentAttribute[INHERIT_KEY])
 				AttributesToInherit[getGlobalLink(configName, attribute)] = currentAttribute
 			else:
@@ -59,15 +58,13 @@ def processConfig(config: dict, configName: str, completeConfig: Configuration, 
 		if(not hasattr(completeConfig, configName)):
 			setattr(completeConfig, configName, Subconfig())
 			currentConfig = getattr(completeConfig, configName)
-			setattr(currentConfig, OBJECT_ITERATOR_ATTRIBUTE, [])
 		else:
 			currentConfig = getattr(completeConfig, configName)
 
 		newElement = ConfigElement()
 		setattr(currentConfig, element, newElement)
-		setattr(newElement, OBJECT_ID_ATTRIBUTE, element) # add the key of the element as an id inside the object so that it can be accessed also when iterating over the elements
-		iterator = getattr(currentConfig, OBJECT_ITERATOR_ATTRIBUTE)
-		iterator.append(newElement)
+		newElement.id = element # add the key of the element as an id inside the object so that it can be accessed also when iterating over the elements
+		currentConfig.iterator.append(newElement)
 		if(not type(currentElement) is list):
 			raise Exception(f"In config {configName} the {ELEMENTS_KEY} property is required to be a list but found {type(currentElement)}")
 		for attributeInstance in currentElement:
@@ -87,8 +84,8 @@ def processConfig(config: dict, configName: str, completeConfig: Configuration, 
 				raise Exception(f"Invalid attribute instance formatting in {configName} config. The following property is invalid: {attributeInstance}")
 
 def resolveElementLink(globalConfig: Configuration, localConfig: Subconfig, link: str):
-	if('/' in link):
-		config, target = link.split('/')
+	if(isGlobalLink(link)):
+		config, target = splitGlobalLink(link)
 		try:
 			targetConfig = getattr(globalConfig, config)
 		except AttributeError:
@@ -105,7 +102,7 @@ def resolveElementLink(globalConfig: Configuration, localConfig: Subconfig, link
 	return linkTarget
 
 def resolveAttributeLink(attributeCollection: AttributeCollectionType, localConfig: str, link: str) -> AttributeType:
-	if('/' in link):
+	if(isGlobalLink(link)):
 		try:
 			linkTarget = attributeCollection[link]
 		except KeyError:
@@ -117,12 +114,6 @@ def resolveAttributeLink(attributeCollection: AttributeCollectionType, localConf
 		except KeyError:
 			raise KeyError(f"Could not find a target attribute for {link} in {localConfig} config")
 	return linkTarget
-
-def getGlobalLink(location: str, target: str):
-	return location + "/" + target
-
-def getConfigNameFromLink(globalLink: str):
-	return globalLink.split("/")[0]
 
 def linkParents(jsonConfigs: jsonConfigType, objConfigs: Configuration, attributeCollection: AttributeCollectionType):
 	for config in jsonConfigs:
@@ -137,19 +128,25 @@ def linkParents(jsonConfigs: jsonConfigType, objConfigs: Configuration, attribut
 					if(not hasattr(parentObject, config)):
 						setattr(parentObject, config, Subconfig())
 						parentLink_obj = getattr(parentObject, config)
-						setattr(parentLink_obj, OBJECT_ITERATOR_ATTRIBUTE, [])
 					else:
 						parentLink_obj = getattr(parentObject, config)
 					element_obj = getattr(local_config, element)
 					setattr(parentLink_obj, element, element_obj)
-					iterator = getattr(parentLink_obj, OBJECT_ITERATOR_ATTRIBUTE)
-					iterator.append(element_obj)
+					parentLink_obj.iterator.append(element_obj)
 					if(PARENT_REFERENCE_NAME_KEY in attributeInstance):
 						setattr(element_obj, attributeInstance[PARENT_REFERENCE_NAME_KEY], parentObject)
 				else:
+					local_config = getattr(objConfigs, config)
+					element_obj = getattr(local_config, element)
 					attribTarget = attributeCollection[getGlobalLink(config, attributeInstance[TARGET_KEY])]
-					if(attribTarget.needsLinking):
-						None
+					if(TARGET_NAME_OVERWRITE_KEY in attributeInstance):
+						attributeName = attributeInstance[TARGET_NAME_OVERWRITE_KEY]
+					else:
+						attributeName = attributeInstance[TARGET_KEY]
+					try:
+						attribTarget.link(objConfigs, element_obj, attributeName)
+					except NameError as e:
+						raise NameError(f"{str(e)}")
 
 def config_file_sanity_check(config: dict):
 	for required_key in required_json_config_keys:

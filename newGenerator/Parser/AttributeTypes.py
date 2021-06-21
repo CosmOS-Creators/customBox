@@ -1,5 +1,7 @@
 from typing import List
-from Parser.ConfigTypes import ConfigElement
+
+from Parser.ConfigTypes import ConfigElement, Configuration
+from Parser.helpers import splitGlobalLink
 
 LABEL_KEY 		= "label"
 TYPE_KEY 		= "type"
@@ -33,7 +35,6 @@ class AttributeType():
 		# internal helpers
 		self._is_inherited 			= False
 		self._attribute_definition 	= attribute_definition.copy()
-		self._value					= None
 
 		# special helpers
 		if(PLACEHOLDER_KEY in attribute_definition):
@@ -80,8 +81,10 @@ class AttributeType():
 		raise NotImplementedError("getDefault of the base class AttributeType was called. But this method should always be overwritten by a more specific type")
 
 	def checkValue(self, valueInput):
-		self._value = valueInput
 		return valueInput
+
+	def link(self, objConfig: Configuration, targetConfigObject: ConfigElement, targetAttributeName: str):
+		pass
 
 	@property
 	def needsLinking(self) -> bool:
@@ -159,6 +162,9 @@ class ReferenceListType(AttributeType):
 	def getDefault(self) -> List[ConfigElement]:
 		return []
 
+	def link(self, objConfig: Configuration, targetConfigObject: ConfigElement, targetAttributeName: str):
+		pass
+
 class StringListType(AttributeType):
 	_comparison_type = "stringList"
 
@@ -175,12 +181,45 @@ class SelectionType(AttributeType):
 		super().__init__(attribute_definition, globalID)
 		if(ELEMENTS_KEY in attribute_definition):
 			self.elements 			= attribute_definition[ELEMENTS_KEY]
+			self.resolvedElements	= None
+			if(type(self.elements) is list):
+				self._needs_linking		= False
+			elif(type(self.elements) is str):
+				self._needs_linking		= True
+			else:
+				raise TypeError(f"Attribute \"{self.globalID}\" only allows string and list types for \"{ELEMENTS_KEY}\" property but found type \"{type(self.elements)}\"")
 		else:
-			self.elements 			= None
+			raise AttributeError(f"Property \"{ELEMENTS_KEY}\" is required for type \"{self._comparison_type}\" but was missing for attribute \"{self.globalID}\"")
 
 	@overrides(AttributeType)
 	def getDefault(self) -> ConfigElement:
 		return None
+
+	@overrides(AttributeType)
+	def link(self, objConfig: Configuration, targetConfigObject: ConfigElement, targetAttributeName: str):
+		if(self._needs_linking):
+			possibleValues = []
+			foundMatch = False
+			config, targetAttribute = splitGlobalLink(self.elements)
+			try:
+				subconfig = getattr(objConfig, config)
+			except AttributeError:
+				raise AttributeError(f"Attribute definition \"{self.globalID}\" requested a config named \"{config}\" but this config does not exist.")
+			for element in subconfig.iterator:
+				try:
+					targetValue = getattr(element, targetAttribute)
+				except AttributeError:
+					print(f"WARNING: Attribute definition \"{self.globalID}\" requested an attribute instance named \"{targetAttribute}\" from the config \"{config}\" but the element \"{element.id}\" does not have an instance of that attribute. Skipping this element.")
+					continue
+				possibleValues.append(targetValue)
+				value = getattr(targetConfigObject, targetAttributeName)
+				if(value == targetValue):
+					setattr(targetConfigObject, targetAttributeName, element)
+					foundMatch = True
+			if(self.resolvedElements is None):
+				self.resolvedElements = possibleValues
+			if(foundMatch == False):
+				raise NameError(f"\"{value}\" is not a valid choice for Attribute instances of \"{self.globalID}\". Valid choices are: {possibleValues}")
 
 class HexType(IntType):
 	_comparison_type = "hex"
