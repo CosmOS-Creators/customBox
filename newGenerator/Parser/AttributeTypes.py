@@ -257,5 +257,5 @@ def parseAttribute(attributeDefinition: dict, AttributeGlobalID: str) -> Attribu
 			newAttribute = attribType(attributeDefinition, AttributeGlobalID)
 			break
 	if(newAttribute is None):
-		raise KeyError(f"The type {parseType} is not a supported type")
+		raise KeyError(f"The type \"{parseType}\" is not a supported type")
 	return newAttribute

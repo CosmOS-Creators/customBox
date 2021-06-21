@@ -26,6 +26,10 @@ required_json_config_keys	= [ELEMENTS_KEY, ATTRIBUTES_KEY, VERSION_KEY]
 jsonConfigType 				= NewType('jsonConfigType', Dict[str, object])
 AttributeCollectionType 	= NewType('AttributeCollectionType', Dict[str, AttributeType])
 
+reservedConfigNames = ["require"]
+reservedElementNames = ["iterator"]
+reservedAttributeNames = ["id"]
+
 def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 	attributeCollection: AttributeCollectionType = {}
 	AttributesToInherit: Dict[str, AttributeType] = {}
@@ -41,19 +45,23 @@ def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 					globalIdentifier = getGlobalLink(configName, attribute)
 					attributeCollection[globalIdentifier] = AttributeTypes.parseAttribute(currentAttribute, globalIdentifier)
 				except KeyError as e:
-					raise KeyError(f"Invalid attribute in config {configName} for attribute {attribute}: {e}")
+					raise KeyError(f"Invalid attribute in config \"{configName}\" for attribute \"{attribute}\": {e}")
 	for attribLink in AttributesToInherit:
 		attrib = AttributesToInherit[attribLink]
 		configName = getConfigNameFromLink(attribLink)
 		baseAttribute = attributeCollection[attrib[INHERIT_KEY]]
 		if(baseAttribute.is_inherited):
-			raise Exception(f"In config {configName} it was tried to inherit from {attrib[INHERIT_KEY]} but this attribute is already inherited and inheritance nesting is not supported at the moment.")
+			raise Exception(f"In config \"{configName}\" it was tried to inherit from \"{attrib[INHERIT_KEY]}\" but this attribute is already inherited and inheritance nesting is not supported at the moment.")
 		attributeCollection[attribLink] = baseAttribute.create_inheritor(attrib, attribLink)
 
 	return attributeCollection
 
 def processConfig(config: dict, configName: str, completeConfig: Configuration, attributeCollection: AttributeCollectionType):
+	if(configName in reservedConfigNames):
+		raise Exception(f"Creating a config with the name \"{configName}\" is not permitted as \"{configName}\" is a reserved keyword")
 	for element in config[ELEMENTS_KEY]:
+		if(element in reservedElementNames):
+			raise Exception(f"In config \"{configName}\" is was requested to create an element with the name \"{element}\" but this name is a reserved keyword thus the creation of such an element is prohibited")
 		currentElement = config[ELEMENTS_KEY][element]
 		if(not hasattr(completeConfig, configName)):
 			setattr(completeConfig, configName, Subconfig())
@@ -66,8 +74,11 @@ def processConfig(config: dict, configName: str, completeConfig: Configuration, 
 		newElement.id = element # add the key of the element as an id inside the object so that it can be accessed also when iterating over the elements
 		currentConfig.iterator.append(newElement)
 		if(not type(currentElement) is list):
-			raise Exception(f"In config {configName} the {ELEMENTS_KEY} property is required to be a list but found {type(currentElement)}")
+			raise Exception(f"In config \"{configName}\" the \"{ELEMENTS_KEY}\" property is required to be a list but found {type(currentElement)}")
 		for attributeInstance in currentElement:
+			if(TARGET_KEY in attributeInstance):
+				if(attributeInstance[TARGET_KEY] in reservedAttributeNames):
+					raise Exception(f"In config \"{configName}\" is was requested to create an attribute with the name \"{attributeInstance[TARGET_KEY]}\" but this name is a reserved keyword thus the creation of such an attribute is prohibited")
 			if(TARGET_KEY in attributeInstance and VALUE_KEY in attributeInstance): # this is a normal attribute instance
 				attribute = resolveAttributeLink(attributeCollection, configName, attributeInstance[TARGET_KEY])
 				propertyName = attributeInstance[TARGET_KEY]
@@ -79,9 +90,9 @@ def processConfig(config: dict, configName: str, completeConfig: Configuration, 
 				if(attribute.is_placeholder):
 					setattr(newElement, attributeInstance[TARGET_KEY], attribute.getDefault())
 				else:
-					raise Exception(f"Invalid attribute instance formatting in {configName} config. The following property is missing the {VALUE_KEY} property: {attributeInstance}")
+					raise Exception(f"Invalid attribute instance formatting in \"{configName}\" config. The following property is missing the \"{VALUE_KEY}\" property: {attributeInstance}")
 			elif(not PARENT_REFERENCE_KEY in attributeInstance): # this is parent reference special attribute instance
-				raise Exception(f"Invalid attribute instance formatting in {configName} config. The following property is invalid: {attributeInstance}")
+				raise Exception(f"Invalid attribute instance formatting in \"{configName}\" config. The following property is invalid: {attributeInstance}")
 
 def resolveElementLink(globalConfig: Configuration, localConfig: Subconfig, link: str):
 	if(isGlobalLink(link)):
@@ -89,16 +100,16 @@ def resolveElementLink(globalConfig: Configuration, localConfig: Subconfig, link
 		try:
 			targetConfig = getattr(globalConfig, config)
 		except AttributeError:
-			raise AttributeError(f"Configuration has no subconfig named {config}")
+			raise AttributeError(f"Configuration has no subconfig named \"{config}\"")
 		try:
 			linkTarget = getattr(targetConfig, target)
 		except AttributeError:
-			raise AttributeError(f"Configuration {config} has no element named {target}")
+			raise AttributeError(f"Configuration {config} has no element named \"{target}\"")
 	else:
 		try:
 			linkTarget = getattr(localConfig, link)
 		except AttributeError:
-			raise AttributeError(f"Configuration has no element named {link}")
+			raise AttributeError(f"Configuration has no element named \"{link}\"")
 	return linkTarget
 
 def resolveAttributeLink(attributeCollection: AttributeCollectionType, localConfig: str, link: str) -> AttributeType:
@@ -106,13 +117,13 @@ def resolveAttributeLink(attributeCollection: AttributeCollectionType, localConf
 		try:
 			linkTarget = attributeCollection[link]
 		except KeyError:
-			raise KeyError(f"Could not find a target attribute for {link} in {localConfig} config")
+			raise KeyError(f"Could not find a target attribute for \"{link}\" in \"{localConfig}\" config")
 	else:
 		globalLink = getGlobalLink(localConfig, link)
 		try:
 			linkTarget = attributeCollection[globalLink]
 		except KeyError:
-			raise KeyError(f"Could not find a target attribute for {link} in {localConfig} config")
+			raise KeyError(f"Could not find a target attribute for \"{link}\" in \"{localConfig}\" config")
 	return linkTarget
 
 def linkParents(jsonConfigs: jsonConfigType, objConfigs: Configuration, attributeCollection: AttributeCollectionType):
@@ -124,7 +135,7 @@ def linkParents(jsonConfigs: jsonConfigType, objConfigs: Configuration, attribut
 					try:
 						parentObject = resolveElementLink(objConfigs, local_config, attributeInstance[PARENT_REFERENCE_KEY])
 					except AttributeError as e:
-						raise AttributeError(f"Error in {config} config. Target link was invalid: " + str(e))
+						raise AttributeError(f"Error in \"{config}\" config. Target link was invalid: {str(e)}")
 					if(not hasattr(parentObject, config)):
 						setattr(parentObject, config, Subconfig())
 						parentLink_obj = getattr(parentObject, config)
@@ -146,12 +157,12 @@ def linkParents(jsonConfigs: jsonConfigType, objConfigs: Configuration, attribut
 					try:
 						attribTarget.link(objConfigs, element_obj, attributeName)
 					except NameError as e:
-						raise NameError(f"{str(e)}")
+						raise NameError(f"Error in \"{config}\" config: {str(e)}")
 
 def config_file_sanity_check(config: dict):
 	for required_key in required_json_config_keys:
 		if(not required_key in config):
-			raise KeyError(f"Every config file must have a key named {required_key}")
+			raise KeyError(f"Every config file must have a key named \"{required_key}\"")
 
 def discoverConfigFiles(configPath: Union[str,List[str]]) -> List[str]:
 	configPaths: List[str] = []
