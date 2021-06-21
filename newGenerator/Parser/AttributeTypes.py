@@ -1,7 +1,7 @@
 from typing import List
 
 from Parser.ConfigTypes import ConfigElement, Configuration
-from Parser.helpers import splitGlobalLink
+from Parser.helpers import resolveConfigLink, splitGlobalLink
 
 LABEL_KEY 		= "label"
 TYPE_KEY 		= "type"
@@ -163,7 +163,17 @@ class ReferenceListType(AttributeType):
 		return []
 
 	def link(self, objConfig: Configuration, targetConfigObject: ConfigElement, targetAttributeName: str):
-		pass
+		value = getattr(targetConfigObject, targetAttributeName)
+		if(not type(value) is list):
+			raise TypeError("")
+		linkedTargets = []
+		for targetLink in value:
+			try:
+				targetElement = resolveConfigLink(objConfig, targetLink)
+			except AttributeError as e:
+				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}")
+			linkedTargets.append(targetElement)
+		setattr(targetConfigObject, targetAttributeName, linkedTargets)
 
 class StringListType(AttributeType):
 	_comparison_type = "stringList"
@@ -202,9 +212,9 @@ class SelectionType(AttributeType):
 			foundMatch = False
 			config, targetAttribute = splitGlobalLink(self.elements)
 			try:
-				subconfig = getattr(objConfig, config)
-			except AttributeError:
-				raise AttributeError(f"Attribute definition \"{self.globalID}\" requested a config named \"{config}\" but this config does not exist.")
+				subconfig = resolveConfigLink(objConfig, config)
+			except AttributeError as e:
+				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}")
 			for element in subconfig.iterator:
 				try:
 					targetValue = getattr(element, targetAttribute)
