@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 from typing import Dict, List, Union, NewType
+import re
 
 import Parser.AttributeTypes as AttributeTypes
 from Parser.ConfigTypes import Configuration, Subconfig, ConfigElement
@@ -19,6 +20,8 @@ INHERIT_KEY					= "inherit"
 PARENT_REFERENCE_KEY		= "parentReference"
 PARENT_REFERENCE_NAME_KEY	= "name"
 TARGET_NAME_OVERWRITE_KEY	= "targetNameOverwrite"
+
+configFileNameRegex			= re.compile(r"^[A-Za-z0-9]+$")
 
 required_json_config_keys	= [ELEMENTS_KEY, ATTRIBUTES_KEY, VERSION_KEY]
 
@@ -183,8 +186,15 @@ def loadConfig(configPath: Union[str,List[str]]) -> Configuration:
 	configFiles = discoverConfigFiles(configPath)
 
 	jsonConfigs = {}
+	configFileNames = {}
 	for configFile in configFiles:
+
 		with open(configFile, "r") as currentFile:
+			configCleanName = Path(configFile).stem
+			if(not configFileNameRegex.match(configCleanName)):
+				raise Exception(f"Config file names are oly allowed to contain lower case alphanumeric characters but the file \"{configFile}\" would generate a config named \"{configCleanName}\" which would violate this restriction")
+			if(configCleanName in jsonConfigs):
+				raise Exception(f"Config file names have to be unique but the files \"{configFileNames[configCleanName]}\" and \"{configFile}\" have the same name({configCleanName}) thus are considered duplicated.")
 			try:
 				loaded_json_config = json.load(currentFile)
 			except json.JSONDecodeError as e:
@@ -193,7 +203,7 @@ def loadConfig(configPath: Union[str,List[str]]) -> Configuration:
 				config_file_sanity_check(loaded_json_config)
 			except KeyError as e:
 				raise KeyError(f"Error in config file \"{configFile}\": {str(e)}")
-			configCleanName = Path(configFile).stem
+			configFileNames[configCleanName] = configFile
 			jsonConfigs[configCleanName] = loaded_json_config
 
 	# make sure to load all attributes before loading all configs
