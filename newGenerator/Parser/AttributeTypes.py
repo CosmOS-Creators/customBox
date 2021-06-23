@@ -253,6 +253,13 @@ class SelectionType(AttributeType):
 			raise AttributeError(f"Property \"{ELEMENTS_KEY}\" is required for type \"{self._comparison_type}\" but was missing for attribute \"{self.globalID}\"")
 
 	@overrides(AttributeType)
+	def checkValue(self, valueInput: str):
+		if(type(self.elements) is list):
+			if(not valueInput in self.elements):
+				reportValidationError(f"The input value ({valueInput}) does not match any of the specified elements ({self.elements})")
+		return valueInput
+
+	@overrides(AttributeType)
 	def getDefault(self) -> ConfigElement:
 		return None
 
