@@ -1,27 +1,23 @@
-from typing import List
+from typing import List, Type
+import re
 
 from Parser.ConfigTypes import ConfigElement, Configuration
-from Parser.helpers import resolveConfigLink, splitGlobalLink
+from Parser.helpers import isGlobalLink, resolveConfigLink, splitGlobalLink, overrides, toInt
 
 LABEL_KEY 		= "label"
 TYPE_KEY 		= "type"
 TOOLTIP_KEY		= "tooltip"
 INHERIT_KEY		= "inherit"
 PLACEHOLDER_KEY	= "placeholder"
-VALIDATION_KEY	= "validation"
 HIDDEN_KEY		= "hidden"
 # special keys
+VALIDATION_KEY	= "validation"
 ELEMENTS_KEY	= "elements"
 STEP_KEY		= "step"
 MIN_KEY			= "min"
 MAX_KEY			= "max"
 
-# helper decorator to ensure proper naming of functions
-def overrides(interface_class):
-    def overrider(method):
-        assert(method.__name__ in dir(interface_class))
-        return method
-    return overrider
+baseKeys = [LABEL_KEY, TOOLTIP_KEY, HIDDEN_KEY, PLACEHOLDER_KEY, TYPE_KEY]
 
 class AttributeType():
 	""" Base class attribute type. Specifics should be overwritten in inherited classes
@@ -29,19 +25,21 @@ class AttributeType():
 	"""
 	_comparison_type 		= None
 	_needs_linking			= False
+	_typeSpecificKeys		= []
 
 	def __init__(self, attribute_definition: dict, globalID: str):
-
 		# internal helpers
 		self._is_inherited 			= False
 		self._attribute_definition 	= attribute_definition.copy()
 
-		# special helpers
-		if(PLACEHOLDER_KEY in attribute_definition):
-			self._is_placeholder 	= attribute_definition[PLACEHOLDER_KEY]
-		else:
-			self._is_placeholder	= False
+		# check if any forbidden keys exist:
+		try:
+			self.checkForForbiddenKeys(self._typeSpecificKeys)
+		except KeyError as e:
+			raise KeyError(f"Error in attribute \"{globalID}\" of type \"{self._comparison_type}\" : {str(e)}")
 
+		# special helpers
+		self._is_placeholder 		= self.checkForKey(PLACEHOLDER_KEY, False)
 		# required properties
 		self.globalID 				= globalID
 		self.id 					= globalID.split("/")[1]
@@ -53,18 +51,8 @@ class AttributeType():
 			raise AttributeError(error_message.format(TYPE_KEY))
 
 		# optional properties
-		if(TOOLTIP_KEY in attribute_definition):
-			self.tooltip 			= attribute_definition[TOOLTIP_KEY]
-		else:
-			self.tooltip 			= ""
-		if(VALIDATION_KEY in attribute_definition):
-			self.validation 		= attribute_definition[VALIDATION_KEY]
-		else:
-			self.validation 		= ""
-		if(HIDDEN_KEY in attribute_definition):
-			self.hidden 			= attribute_definition[HIDDEN_KEY]
-		else:
-			self.hidden 			= False
+		self.tooltip 				= self.checkForKey(TOOLTIP_KEY, "")
+		self.hidden 				= self.checkForKey(HIDDEN_KEY, False)
 		if(LABEL_KEY in attribute_definition):
 			self.label 				= attribute_definition[LABEL_KEY]
 		elif(self.hidden == False and not self._is_placeholder):
@@ -85,6 +73,19 @@ class AttributeType():
 
 	def link(self, objConfig: Configuration, targetConfigObject: ConfigElement, targetAttributeName: str):
 		pass
+
+	def checkForForbiddenKeys(self, listOfAllowedKeys: List[str]):
+		global baseKeys
+		AllAllowedKeys = baseKeys + listOfAllowedKeys
+		for key in self._attribute_definition:
+			if(not key in AllAllowedKeys):
+				raise KeyError(f"The key \"{key}\" is not valid for this attribute type")
+
+	def checkForKey(self, key: str, defaultValue):
+		if(key in self._attribute_definition):
+			return self._attribute_definition[key]
+		else:
+			return defaultValue
 
 	@property
 	def needsLinking(self) -> bool:
@@ -115,40 +116,66 @@ class AttributeType():
 		return newAttribute
 
 class StringType(AttributeType):
-	_comparison_type = "string"
+	_comparison_type 	= "string"
+	_typeSpecificKeys	= [VALIDATION_KEY]
+
+	@overrides(AttributeType)
+	def __init__(self, attribute_definition: dict, globalID: str):
+		super().__init__(attribute_definition, globalID)
+		self.validation = self.checkForKey(VALIDATION_KEY, "")
+
+	@overrides(AttributeType)
+	def checkValue(self, valueInput: str):
+		if(self.validation != ""):
+			try:
+				regex = re.compile(self.validation)
+			except Exception as e:
+				raise ValueError(f"The regex \"{self.validation}\" is not valid: \"{str(e)}\"")
+			if(not regex.match(valueInput)):
+				reportValidationError(f"\"{valueInput}\" does not match the validation regex \"{self.validation}\"")
+		return valueInput
 
 	@overrides(AttributeType)
 	def getDefault(self) -> str:
-		return ""
+		return str("")
 
 class BoolType(AttributeType):
-	_comparison_type = "bool"
+	_comparison_type 	= "bool"
+
+	@overrides(AttributeType)
+	def checkValue(self, valueInput: bool):
+		return valueInput
 
 	@overrides(AttributeType)
 	def getDefault(self) -> bool:
 		return False
 
 class IntType(AttributeType):
-	_comparison_type = "int"
+	_comparison_type 	= "int"
+	_typeSpecificKeys	= [MIN_KEY, MAX_KEY]
 
 	@overrides(AttributeType)
 	def __init__(self, attribute_definition: dict, globalID: str):
 		super().__init__(attribute_definition, globalID)
-		if(MIN_KEY in attribute_definition):
-			self.min 			= attribute_definition[MIN_KEY]
-		else:
-			self.min 			= None
-		if(MAX_KEY in attribute_definition):
-			self.max 			= attribute_definition[MAX_KEY]
-		else:
-			self.max 			= None
+		self.min 			= self.checkForKey(MIN_KEY, None)
+		self.max 			= self.checkForKey(MAX_KEY, None)
+
+	@overrides(AttributeType)
+	def checkValue(self, valueInput: int):
+		if(not self.min is None):
+			if(valueInput < self.min):
+				reportValidationError(f"The input value ({valueInput}) is lower than the minimum value({self.min}) for this attribute")
+		if(not self.max is None):
+			if(valueInput > self.max):
+				reportValidationError(f"The input value ({valueInput}) is higher than the maximum value({self.min}) for this attribute")
+		return int(valueInput)
 
 	@overrides(AttributeType)
 	def getDefault(self) -> int:
 		return int(0)
 
 class FloatType(IntType):
-	_comparison_type = "float"
+	_comparison_type 	= "float"
 
 	@overrides(AttributeType)
 	def getDefault(self) -> float:
@@ -157,6 +184,17 @@ class FloatType(IntType):
 class ReferenceListType(AttributeType):
 	_comparison_type 	= "referenceList"
 	_needs_linking		= True
+
+	@overrides(AttributeType)
+	def checkValue(self, valueInput: List[str]):
+		# just check the syntax here as no info about any valid choices is avaliable and validation will be done in the link method
+		if(type(valueInput) is list):
+			for i, value in enumerate(valueInput):
+				if(not isGlobalLink(value)):
+					raise ValueError(f"All elements of a reference list must be global links but element {i} ({value}) was not")
+		else:
+			raise TypeError(f"Values of reference list attribute types must be of type list but found type \"{type(valueInput)}\" instead")
+		return valueInput
 
 	@overrides(AttributeType)
 	def getDefault(self) -> List[ConfigElement]:
@@ -176,7 +214,19 @@ class ReferenceListType(AttributeType):
 		setattr(targetConfigObject, targetAttributeName, linkedTargets)
 
 class StringListType(AttributeType):
-	_comparison_type = "stringList"
+	_comparison_type 	= "stringList"
+	_typeSpecificKeys	= [ELEMENTS_KEY]
+
+	@overrides(AttributeType)
+	def checkValue(self, valueInput: List[str]):
+		# The only requirement here is for the value to be of type list.
+		if(type(valueInput) is list):
+			for i, item in enumerate(valueInput):
+				if(not type(item) is str):
+					raise ValueError(f"All elements of a string list must be strings but element {i} was not. Found type \"{type(item)}\" instead")
+		else:
+			raise TypeError(f"Values of string list attribute types must be of type list but found type \"{type(valueInput)}\" instead")
+		return valueInput
 
 	@overrides(AttributeType)
 	def getDefault(self) -> List[str]:
@@ -185,6 +235,7 @@ class StringListType(AttributeType):
 class SelectionType(AttributeType):
 	_comparison_type 	= "selection"
 	_needs_linking		= True
+	_typeSpecificKeys	= [ELEMENTS_KEY]
 
 	@overrides(AttributeType)
 	def __init__(self, attribute_definition: dict, globalID: str):
@@ -232,22 +283,42 @@ class SelectionType(AttributeType):
 				raise NameError(f"\"{value}\" is not a valid choice for Attribute instances of \"{self.globalID}\". Valid choices are: {possibleValues}")
 
 class HexType(IntType):
-	_comparison_type = "hex"
+	_comparison_type 	= "hex"
+	_typeSpecificKeys	= [MIN_KEY, MAX_KEY]
+
+	@overrides(AttributeType)
+	def checkValue(self, valueInput: str):
+		convertedInput = toInt(valueInput)
+		if(not self.min is None):
+			convertedMin = toInt(self.min)
+			if(convertedInput < convertedMin):
+				reportValidationError(f"The input value ({valueInput}) is lower than the minimum value({self.min}) for this attribute")
+		if(not self.max is None):
+			convertedMax = toInt(self.max)
+			if(convertedInput > convertedMax):
+				reportValidationError(f"The input value ({valueInput}) is higher than the maximum value({self.min}) for this attribute")
+		return convertedInput
 
 	@overrides(AttributeType)
 	def getDefault(self) -> int:
 		return int(0)
 
-class SliderType(AttributeType):
-	_comparison_type = "slider"
+class SliderType(IntType):
+	_comparison_type 	= "slider"
+	_typeSpecificKeys	= [MIN_KEY, MAX_KEY, STEP_KEY]
 
 	@overrides(AttributeType)
 	def __init__(self, attribute_definition: dict, globalID: str):
 		super().__init__(attribute_definition, globalID)
-		if(STEP_KEY in attribute_definition):
-			self.step 			= attribute_definition[STEP_KEY]
-		else:
-			self.step 			= 1
+		self.step 			= self.checkForKey(STEP_KEY, 1)
+
+	@overrides(AttributeType)
+	def checkValue(self, valueInput: int):
+		super().checkValue(valueInput)
+		if(not self.step is None):
+			if(valueInput % self.step != 0):
+				raise ValueError(f"The value of a slider attribute must be a multiple of {self.step} but {valueInput} is not.")
+		return valueInput
 
 	@overrides(AttributeType)
 	def getDefault(self) -> float:
@@ -256,6 +327,8 @@ class SliderType(AttributeType):
 
 attributeTypeList = [StringType, BoolType, IntType, FloatType, ReferenceListType, StringListType, SelectionType, SelectionType, HexType, SliderType]
 
+def reportValidationError(errorMsg: str):
+	raise ValueError(errorMsg)
 
 def parseAttribute(attributeDefinition: dict, AttributeGlobalID: str) -> AttributeType:
 	if(not TYPE_KEY in attributeDefinition):

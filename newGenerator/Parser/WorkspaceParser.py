@@ -11,7 +11,6 @@ class Workspace():
 	def __init__(self, WorkspaceFile: str):
 		self.workspaceFilePth = WorkspaceFile
 		self.placeholders = [WORKSPACE_PLACEHOLDER]
-		#TODO: build list of configs that need replacing
 
 		with open(WorkspaceFile, "r") as file:
 			workspaceFile = json.load(file)

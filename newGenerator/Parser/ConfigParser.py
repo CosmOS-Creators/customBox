@@ -67,8 +67,8 @@ def processConfig(config: dict, configName: str, completeConfig: Configuration, 
 			raise Exception(f"In config \"{configName}\" is was requested to create an element with the name \"{element}\" but this name is a reserved keyword thus the creation of such an element is prohibited")
 		currentElement = config[ELEMENTS_KEY][element]
 		if(not hasattr(completeConfig, configName)):
-			setattr(completeConfig, configName, Subconfig())
-			currentConfig = getattr(completeConfig, configName)
+			currentConfig = Subconfig()
+			setattr(completeConfig, configName, currentConfig)
 		else:
 			currentConfig = getattr(completeConfig, configName)
 
@@ -80,18 +80,27 @@ def processConfig(config: dict, configName: str, completeConfig: Configuration, 
 			raise Exception(f"In config \"{configName}\" the \"{ELEMENTS_KEY}\" property is required to be a list but found {type(currentElement)}")
 		for attributeInstance in currentElement:
 			if(TARGET_KEY in attributeInstance):
-				if(attributeInstance[TARGET_KEY] in reservedAttributeNames):
-					raise Exception(f"In config \"{configName}\" is was requested to create an attribute with the name \"{attributeInstance[TARGET_KEY]}\" but this name is a reserved keyword thus the creation of such an attribute is prohibited")
-			if(TARGET_KEY in attributeInstance and VALUE_KEY in attributeInstance): # this is a normal attribute instance
-				attribute = resolveAttributeLink(attributeCollection, configName, attributeInstance[TARGET_KEY])
 				propertyName = attributeInstance[TARGET_KEY]
-				if(TARGET_NAME_OVERWRITE_KEY in attributeInstance):
-					propertyName = attributeInstance[TARGET_NAME_OVERWRITE_KEY]
-				setattr(newElement, propertyName, attribute.checkValue(attributeInstance[VALUE_KEY]))
-			elif(TARGET_KEY in attributeInstance): # might be a placeholder instance
-				attribute = resolveAttributeLink(attributeCollection, configName, attributeInstance[TARGET_KEY])
+				attribute = resolveAttributeLink(attributeCollection, configName, propertyName)
+				if(propertyName in reservedAttributeNames):
+					raise Exception(f"In config \"{configName}\" is was requested to create an attribute with the name \"{propertyName}\" but this name is a reserved keyword thus the creation of such an attribute is prohibited")
 				if(attribute.is_placeholder):
-					setattr(newElement, attributeInstance[TARGET_KEY], attribute.getDefault())
+					if(VALUE_KEY in attributeInstance):
+						raise Exception(f"In config \"{configName}\" element \"{element}\" instantiates the attribute definition \"{propertyName}\" which is a placeholder but the value key ist also defined which is invalid for placeholder entries.")
+					if(hasattr(newElement, propertyName)):
+						raise Exception(f"In config \"{configName}\" is was requested to create a property for the element \"{element}\" with the name \"{propertyName}\" but a property with that name already exists for that element")
+					setattr(newElement, propertyName, attribute.getDefault())
+				elif(VALUE_KEY in attributeInstance): # this is a normal attribute instance
+					if(TARGET_NAME_OVERWRITE_KEY in attributeInstance):
+						propertyName = attributeInstance[TARGET_NAME_OVERWRITE_KEY]
+					if(hasattr(newElement, propertyName)):
+						raise Exception(f"In config \"{configName}\" is was requested to create a property for the element \"{element}\" with the name \"{propertyName}\" but a property with that name already exists for that element")
+					try:
+						parsedValue = attribute.checkValue(attributeInstance[VALUE_KEY])
+					except ValueError as e:
+						location = getGlobalLink(configName, element)
+						raise Exception(f"Validation in \"{location}\" for property \"{propertyName}\" failed: {str(e)}")
+					setattr(newElement, propertyName, parsedValue)
 				else:
 					raise Exception(f"Invalid attribute instance formatting in \"{configName}\" config. The following property is missing the \"{VALUE_KEY}\" property: {attributeInstance}")
 			elif(not PARENT_REFERENCE_KEY in attributeInstance): # this is parent reference special attribute instance
@@ -135,20 +144,25 @@ def linkParents(jsonConfigs: jsonConfigType, objConfigs: Configuration, attribut
 			for attributeInstance in jsonConfigs[config][ELEMENTS_KEY][element]:
 				if(PARENT_REFERENCE_KEY in attributeInstance):
 					local_config = getattr(objConfigs, config)
+					parentLink = attributeInstance[PARENT_REFERENCE_KEY]
 					try:
-						parentObject = resolveElementLink(objConfigs, local_config, attributeInstance[PARENT_REFERENCE_KEY])
+						parentObject = resolveElementLink(objConfigs, local_config, parentLink)
 					except AttributeError as e:
 						raise AttributeError(f"Error in \"{config}\" config. Target link was invalid: {str(e)}")
 					if(not hasattr(parentObject, config)):
-						setattr(parentObject, config, Subconfig())
-						parentLink_obj = getattr(parentObject, config)
+						parentLink_obj = Subconfig()
+						setattr(parentObject, config, parentLink_obj)
 					else:
 						parentLink_obj = getattr(parentObject, config)
 					element_obj = getattr(local_config, element)
+					if(hasattr(parentLink_obj, element)):
+						raise Exception(f"In config \"{config}\" in element \"{element}\" is was requested to create an element for the parent object \"{parentLink}\" but a property with the name \"{element}\" already exists.")
 					setattr(parentLink_obj, element, element_obj)
 					parentLink_obj.iterator.append(element_obj)
 					if(PARENT_REFERENCE_NAME_KEY in attributeInstance):
-						setattr(element_obj, attributeInstance[PARENT_REFERENCE_NAME_KEY], parentObject)
+						propertyName = attributeInstance[PARENT_REFERENCE_NAME_KEY]
+						if(hasattr(element_obj, propertyName)):
+							raise Exception(f"In config \"{config}\" is was requested to create a property for the element \"{element}\" with the name \"{propertyName}\" but a property with that name already exists for that element")
 				else:
 					local_config = getattr(objConfigs, config)
 					element_obj = getattr(local_config, element)

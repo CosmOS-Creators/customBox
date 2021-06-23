@@ -1,10 +1,20 @@
 from typing import List
 
+# helper decorator to ensure proper naming of functions
+def overrides(interface_class):
+    def overrider(method):
+        assert(method.__name__ in dir(interface_class))
+        return method
+    return overrider
+
 def getGlobalLink(location: str, target: str):
 	return location + "/" + target
 
 def isGlobalLink(link: str):
-	return "/" in link
+	if(link.count("/") <= 1):
+		return "/" in link
+	else:
+		raise ValueError("Links are only allowed to have at most one nesting level ('/' character)")
 
 def getConfigNameFromLink(globalLink: str):
 	return globalLink.split("/")[0]
@@ -34,3 +44,9 @@ def resolveConfigLink(config, link: str):
 		return targetElement
 	else:
 		return subconfig
+
+def toInt(hexValue: str):
+	return int(hexValue, 16)
+
+def toHex(intValue: int):
+	return hex(intValue)
