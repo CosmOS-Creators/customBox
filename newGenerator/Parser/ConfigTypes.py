@@ -1,11 +1,10 @@
 from types import SimpleNamespace
-from typing import List
+from typing import List, Union
 import Parser.helpers as helpers
 
 class Configuration(SimpleNamespace):
-	def require(self, requiredProperties : List[str]):
-		if(not type(requiredProperties) is list):
-			raise TypeError("Require only supports lists as input")
+	def require(self, requiredProperties : Union[List[str], str]):
+		requiredProperties = helpers.forceStrList(requiredProperties)
 		for prop in requiredProperties:
 			if(helpers.isGlobalLink(prop)):
 				configStr = helpers.splitGlobalLink(prop)[0]

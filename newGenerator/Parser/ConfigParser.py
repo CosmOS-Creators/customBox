@@ -234,6 +234,6 @@ if __name__ == "__main__":
 	parser = Workspace.getReqiredArgparse()
 	args = parser.parse_args()
 	workspace = Workspace(args.WORKSPACE)
-	workspace.require(["config"])
+	workspace.requireFolder(["config"])
 	fullConfig = loadConfig(workspace.config)
 	pprint(fullConfig)

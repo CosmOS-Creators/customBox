@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
 	workspace = Parser.Workspace(args.WORKSPACE)
 	try:
-		workspace.require(["CoreConfig", "DefaultConfig"])
+		workspace.requireFolder(["config", "CoreConfig", "DefaultConfig"])
 	except AttributeError as e:
 		raise AttributeError(f"Aborting execution of DefaultConfig.py: {str(e)}")
 	try:
