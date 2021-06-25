@@ -17,7 +17,8 @@ if __name__ == "__main__":
 	except AttributeError as e:
 		raise AttributeError(f"Aborting execution of DefaultConfig.py: {str(e)}")
 	try:
-		Parser.loadConfig(workspace.config) # ensure that there are no syntax errors in the current config by tyring to load it
+		parser = Parser.ConfigParser(workspace)
+		parser.parse() # ensure that there are no syntax errors in the current config by tyring to load it
 	except Exception as e:
 		raise Exception(f"The input config was not valid: \n{str(e)}")
 

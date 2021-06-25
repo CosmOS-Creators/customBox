@@ -14,6 +14,7 @@ OUTPUT_DIR_KEY			= "outputDir"
 LOOP_KEY				= "loop"
 FILE_NAME_KEY			= "fileName"
 TARGET_KEY				= "target"
+PATTERN_KEY				= "pattern"
 
 TARGET_PLACEHOLDER		= "{target}"
 TEMPLATE_PLACEHOLDER	= "{template}"
@@ -48,6 +49,7 @@ class generationElement():
 	__specialOutName	= None
 	__targetConfig 		= None
 	__targetName		= None
+	__pattern			= None
 
 	def __init__(self, outPath: str, templateFiles: List[Union[str, Path]]):
 		self.__outputPath 	= outPath
@@ -55,6 +57,8 @@ class generationElement():
 
 	def addLoop(self, loopConfigTarget: str, config: configTypes.Configuration):
 		config.require(loopConfigTarget)
+		# Link = Parser.Link(loopConfigTarget)
+		# test = Link.resolve(config)
 		self.__loopElements = helpers.resolveConfigAttributeLink(config, loopConfigTarget)
 		self.__targetConfig = helpers.splitGlobalLink(loopConfigTarget)[0]
 
@@ -63,6 +67,9 @@ class generationElement():
 
 	def setTargetName(self, name: str):
 		self.__targetName = name
+
+	def setPattern(self, pattern: dict):
+		self.__pattern = pattern
 
 	def injectTemplates(self, config: Dict[str, configTypes.Configuration], fileNamePattern: str):
 		for template in self.__templates:
@@ -73,7 +80,17 @@ class generationElement():
 				outFileName = temp.stem
 			else:
 				outFileName = Path(fileNamePattern.replace(TEMPLATE_PLACEHOLDER, templateName)).stem
+
 			outputFilePath = Path.joinpath(self.__outputPath, outFileName + outFileSuffix)
+			if(not self.__pattern is None):
+				for pattern in self.__pattern:
+					if(pattern in outFileSuffix):
+						outputDir = Path.joinpath(self.__outputPath, self.__pattern[pattern])
+						outputFilePath = outputDir.joinpath(outFileName + outFileSuffix)
+						if(not outputDir.exists()):
+							os.makedirs(outputDir)
+						break
+
 			with open(template, "r") as template:
 				templateContent = template.read()
 			jinjaTemplate = jinja2.Template(templateContent)
@@ -94,7 +111,9 @@ class generationElement():
 		else:
 			if(not self.__targetConfig is None):
 				config.require(self.__targetConfig)
-				configDict[self.__targetConfig] = helpers.resolveConfigLink(config, self.__targetConfig)
+				link = Parser.Link()
+				link.set(config=self.__targetConfig)
+				configDict[self.__targetConfig] = link.resolve(config)
 			for element in self.__loopElements:
 				filename = self.__specialOutName
 				if(not self.__targetName is None):
@@ -113,7 +132,8 @@ class Generator():
 		except AttributeError as e:
 			raise AttributeError(f"Workspace file is missing some required keys: {str(e)}")
 		try:
-			self.__sysConfig = Parser.loadConfig(workspace.config)
+			parser = Parser.ConfigParser(workspace)
+			self.__sysConfig = parser.parse()
 		except Exception as e:
 			raise Exception(f"The input config was not valid: \n{str(e)}")
 		try:
@@ -166,6 +186,9 @@ class Generator():
 				newElement.addLoop(config[LOOP_KEY], SysConfig)
 			if(FILE_NAME_KEY in config):
 				newElement.setOutName(config[FILE_NAME_KEY])
+			if(PATTERN_KEY in config):
+				newElement.setPattern(config[PATTERN_KEY])
+
 
 			GeneratorConfig.append(newElement)
 		return GeneratorConfig
@@ -193,9 +216,9 @@ class Generator():
 if __name__ == "__main__":
 	args = Parser.Workspace.getReqiredArgparse().parse_args()
 	workspace = Parser.Workspace(args.WORKSPACE)
-	try:
-		myGenerator = Generator(workspace)
-		myGenerator.generate()
-	except Exception as e:
-		print(f"[ERROR] Aborting execution of DefaultConfig.py: {str(e)}")
-		exit(1)
+	# try:
+	myGenerator = Generator(workspace)
+	myGenerator.generate()
+	# except Exception as e:
+	# 	print(f"[ERROR] Aborting execution of DefaultConfig.py: {str(e)}")
+	# 	exit(1)

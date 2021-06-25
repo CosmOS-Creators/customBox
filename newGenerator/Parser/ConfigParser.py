@@ -7,7 +7,8 @@ import re
 import Parser.AttributeTypes as AttributeTypes
 from Parser.ConfigTypes import Configuration, Subconfig, ConfigElement
 from Parser.AttributeTypes import AttributeType
-from Parser.helpers import getConfigNameFromLink, getGlobalLink, isGlobalLink, splitGlobalLink
+from Parser.helpers import getConfigNameFromLink, getGlobalLink, isGlobalLink, resolveConfigLink, splitGlobalLink
+from Parser.WorkspaceParser import Workspace
 
 ELEMENTS_KEY				= "elements"
 ATTRIBUTES_KEY				= "attributes"
@@ -93,6 +94,7 @@ def processConfig(config: dict, configName: str, completeConfig: Configuration, 
 				elif(VALUE_KEY in attributeInstance): # this is a normal attribute instance
 					if(TARGET_NAME_OVERWRITE_KEY in attributeInstance):
 						propertyName = attributeInstance[TARGET_NAME_OVERWRITE_KEY]
+						attributeCollection[getGlobalLink(configName, propertyName)] = attribute # create an alias for the same attribute
 					if(hasattr(newElement, propertyName)):
 						raise Exception(f"In config \"{configName}\" is was requested to create a property for the element \"{element}\" with the name \"{propertyName}\" but a property with that name already exists for that element")
 					try:
@@ -195,45 +197,64 @@ def discoverConfigFiles(configPath: Union[str,List[str]]) -> List[str]:
 			configFiles.append(path.absolute())
 	return configFiles
 
-def loadConfig(configPath: Union[str,List[str]]) -> Configuration:
-	configuration = Configuration()
-	configFiles = discoverConfigFiles(configPath)
+class ConfigParser():
 
-	jsonConfigs = {}
-	configFileNames = {}
-	for configFile in configFiles:
+	def __init__(self, workspace: Workspace):
+		workspace.requireFolder(["config"])
+		self.__workspace 	= workspace
+		self.__config		= None
 
-		with open(configFile, "r") as currentFile:
-			configCleanName = Path(configFile).stem
-			if(not configFileNameRegex.match(configCleanName)):
-				raise Exception(f"Config file names are oly allowed to contain lower case alphanumeric characters but the file \"{configFile}\" would generate a config named \"{configCleanName}\" which would violate this restriction")
-			if(configCleanName in jsonConfigs):
-				raise Exception(f"Config file names have to be unique but the files \"{configFileNames[configCleanName]}\" and \"{configFile}\" have the same name({configCleanName}) thus are considered duplicated.")
-			try:
-				loaded_json_config = json.load(currentFile)
-			except json.JSONDecodeError as e:
-				raise Exception(f"Config file \"{configFile}\" is not a valid json: {str(e)}")
-			try:
-				config_file_sanity_check(loaded_json_config)
-			except KeyError as e:
-				raise KeyError(f"Error in config file \"{configFile}\": {str(e)}")
-			configFileNames[configCleanName] = configFile
-			jsonConfigs[configCleanName] = loaded_json_config
+	def parse(self)  -> Configuration:
+		configFiles = discoverConfigFiles(self.__workspace.config)
+		jsonConfigs = {}
+		configFileNames = {}
+		for configFile in configFiles:
+			with open(configFile, "r") as currentFile:
+				configCleanName = Path(configFile).stem
+				if(not configFileNameRegex.match(configCleanName)):
+					raise Exception(f"Config file names are oly allowed to contain lower case alphanumeric characters but the file \"{configFile}\" would generate a config named \"{configCleanName}\" which would violate this restriction")
+				if(configCleanName in jsonConfigs):
+					raise Exception(f"Config file names have to be unique but the files \"{configFileNames[configCleanName]}\" and \"{configFile}\" have the same name({configCleanName}) thus are considered duplicated.")
+				try:
+					loaded_json_config = json.load(currentFile)
+				except json.JSONDecodeError as e:
+					raise Exception(f"Config file \"{configFile}\" is not a valid json: {str(e)}")
+				try:
+					config_file_sanity_check(loaded_json_config)
+				except KeyError as e:
+					raise KeyError(f"Error in config file \"{configFile}\": {str(e)}")
+				configFileNames[configCleanName] = configFile
+				jsonConfigs[configCleanName] = loaded_json_config
+		configuration = Configuration()
 
-	# make sure to load all attributes before loading all configs
-	attributeCollection = processAttributes(jsonConfigs)
+		# make sure to load all attributes before loading all configs
+		self.__attributeCollection = processAttributes(jsonConfigs)
+		for config in jsonConfigs:
+			processConfig(jsonConfigs[config], config, configuration, self.__attributeCollection)
+		linkParents(jsonConfigs, configuration, self.__attributeCollection)
+		self.__config = configuration
+		return configuration
 
-	for config in jsonConfigs:
-		processConfig(jsonConfigs[config], config, configuration, attributeCollection)
-	linkParents(jsonConfigs, configuration, attributeCollection)
-	return configuration
+	def populatePlaceholder(self, target: str, attribute: str, value):
+		if(not isGlobalLink(target)):
+			raise ValueError(f"Target link must be global but \"{target}\" is not")
+		targetElement 				= resolveConfigLink(self.__config, target)
+		attributeDefinitionTarget 	= getGlobalLink(splitGlobalLink(target)[0], attribute)
+		targetAttributeDefinition 	= self.__attributeCollection[attributeDefinitionTarget]
+		validatedValue 				= targetAttributeDefinition.checkValue(value)
+		try:
+			setattr(targetElement, attribute, validatedValue)
+		except AttributeError:
+			raise AttributeError(f"Element \"{target}\" has no attribute called \"{attribute}\"")
+		if(targetAttributeDefinition.needsLinking):
+			targetAttributeDefinition.link(self.__config, targetElement, attribute)
+
 
 if __name__ == "__main__":
-	from Parser.WorkspaceParser import Workspace
 	from pretty_simple_namespace import pprint
 	parser = Workspace.getReqiredArgparse()
 	args = parser.parse_args()
 	workspace = Workspace(args.WORKSPACE)
-	workspace.requireFolder(["config"])
-	fullConfig = loadConfig(workspace.config)
+	parser = ConfigParser(workspace)
+	fullConfig = parser.parse()
 	pprint(fullConfig)
