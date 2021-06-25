@@ -23,6 +23,17 @@
             "min": 0,
             "max": 2048,
             "tooltip": "Stack size of the current thread"
+        },
+        "lowAddress": {
+            "placeholder": true,
+            "type": "int"
+        },
+        "highAddress": {
+            "placeholder": true,
+            "type": "int"
+        },
+        "program": {
+            "type": "parentReference"
         }
     },
     "elements": {}

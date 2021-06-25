@@ -49,13 +49,16 @@ if __name__ == "__main__":
 	elif(args.check):
 		for i, configPath in enumerate(relativeFilePaths):
 			DefaultConfigPath = BasePath.joinpath(configPath)
-			with open(DefaultConfigPath, "r") as file:
-				defaultConfig = json.load(file)
+			try:
+				with open(DefaultConfigPath, "r") as file:
+					defaultConfig = json.load(file)
+			except IOError as e:
+				raise IOError(f"ERROR: Default config does not match with core config. Reason: {str(e)}")
 			with open(allConfigFiles[i], "r") as file1:
 				CoreConfig = json.load(file1)
 			CoreConfig[ELEMENTS_KEY] = {}
 			if(defaultConfig != CoreConfig):
-				raise Exception(f"Default config \"{DefaultConfigPath}\" does not match with Core config \"{allConfigFiles[i]}\". Check FAILED\nConsider running the Default config script with the generation option.")
+				raise Exception(f"ERROR: Default config \"{DefaultConfigPath}\" does not match with Core config \"{allConfigFiles[i]}\". Check FAILED\nConsider running the Default config script with the generation option.")
 		print("Default config is inline with Core config. Check was SUCCESSFUL")
 	else:
 		raise NotImplementedError("Either check or generate option must have to be selected.")

@@ -6,6 +6,12 @@
             "type": "int",
             "min": 0,
             "max": 2048
+        },
+        "scheduler": {
+            "type": "parentReference"
+        },
+        "task": {
+            "type": "parentReference"
         }
     },
     "elements": {}

@@ -46,6 +46,9 @@
         "taskId": {
             "placeholder": true,
             "type": "int"
+        },
+        "program": {
+            "type": "parentReference"
         }
     },
     "elements": {}

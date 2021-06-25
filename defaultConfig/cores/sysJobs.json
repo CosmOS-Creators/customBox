@@ -17,6 +17,9 @@
             "label": "API header files",
             "type": "stringList",
             "tooltip": "API headers providing definitions of sysJobs used in the current group"
+        },
+        "core": {
+            "type": "parentReference"
         }
     },
     "elements": {}
