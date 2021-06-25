@@ -21,6 +21,8 @@ TEMPLATE_PLACEHOLDER	= "{template}"
 
 mandatoryKeys = [TEMPLATES_KEY, OUTPUT_DIR_KEY]
 
+__version__ = "0.0.1"
+
 class GeneratorPlugin():
 	def preGeneration(self, systemConfig: configTypes.Configuration):
 		""" called once after parsing of inputs is finished
@@ -81,6 +83,7 @@ class generationElement():
 				outFileName = Path(fileNamePattern.replace(TEMPLATE_PLACEHOLDER, templateName)).stem
 
 			outputFilePath = Path.joinpath(self.__outputPath, outFileName + outFileSuffix)
+			config["filename"] = outFileName + outFileSuffix
 			if(not self.__pattern is None):
 				for pattern in self.__pattern:
 					if(pattern in outFileSuffix):
@@ -101,7 +104,7 @@ class generationElement():
 				file.write(renderedFile)
 
 	def generate(self, config: configTypes.Configuration):
-		configDict = {"config": config}
+		configDict = {"config": config, "version": __version__}
 		if(self.__loopElements is None):
 			if(not self.__specialOutName is None):
 				if(TARGET_PLACEHOLDER in self.__specialOutName):
