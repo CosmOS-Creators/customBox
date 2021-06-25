@@ -211,8 +211,6 @@ class Generator():
 	def registerPlugin(self, plugin: GeneratorPlugin):
 		self.__pluginList.append(plugin)
 
-
-
 if __name__ == "__main__":
 	args = Parser.Workspace.getReqiredArgparse().parse_args()
 	workspace = Parser.Workspace(args.WORKSPACE)

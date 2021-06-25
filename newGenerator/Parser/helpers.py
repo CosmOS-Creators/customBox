@@ -24,6 +24,7 @@ def splitGlobalLink(globalLink: str) -> List[str]:
 
 class Link():
 	def __init__(self, link: str = None):
+		self.isGlobal 			= self.__isGlobal
 		if(link):
 			self.config, self.element, self.attribute = self.split(link)
 		else:
@@ -32,13 +33,16 @@ class Link():
 			self.attribute		= None
 
 	def __repr__(self):
-		return "Link(" + self.getFullLink() + ")"
+		return "Link(" + self.getLink() + ")"
 
 	def __str__(self) -> str:
-		return self.getFullLink()
+		return self.getLink()
 
 	def __eq__(self, o: object) -> bool:
 		return o.config == self.config and o.element == self.element and o.attribute == self.attribute
+
+	def __hash__(self) -> int:
+		return hash((self.config, self.element, self.attribute))
 
 	@staticmethod
 	def split(link: str):
@@ -60,7 +64,7 @@ class Link():
 				config = temp[0]
 				element = temp[1]
 			else:
-				config = temp[0]
+				element = temp[0]
 		else:
 			raise ValueError(f"The link \"{link}\" does not have a valid format in the form of \"config/element:attribute\"")
 		if(not config):
@@ -71,15 +75,46 @@ class Link():
 			attribute = None
 		return config, element, attribute
 
+	@staticmethod
+	def construct(config: str = None, element: str = None, attribute: str = None):
+		newLink = Link()
+		newLink.set(config, element, attribute)
+		return newLink
+
+	@staticmethod
+	def parse(link: str):
+		newLink = Link(link)
+		return newLink
+
+	@staticmethod
+	def isGlobal(link: str):
+		newLink = Link(link)
+		if(newLink.config):
+			return True
+		else:
+			return False
+
+	def __isGlobal(self):
+		if(self.config):
+			return True
+		else:
+			return False
+
 	def set(self, config: str = None, element: str = None, attribute: str = None):
 		self.config		= config
 		self.element	= element
 		self.attribute	= attribute
 
-	def getFullLink(self) -> str:
-		config = self.config if not self.config is None else ""
-		element = self.element if not self.element is None else ""
-		attribute = self.attribute if not self.attribute is None else ""
+	def getLink(self, Config: bool = True, Element: bool = True, Attribute: bool = True) -> str:
+		config 			= self.config if not self.config is None else ""
+		element 		= self.element if not self.element is None else ""
+		attribute 		= self.attribute if not self.attribute is None else ""
+		if(Config == False):
+			config 		= ""
+		if(Element == False):
+			element 	= ""
+		if(Attribute == False):
+			attribute 	= ""
 		if(self.attribute):
 			return f"{config}/{element}:{attribute}"
 		elif(self.element):
@@ -91,40 +126,65 @@ class Link():
 		try:
 			return getattr(config, self.config)
 		except AttributeError:
-			raise AttributeError(f"Error resolving link \"{self.getFullLink()}\": Config has no subconfig named \"{self.config}\"")
+			raise AttributeError(f"Error resolving link \"{self.getLink()}\": Config has no subconfig named \"{self.config}\"")
 
 	def __getElement(self, subconfig):
 		try:
 			return getattr(subconfig, self.element)
 		except AttributeError:
-			raise AttributeError(f"Error resolving link \"{self.getFullLink()}\": subconfig \"{self.config}\" has no element named \"{self.element}\"")
+			raise AttributeError(f"Error resolving link \"{self.getLink()}\": subconfig \"{self.config}\" has no element named \"{self.element}\"")
 
 	def __getAttribute(self, element):
 		try:
 			return getattr(element, self.attribute)
 		except AttributeError:
-			raise AttributeError(f"Error resolving link \"{self.getFullLink()}\": element \"{element.id}\" has no attribute named \"{self.attribute}\"")
+			raise AttributeError(f"Error resolving link \"{self.getLink()}\": element \"{element.id}\" has no attribute named \"{self.attribute}\"")
 
-	def resolve(self, config: object) -> object:
-		if(self.config is None):
-			raise AttributeError(f"For resolving a link at least the config must be set.")
-		subconfig = self.__getSubconfig(config)
-		if(self.config and self.element and not self.attribute): # link to an element
+	def resolveElement(self, config: object) -> object:
+		if(self.config and self.element):
+			subconfig = self.__getSubconfig(config)
 			return self.__getElement(subconfig)
-		elif(self.config and not self.element and self.attribute): # link to list of attributes of all elements in config
+		else:
+			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved. Either the config or the element part of the link are missing but they are mandatory for resolving an element.")
+
+	def resolveAttributeList(self, config: object) -> object:
+		subconfig = self.__getSubconfig(config)
+		if(self.config and self.attribute):
 			attributeCollection = []
 			for element in subconfig.iterator:
 				targetAttribute = self.__getAttribute(element)
 				attributeCollection.append({"target": targetAttribute, "element": element})
 			return attributeCollection
-		elif(self.config and self.attribute and self.element): # link to the value of an attribute inside an element
+		else:
+			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved. Either the config or the attribute part of the link are missing but they are mandatory for resolving an attribute list.")
+
+	def resolveAttribute(self, config: object) -> object:
+		if(self.config and self.attribute and self.element):
 			subconfig = self.__getSubconfig(config)
 			element = self.__getElement(subconfig)
 			return self.__getAttribute(element)
-		elif(self.config and not self.element and not self.attribute): # link to a subconfig
+		else:
+			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved as it is missing at least one part. All three parts of the link are mandatory for resolving an attribute value.")
+
+	def resolveSubconfig(self, config: object) -> object:
+		if(self.config):
 			return self.__getSubconfig(config)
 		else:
-			raise ValueError(f"The link \"{self.getFullLink()}\" cannot be resolved as it is missing at least one part of the link.")
+			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved. The link is missing the config part which is mandatory for resolving subconfigs.")
+
+	def resolve(self, config: object) -> object:
+		if(self.config is None):
+			raise AttributeError(f"For resolving a link at least the config must be set.")
+		if(self.config and self.element and not self.attribute): # link to an element
+			return self.resolveElement(config)
+		elif(self.config and not self.element and self.attribute): # link to list of attributes of all elements in config
+			return self.resolveAttributeList(config)
+		elif(self.config and self.attribute and self.element): # link to the value of an attribute inside an element
+			return self.resolveAttribute(config)
+		elif(self.config and not self.element and not self.attribute): # link to a subconfig
+			return self.resolveSubconfig(config)
+		else:
+			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved as it is missing at least one part of the link.")
 
 	@property
 	def parts(self):

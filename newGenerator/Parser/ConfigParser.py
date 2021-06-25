@@ -4,10 +4,10 @@ from pathlib import Path
 from typing import Dict, List, Union, NewType
 import re
 
-import Parser.AttributeTypes as AttributeTypes
+from Parser import AttributeTypes
 from Parser.ConfigTypes import Configuration, Subconfig, ConfigElement
 from Parser.AttributeTypes import AttributeType
-from Parser.helpers import getConfigNameFromLink, getGlobalLink, isGlobalLink, resolveConfigLink, splitGlobalLink
+from Parser.helpers import Link, forceLink
 from Parser.WorkspaceParser import Workspace
 
 ELEMENTS_KEY				= "elements"
@@ -40,22 +40,25 @@ def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 	for configName in config:
 		for attribute in config[configName][ATTRIBUTES_KEY]:
 			currentAttribute = config[configName][ATTRIBUTES_KEY][attribute]
+			globalIdentifier = Link.construct(config=configName, attribute=attribute).getLink()
 			if(INHERIT_KEY in currentAttribute):
-				if(not isGlobalLink(currentAttribute[INHERIT_KEY])):
-					currentAttribute[INHERIT_KEY] = getGlobalLink(configName, currentAttribute[INHERIT_KEY])
-				AttributesToInherit[getGlobalLink(configName, attribute)] = currentAttribute
+				if(not Link.isGlobal(currentAttribute[INHERIT_KEY])):
+					currentAttribute[INHERIT_KEY] = Link.construct(config=configName, attribute=currentAttribute[INHERIT_KEY]).getLink()
+				AttributesToInherit[globalIdentifier] = currentAttribute
 			else:
 				try:
-					globalIdentifier = getGlobalLink(configName, attribute)
 					attributeCollection[globalIdentifier] = AttributeTypes.parseAttribute(currentAttribute, globalIdentifier)
 				except KeyError as e:
 					raise KeyError(f"Invalid attribute in config \"{configName}\" for attribute \"{attribute}\": {e}")
 	for attribLink in AttributesToInherit:
 		attrib = AttributesToInherit[attribLink]
-		configName = getConfigNameFromLink(attribLink)
-		baseAttribute = attributeCollection[attrib[INHERIT_KEY]]
+		link = Link(attribLink)
+		try:
+			baseAttribute = attributeCollection[attrib[INHERIT_KEY]]
+		except KeyError:
+			raise KeyError(f"In config \"{link.config}\" the attribute inherit target \"{attrib[INHERIT_KEY]}\" does not match any known attributes")
 		if(baseAttribute.is_inherited):
-			raise Exception(f"In config \"{configName}\" it was tried to inherit from \"{attrib[INHERIT_KEY]}\" but this attribute is already inherited and inheritance nesting is not supported at the moment.")
+			raise Exception(f"In config \"{link.config}\" it was tried to inherit from \"{attrib[INHERIT_KEY]}\" but this attribute is already inherited and inheritance nesting is not supported at the moment.")
 		attributeCollection[attribLink] = baseAttribute.create_inheritor(attrib, attribLink)
 
 	return attributeCollection
@@ -94,13 +97,13 @@ def processConfig(config: dict, configName: str, completeConfig: Configuration, 
 				elif(VALUE_KEY in attributeInstance): # this is a normal attribute instance
 					if(TARGET_NAME_OVERWRITE_KEY in attributeInstance):
 						propertyName = attributeInstance[TARGET_NAME_OVERWRITE_KEY]
-						attributeCollection[getGlobalLink(configName, propertyName)] = attribute # create an alias for the same attribute
+						attributeCollection[Link.construct(config=configName, attribute=propertyName)] = attribute # create an alias for the same attribute
 					if(hasattr(newElement, propertyName)):
 						raise Exception(f"In config \"{configName}\" is was requested to create a property for the element \"{element}\" with the name \"{propertyName}\" but a property with that name already exists for that element")
 					try:
 						parsedValue = attribute.checkValue(attributeInstance[VALUE_KEY])
 					except ValueError as e:
-						location = getGlobalLink(configName, element)
+						location = Link.construct(config=configName, element=element)
 						raise Exception(f"Validation in \"{location}\" for property \"{propertyName}\" failed: {str(e)}")
 					setattr(newElement, propertyName, parsedValue)
 				else:
@@ -108,32 +111,25 @@ def processConfig(config: dict, configName: str, completeConfig: Configuration, 
 			elif(not PARENT_REFERENCE_KEY in attributeInstance): # this is parent reference special attribute instance
 				raise Exception(f"Invalid attribute instance formatting in \"{configName}\" config. The following property is invalid: {attributeInstance}")
 
-def resolveElementLink(globalConfig: Configuration, localConfig: Subconfig, link: str):
-	if(isGlobalLink(link)):
-		config, target = splitGlobalLink(link)
-		try:
-			targetConfig = getattr(globalConfig, config)
-		except AttributeError:
-			raise AttributeError(f"Configuration has no subconfig named \"{config}\"")
-		try:
-			linkTarget = getattr(targetConfig, target)
-		except AttributeError:
-			raise AttributeError(f"Configuration {config} has no element named \"{target}\"")
+def resolveElementLink(globalConfig: Configuration, localConfig: Subconfig, link: Union[str, Link]):
+	link = forceLink(link)
+	if(link.isGlobal()):
+		return link.resolveElement(globalConfig)
 	else:
 		try:
 			linkTarget = getattr(localConfig, link)
 		except AttributeError:
 			raise AttributeError(f"Configuration has no element named \"{link}\"")
-	return linkTarget
+		return linkTarget
 
 def resolveAttributeLink(attributeCollection: AttributeCollectionType, localConfig: str, link: str) -> AttributeType:
-	if(isGlobalLink(link)):
+	if(Link.isGlobal(link)):
 		try:
 			linkTarget = attributeCollection[link]
 		except KeyError:
 			raise KeyError(f"Could not find a target attribute for \"{link}\" in \"{localConfig}\" config")
 	else:
-		globalLink = getGlobalLink(localConfig, link)
+		globalLink = Link.construct(config=localConfig, attribute=link).getLink()
 		try:
 			linkTarget = attributeCollection[globalLink]
 		except KeyError:
@@ -168,7 +164,7 @@ def linkParents(jsonConfigs: jsonConfigType, objConfigs: Configuration, attribut
 				else:
 					local_config = getattr(objConfigs, config)
 					element_obj = getattr(local_config, element)
-					attribTarget = attributeCollection[getGlobalLink(config, attributeInstance[TARGET_KEY])]
+					attribTarget = attributeCollection[Link.construct(config=config, attribute=attributeInstance[TARGET_KEY]).getLink()]
 					if(TARGET_NAME_OVERWRITE_KEY in attributeInstance):
 						attributeName = attributeInstance[TARGET_NAME_OVERWRITE_KEY]
 					else:
@@ -198,7 +194,6 @@ def discoverConfigFiles(configPath: Union[str,List[str]]) -> List[str]:
 	return configFiles
 
 class ConfigParser():
-
 	def __init__(self, workspace: Workspace):
 		workspace.requireFolder(["config"])
 		self.__workspace 	= workspace
@@ -235,26 +230,30 @@ class ConfigParser():
 		self.__config = configuration
 		return configuration
 
-	def populatePlaceholder(self, target: str, attribute: str, value):
-		if(not isGlobalLink(target)):
-			raise ValueError(f"Target link must be global but \"{target}\" is not")
-		targetElement 				= resolveConfigLink(self.__config, target)
-		attributeDefinitionTarget 	= getGlobalLink(splitGlobalLink(target)[0], attribute)
+	def populatePlaceholder(self, link: Union[Link, str], value):
+		link = forceLink(link)
+		if(not link.isGlobal()):
+			raise ValueError(f"Target link must be global but \"{link}\" is not")
+		targetElement 				= link.resolveElement(self.__config)
+		attributeDefinitionTarget 	= link.construct(config=link.config, attribute=link.attribute).getLink(Element=False)
 		targetAttributeDefinition 	= self.__attributeCollection[attributeDefinitionTarget]
 		validatedValue 				= targetAttributeDefinition.checkValue(value)
 		try:
-			setattr(targetElement, attribute, validatedValue)
+			setattr(targetElement, link.attribute, validatedValue)
 		except AttributeError:
-			raise AttributeError(f"Element \"{target}\" has no attribute called \"{attribute}\"")
+			raise AttributeError(f"Element \"{link.getLink(Attribute=False)}\" has no attribute called \"{link.attribute}\"")
 		if(targetAttributeDefinition.needsLinking):
-			targetAttributeDefinition.link(self.__config, targetElement, attribute)
+			targetAttributeDefinition.link(self.__config, targetElement, link.attribute)
 
 
 if __name__ == "__main__":
-	from pretty_simple_namespace import pprint
+	from pretty_simple_namespace import pprint, format
 	parser = Workspace.getReqiredArgparse()
 	args = parser.parse_args()
 	workspace = Workspace(args.WORKSPACE)
 	parser = ConfigParser(workspace)
 	fullConfig = parser.parse()
+	parser.populatePlaceholder("tasks/task_0:taskId", 5)
+	with open("dump", "w") as file:
+		file.write(format(fullConfig))
 	pprint(fullConfig)
