@@ -57,10 +57,9 @@ class generationElement():
 
 	def addLoop(self, loopConfigTarget: str, config: configTypes.Configuration):
 		config.require(loopConfigTarget)
-		# Link = Parser.Link(loopConfigTarget)
-		# test = Link.resolve(config)
-		self.__loopElements = helpers.resolveConfigAttributeLink(config, loopConfigTarget)
-		self.__targetConfig = helpers.splitGlobalLink(loopConfigTarget)[0]
+		Link = Parser.Link(loopConfigTarget)
+		self.__loopElements = Link.resolve(config)
+		self.__targetConfig = Link.config
 
 	def setOutName(self, name: str):
 		self.__specialOutName = name
@@ -110,9 +109,8 @@ class generationElement():
 			self.injectTemplates(configDict, self.__specialOutName)
 		else:
 			if(not self.__targetConfig is None):
-				config.require(self.__targetConfig)
-				link = Parser.Link()
-				link.set(config=self.__targetConfig)
+				link = Parser.Link.construct(config=self.__targetConfig)
+				config.require(link)
 				configDict[self.__targetConfig] = link.resolve(config)
 			for element in self.__loopElements:
 				filename = self.__specialOutName

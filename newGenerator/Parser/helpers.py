@@ -225,7 +225,7 @@ class Link():
 
 def forceLink(input: Union[Link, str]) -> Link:
 	if(type(input) is Link):
-		return Link
+		return input
 	else:
 		return Link(input)
 

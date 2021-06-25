@@ -3,24 +3,15 @@ from typing import List, Union
 import Parser.helpers as helpers
 
 class Configuration(SimpleNamespace):
-	def require(self, requiredProperties : Union[List[str], str]):
-		requiredProperties = helpers.forceStrList(requiredProperties)
+	def require(self, requiredProperties : Union[List[Union[str, helpers.Link]], Union[str, helpers.Link]]):
+		if(not type(requiredProperties) is list):
+			requiredProperties = [requiredProperties]
 		for prop in requiredProperties:
-			if(helpers.isGlobalLink(prop)):
-				configStr = helpers.splitGlobalLink(prop)[0]
-			else:
-				configStr = prop
+			link = helpers.forceLink(prop)
 			try:
-				configObj = getattr(self, configStr)
-			except AttributeError:
-				raise AttributeError(f"Configuration does not have a subconfig named \"{configStr}\" but it was listed as being required")
-			if(helpers.isGlobalLink(prop)):
-				attribStr = helpers.splitGlobalLink(prop)[1]
-				for element in configObj.iterator:
-					try:
-						getattr(element, attribStr)
-					except AttributeError:
-						raise AttributeError(f"Element \"{element.id}\" has no attribute called \"{attribStr}\" but it was listed as being required")
+				link.resolve(self)
+			except Exception as e:
+				raise AttributeError(f"The link \"{link.getLink()}\" was listed as required but it could not be resolved: {str(e)}")
 
 class Subconfig(SimpleNamespace):
 	def __init__(self):
