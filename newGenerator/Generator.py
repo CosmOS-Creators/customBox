@@ -215,9 +215,9 @@ class Generator():
 if __name__ == "__main__":
 	args = Parser.Workspace.getReqiredArgparse().parse_args()
 	workspace = Parser.Workspace(args.WORKSPACE)
-	# try:
-	myGenerator = Generator(workspace)
-	myGenerator.generate()
-	# except Exception as e:
-	# 	print(f"[ERROR] Aborting execution of DefaultConfig.py: {str(e)}")
-	# 	exit(1)
+	try:
+		myGenerator = Generator(workspace)
+		myGenerator.generate()
+	except Exception as e:
+		print(f"[ERROR] Aborting execution of DefaultConfig.py: {str(e)}")
+		exit(1)

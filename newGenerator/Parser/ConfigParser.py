@@ -214,6 +214,6 @@ if __name__ == "__main__":
 	fullConfig = parser.parse()
 	fullConfig.require(['tasks/task_0:taskId'])
 	fullConfig.tasks.task_0.populatePlaceholder("taskId", 5)
-	with open("dump", "w") as file:
+	with open("ConfigDump", "w") as file:
 		file.write(format(fullConfig))
 	pprint(fullConfig)
