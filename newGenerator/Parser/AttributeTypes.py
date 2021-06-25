@@ -1,8 +1,8 @@
-from typing import List, Type
+from typing import List
 import re
 
 from Parser.ConfigTypes import ConfigElement, Configuration
-from Parser.helpers import isGlobalLink, resolveConfigLink, splitGlobalLink, overrides, toInt
+from Parser.helpers import Link, overrides, toInt
 
 LABEL_KEY 		= "label"
 TYPE_KEY 		= "type"
@@ -190,7 +190,7 @@ class ReferenceListType(AttributeType):
 		# just check the syntax here as no info about any valid choices is avaliable and validation will be done in the link method
 		if(type(valueInput) is list):
 			for i, value in enumerate(valueInput):
-				if(not isGlobalLink(value)):
+				if(not Link.isGlobal(value)):
 					raise ValueError(f"All elements of a reference list must be global links but element {i} ({value}) was not")
 		else:
 			raise TypeError(f"Values of reference list attribute types must be of type list but found type \"{type(valueInput)}\" instead")
@@ -207,7 +207,7 @@ class ReferenceListType(AttributeType):
 		linkedTargets = []
 		for targetLink in value:
 			try:
-				targetElement = resolveConfigLink(objConfig, targetLink)
+				targetElement = Link.parse(targetLink).resolveSubconfig(objConfig)
 			except AttributeError as e:
 				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}")
 			linkedTargets.append(targetElement)
@@ -268,16 +268,16 @@ class SelectionType(AttributeType):
 		if(self._needs_linking):
 			possibleValues = []
 			foundMatch = False
-			config, targetAttribute = splitGlobalLink(self.elements)
+			link = Link(self.elements)
 			try:
-				subconfig = resolveConfigLink(objConfig, config)
+				subconfig = link.resolveSubconfig(objConfig)
 			except AttributeError as e:
 				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}")
 			for element in subconfig.iterator:
 				try:
-					targetValue = getattr(element, targetAttribute)
+					targetValue = getattr(element, link.element)
 				except AttributeError:
-					print(f"WARNING: Attribute definition \"{self.globalID}\" requested an attribute instance named \"{targetAttribute}\" from the config \"{config}\" but the element \"{element.id}\" does not have an instance of that attribute. Skipping this element.")
+					print(f"WARNING: Attribute definition \"{self.globalID}\" requested an attribute instance named \"{link.element}\" from the config \"{link.config}\" but the element \"{element.id}\" does not have an instance of that attribute. Skipping this element.")
 					continue
 				possibleValues.append(targetValue)
 				value = getattr(targetConfigObject, targetAttributeName)
