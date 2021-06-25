@@ -4,34 +4,41 @@
         "name": {
             "label": "Name of the routed function",
             "type": "string",
-            "validation": "^[A-Za-z][A-Za-z0-9_]*$"
+            "validation": "^[A-Za-z][A-Za-z0-9_]*$",
+            "tooltip": "Name of the routed function to the sysCall, be aware that routed function args and return type must be compliant with sysCall"
         },
-        "api_header": {
-            "label": "Name of the routed function",
+        "apiHeader": {
+            "label": "API header with routed function definition",
             "type": "string",
-            "validation": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z]+$"
+            "validation": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z]+$",
+            "tooltip": "API header with routed function definition is included in the routes configuration"
         },
         "sysCall": {
-            "label": "Name of the syscall",
+            "label": "Name of the sysCall",
             "type": "string",
-            "validation": "^[A-Za-z][A-Za-z0-9_]*$"
+            "validation": "^[A-Za-z][A-Za-z0-9_]*$",
+            "tooltip": "Name of the sysCall used to interface with your routed function"
         },
-        "user_visible": {
-            "label": "",
-            "type": "bool"
+        "userVisible": {
+            "label": "Visible for application layer",
+            "type": "bool",
+            "tooltip": "Should be this route generated as CosmOS API for the usage in application layer?"
         },
-        "is_mapped_to_entity": {
-            "label": "",
-            "type": "bool"
+        "isMappedToEntity": {
+            "label": "Is route mapped to entity",
+            "type": "bool",
+            "tooltip": "Is this route mapped also to entity for instance buffer"
         },
         "args": {
             "label": "Function arguments",
-            "type": "stringList"
+            "type": "stringList",
+            "tooltip": "Arguments of the routed function in the correct order"
         },
-        "return_type": {
+        "returnType": {
             "label": "Type of the returned value",
             "type": "string",
-            "validation": "^[A-Za-z][A-Za-z0-9_]*$"
+            "validation": "^[A-Za-z][A-Za-z0-9_]*$",
+            "tooltip": "Return type of the routed function"
         }
     },
     "elements": {}
