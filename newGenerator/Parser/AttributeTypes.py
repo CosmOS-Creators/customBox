@@ -1,21 +1,22 @@
 from typing import List
 import re
 
-from Parser.ConfigTypes import ConfigElement, Configuration
+from Parser.ConfigTypes import ConfigElement, Configuration, Subconfig
 from Parser.helpers import Link, overrides, toInt
 
-LABEL_KEY 		= "label"
-TYPE_KEY 		= "type"
-TOOLTIP_KEY		= "tooltip"
-INHERIT_KEY		= "inherit"
-PLACEHOLDER_KEY	= "placeholder"
-HIDDEN_KEY		= "hidden"
+LABEL_KEY 					= "label"
+TYPE_KEY 					= "type"
+TOOLTIP_KEY					= "tooltip"
+INHERIT_KEY					= "inherit"
+PLACEHOLDER_KEY				= "placeholder"
+HIDDEN_KEY					= "hidden"
+PARENT_REFERENCE_TYPE_KEY	= "parentReference"
 # special keys
-VALIDATION_KEY	= "validation"
-ELEMENTS_KEY	= "elements"
-STEP_KEY		= "step"
-MIN_KEY			= "min"
-MAX_KEY			= "max"
+VALIDATION_KEY				= "validation"
+ELEMENTS_KEY				= "elements"
+STEP_KEY					= "step"
+MIN_KEY						= "min"
+MAX_KEY						= "max"
 
 baseKeys = [LABEL_KEY, TOOLTIP_KEY, HIDDEN_KEY, PLACEHOLDER_KEY, TYPE_KEY]
 
@@ -55,7 +56,7 @@ class AttributeType():
 		self.hidden 				= self.checkForKey(HIDDEN_KEY, False)
 		if(LABEL_KEY in attribute_definition):
 			self.label 				= attribute_definition[LABEL_KEY]
-		elif(self.hidden == False and not self._is_placeholder):
+		elif(self.hidden == False and not self._is_placeholder and not self.type == PARENT_REFERENCE_TYPE_KEY):
 			raise AttributeError(error_message.format(LABEL_KEY))
 
 	def __new__(cls, *args, **kwargs):
@@ -200,6 +201,7 @@ class ReferenceListType(AttributeType):
 	def getDefault(self) -> List[ConfigElement]:
 		return []
 
+	@overrides(AttributeType)
 	def link(self, objConfig: Configuration, targetConfigObject: ConfigElement, targetAttributeName: str):
 		value = getattr(targetConfigObject, targetAttributeName)
 		if(not type(value) is list):
@@ -330,8 +332,54 @@ class SliderType(IntType):
 	def getDefault(self) -> float:
 		return int(0)
 
+class ParentReferenceType(AttributeType):
+	_comparison_type 	= "parentReference"
+	_needs_linking		= True
 
-attributeTypeList = [StringType, BoolType, IntType, FloatType, ReferenceListType, StringListType, SelectionType, SelectionType, HexType, SliderType]
+	@overrides(AttributeType)
+	def __init__(self, attribute_definition: dict, globalID: str):
+		if(HIDDEN_KEY in attribute_definition or PLACEHOLDER_KEY in attribute_definition):
+			raise KeyError(f"Attributes of type parent reference are not allowed to contain either the \"{HIDDEN_KEY}\" nor the \"{PLACEHOLDER_KEY}\" key.")
+		super().__init__(attribute_definition, globalID)
+
+	@overrides(AttributeType)
+	def checkValue(self, valueInput: List[str]):
+		# just check if it is a valid link syntax
+		try:
+			link = Link.parse(valueInput)
+		except Exception as e:
+			reportValidationError(f"Values of type parent reference must have a link valid link. But parsing the link \"{valueInput}\" threw errors: {str(e)}")
+		if(not link.config or not link.element or link.attribute):
+			reportValidationError(f"Values of type parent reference must have a link which points to another config element but \"{valueInput}\" does not.")
+		return valueInput
+
+	@overrides(AttributeType)
+	def getDefault(self) -> object:
+		return None
+
+	@overrides(AttributeType)
+	def link(self, objConfig: Configuration, targetConfigObject: ConfigElement, targetAttributeName: str):
+		value = getattr(targetConfigObject, targetAttributeName)
+		link = Link(value)
+		parentElement = link.resolveElement(objConfig)
+		targetObjectLink = Link(targetConfigObject.link)
+
+		# add this object to the parent
+		if(hasattr(parentElement, targetObjectLink.config)):
+			temp = getattr(parentElement, targetObjectLink.config)
+		else:
+			temp = Subconfig()
+			setattr(parentElement, targetObjectLink.config, temp)
+
+		temp.iterator.append(targetConfigObject)
+		if(hasattr(temp, targetObjectLink.element)):
+			raise Exception(f"In config \"{targetObjectLink.config}\" in element \"{targetObjectLink.element}\" is was requested to create an element for the parent object \"{link.getLink()}\" but a property with the name \"{link.element}\" already exists.")
+		else:
+			setattr(temp, targetObjectLink.element, targetConfigObject)
+		# add the parent to this object
+		setattr(targetConfigObject, targetAttributeName, parentElement)
+
+attributeTypeList = [StringType, BoolType, IntType, FloatType, ReferenceListType, StringListType, SelectionType, SelectionType, HexType, SliderType, ParentReferenceType]
 
 def reportValidationError(errorMsg: str):
 	raise ValueError(errorMsg)

@@ -18,8 +18,6 @@ TARGET_KEY					= "target"
 VALUE_KEY					= "value"
 INHERIT_KEY					= "inherit"
 
-PARENT_REFERENCE_KEY		= "parentReference"
-PARENT_REFERENCE_NAME_KEY	= "name"
 TARGET_NAME_OVERWRITE_KEY	= "targetNameOverwrite"
 
 configFileNameRegex			= re.compile(r"^[A-Za-z0-9]+$")
@@ -32,7 +30,7 @@ AttributeCollectionType 	= NewType('AttributeCollectionType', Dict[str, Attribut
 
 reservedConfigNames = ["require"]
 reservedElementNames = ["iterator"]
-reservedAttributeNames = ["id", "attributeLookup", "populatePlaceholder", "configLookup"]
+reservedAttributeNames = ["id", "populatePlaceholder", "link"]
 
 def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 	attributeCollection: AttributeCollectionType = {}
@@ -109,7 +107,7 @@ def processConfig(config: dict, configName: str, completeConfig: Configuration, 
 					setattr(newElement, propertyName, parsedValue)
 				else:
 					raise Exception(f"Invalid attribute instance formatting in \"{configName}\" config. The following property is missing the \"{VALUE_KEY}\" property: {attributeInstance}")
-			elif(not PARENT_REFERENCE_KEY in attributeInstance): # this is parent reference special attribute instance
+			else:
 				raise Exception(f"Invalid attribute instance formatting in \"{configName}\" config. The following property is invalid: {attributeInstance}")
 
 def resolveElementLink(globalConfig: Configuration, localConfig: Subconfig, link: Union[str, Link]):
@@ -141,39 +139,17 @@ def linkParents(jsonConfigs: jsonConfigType, objConfigs: Configuration, attribut
 	for config in jsonConfigs:
 		for element in jsonConfigs[config][ELEMENTS_KEY]:
 			for attributeInstance in jsonConfigs[config][ELEMENTS_KEY][element]:
-				if(PARENT_REFERENCE_KEY in attributeInstance):
-					local_config = getattr(objConfigs, config)
-					parentLink = attributeInstance[PARENT_REFERENCE_KEY]
-					try:
-						parentObject = resolveElementLink(objConfigs, local_config, parentLink)
-					except AttributeError as e:
-						raise AttributeError(f"Error in \"{config}\" config. Target link was invalid: {str(e)}")
-					if(not hasattr(parentObject, config)):
-						parentLink_obj = Subconfig()
-						setattr(parentObject, config, parentLink_obj)
-					else:
-						parentLink_obj = getattr(parentObject, config)
-					element_obj = getattr(local_config, element)
-					if(hasattr(parentLink_obj, element)):
-						raise Exception(f"In config \"{config}\" in element \"{element}\" is was requested to create an element for the parent object \"{parentLink}\" but a property with the name \"{element}\" already exists.")
-					setattr(parentLink_obj, element, element_obj)
-					parentLink_obj.iterator.append(element_obj)
-					if(PARENT_REFERENCE_NAME_KEY in attributeInstance):
-						propertyName = attributeInstance[PARENT_REFERENCE_NAME_KEY]
-						if(hasattr(element_obj, propertyName)):
-							raise Exception(f"In config \"{config}\" is was requested to create a property for the element \"{element}\" with the name \"{propertyName}\" but a property with that name already exists for that element")
+				local_config = getattr(objConfigs, config)
+				element_obj = getattr(local_config, element)
+				attribTarget = attributeCollection[Link.construct(config=config, attribute=attributeInstance[TARGET_KEY]).getLink()]
+				if(TARGET_NAME_OVERWRITE_KEY in attributeInstance):
+					attributeName = attributeInstance[TARGET_NAME_OVERWRITE_KEY]
 				else:
-					local_config = getattr(objConfigs, config)
-					element_obj = getattr(local_config, element)
-					attribTarget = attributeCollection[Link.construct(config=config, attribute=attributeInstance[TARGET_KEY]).getLink()]
-					if(TARGET_NAME_OVERWRITE_KEY in attributeInstance):
-						attributeName = attributeInstance[TARGET_NAME_OVERWRITE_KEY]
-					else:
-						attributeName = attributeInstance[TARGET_KEY]
-					try:
-						attribTarget.link(objConfigs, element_obj, attributeName)
-					except NameError as e:
-						raise NameError(f"Error in \"{config}\" config: {str(e)}")
+					attributeName = attributeInstance[TARGET_KEY]
+				try:
+					attribTarget.link(objConfigs, element_obj, attributeName)
+				except NameError as e:
+					raise NameError(f"Error in \"{config}\" config: {str(e)}")
 
 def config_file_sanity_check(config: dict):
 	for required_key in required_json_config_keys:

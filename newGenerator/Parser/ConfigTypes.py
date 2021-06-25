@@ -26,18 +26,18 @@ class Subconfig(SimpleNamespace):
 class ConfigElement(SimpleNamespace):
 	__attributeLookup 	= {}
 	__configLookup		= None
-	__link 				= ""
+	link 				= ""
 	def __init__(self, config, attribute, link):
 		self.id = None
 		self.__attributeLookup	= attribute
 		self.__configLookup		= config
-		self.__link				= link
+		self.link				= link
 
 	def __repr__(self):
 		return f"ConfigElement({self.id})"
 
 	def populatePlaceholder(self, attribute: str, value):
-		link = helpers.forceLink(self.__link)
+		link = helpers.forceLink(self.link)
 		link.attribute = attribute
 		if(not link.isGlobal()):
 			raise ValueError(f"Target link must be global but \"{link}\" is not")
