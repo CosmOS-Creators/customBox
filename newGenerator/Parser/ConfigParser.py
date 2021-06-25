@@ -32,7 +32,7 @@ AttributeCollectionType 	= NewType('AttributeCollectionType', Dict[str, Attribut
 
 reservedConfigNames = ["require"]
 reservedElementNames = ["iterator"]
-reservedAttributeNames = ["id"]
+reservedAttributeNames = ["id", "attributeLookup", "populatePlaceholder", "configLookup"]
 
 def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 	attributeCollection: AttributeCollectionType = {}
@@ -76,9 +76,10 @@ def processConfig(config: dict, configName: str, completeConfig: Configuration, 
 		else:
 			currentConfig = getattr(completeConfig, configName)
 
-		newElement = ConfigElement()
+		link 			= Link.construct(config=configName, element=element)
+		newElement 		= ConfigElement(completeConfig, attributeCollection, link.getLink())
 		setattr(currentConfig, element, newElement)
-		newElement.id = element # add the key of the element as an id inside the object so that it can be accessed also when iterating over the elements
+		newElement.id 	= element # add the key of the element as an id inside the object so that it can be accessed also when iterating over the elements
 		currentConfig.iterator.append(newElement)
 		if(not type(currentElement) is list):
 			raise Exception(f"In config \"{configName}\" the \"{ELEMENTS_KEY}\" property is required to be a list but found {type(currentElement)}")
@@ -197,7 +198,6 @@ class ConfigParser():
 	def __init__(self, workspace: Workspace):
 		workspace.requireFolder(["config"])
 		self.__workspace 	= workspace
-		self.__config		= None
 
 	def parse(self)  -> Configuration:
 		configFiles = discoverConfigFiles(self.__workspace.config)
@@ -227,24 +227,7 @@ class ConfigParser():
 		for config in jsonConfigs:
 			processConfig(jsonConfigs[config], config, configuration, self.__attributeCollection)
 		linkParents(jsonConfigs, configuration, self.__attributeCollection)
-		self.__config = configuration
 		return configuration
-
-	def populatePlaceholder(self, link: Union[Link, str], value):
-		link = forceLink(link)
-		if(not link.isGlobal()):
-			raise ValueError(f"Target link must be global but \"{link}\" is not")
-		targetElement 				= link.resolveElement(self.__config)
-		attributeDefinitionTarget 	= link.construct(config=link.config, attribute=link.attribute).getLink(Element=False)
-		targetAttributeDefinition 	= self.__attributeCollection[attributeDefinitionTarget]
-		validatedValue 				= targetAttributeDefinition.checkValue(value)
-		try:
-			setattr(targetElement, link.attribute, validatedValue)
-		except AttributeError:
-			raise AttributeError(f"Element \"{link.getLink(Attribute=False)}\" has no attribute called \"{link.attribute}\"")
-		if(targetAttributeDefinition.needsLinking):
-			targetAttributeDefinition.link(self.__config, targetElement, link.attribute)
-
 
 if __name__ == "__main__":
 	from pretty_simple_namespace import pprint, format
@@ -253,7 +236,8 @@ if __name__ == "__main__":
 	workspace = Workspace(args.WORKSPACE)
 	parser = ConfigParser(workspace)
 	fullConfig = parser.parse()
-	parser.populatePlaceholder("tasks/task_0:taskId", 5)
+	fullConfig.require(['tasks/task_0:taskId'])
+	fullConfig.tasks.task_0.populatePlaceholder("taskId", 5)
 	with open("dump", "w") as file:
 		file.write(format(fullConfig))
 	pprint(fullConfig)

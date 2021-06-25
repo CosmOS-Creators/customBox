@@ -207,7 +207,7 @@ class ReferenceListType(AttributeType):
 		linkedTargets = []
 		for targetLink in value:
 			try:
-				targetElement = Link.parse(targetLink).resolveSubconfig(objConfig)
+				targetElement = Link.parse(targetLink).resolveElement(objConfig)
 			except AttributeError as e:
 				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}")
 			linkedTargets.append(targetElement)
@@ -215,7 +215,6 @@ class ReferenceListType(AttributeType):
 
 class StringListType(AttributeType):
 	_comparison_type 	= "stringList"
-	_typeSpecificKeys	= [ELEMENTS_KEY]
 
 	@overrides(AttributeType)
 	def checkValue(self, valueInput: List[str]):
