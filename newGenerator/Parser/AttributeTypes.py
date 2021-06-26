@@ -367,6 +367,8 @@ class ParentReferenceType(AttributeType):
 		# add this object to the parent
 		if(hasattr(parentElement, targetObjectLink.config)):
 			temp = getattr(parentElement, targetObjectLink.config)
+			if(type(temp) is ConfigElement):
+				raise AttributeError(f"Error during linking the element \"{targetObjectLink.getLink()}\" to the parent element \"{link.getLink()}\": The parent already has an attribute with the name \"{targetObjectLink.config}\"")
 		else:
 			temp = Subconfig()
 			setattr(parentElement, targetObjectLink.config, temp)
