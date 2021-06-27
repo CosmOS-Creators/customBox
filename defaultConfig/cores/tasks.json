@@ -49,6 +49,14 @@
         },
         "program": {
             "type": "parentReference"
+        },
+        "lowAddress": {
+            "placeholder": true,
+            "type": "int"
+        },
+        "highAddress": {
+            "placeholder": true,
+            "type": "int"
         }
     },
     "elements": {}
