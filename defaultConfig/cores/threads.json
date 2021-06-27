@@ -24,6 +24,10 @@
             "max": 2048,
             "tooltip": "Stack size of the current thread"
         },
+        "uniqueId": {
+            "placeholder": true,
+            "type": "int"
+        },
         "lowAddress": {
             "placeholder": true,
             "type": "int"

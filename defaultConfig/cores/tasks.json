@@ -43,7 +43,7 @@
             "max": 2048,
             "tooltip": "Stack size of the current task"
         },
-        "taskId": {
+        "uniqueId": {
             "placeholder": true,
             "type": "int"
         },
