@@ -1,4 +1,6 @@
-from typing import List, Union, overload
+from __future__ import annotations
+from typing import List, Union
+
 
 # helper decorator to ensure proper naming of functions
 def overrides(interface_class):
@@ -72,8 +74,8 @@ class Link():
 		return newLink
 
 	@staticmethod
-	def isGlobal(link: str):
-		newLink = Link(link)
+	def isGlobal(link: Union[str, Link]):
+		newLink = forceLink(link)
 		if(newLink.config):
 			return True
 		else:

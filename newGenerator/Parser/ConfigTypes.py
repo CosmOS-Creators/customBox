@@ -36,13 +36,20 @@ class ConfigElement(SimpleNamespace):
 	def __repr__(self):
 		return f"ConfigElement({self.id})"
 
-	def populatePlaceholder(self, attribute: str, value):
+	def populate(self, attribute: str, value, isPlaceholder: bool = True):
+		"""
+			Populate any attribute with a value. If the attribute is not a placeholder isPlaceholder has to be set to False explicitly
+		"""
 		link = helpers.forceLink(self.link)
 		link.attribute = attribute
 		if(not link.isGlobal()):
 			raise ValueError(f"Target link must be global but \"{link}\" is not")
 		attributeDefinitionTarget 	= link.getLink(Element=False)
+		if(not attributeDefinitionTarget in self.__attributeLookup):
+			raise AttributeError(f"Element \"{link.getLink()}\" does not point to an exiting attribute definition. Most likely the link is pointing to a wrong location")
 		targetAttributeDefinition 	= self.__attributeLookup[attributeDefinitionTarget]
+		if(not targetAttributeDefinition.is_placeholder and isPlaceholder == True):
+			raise AttributeError(f"Element \"{link.getLink(Attribute=False)}\" is not a placeholder but the populate method was expecting a placeholder attribute. If a non placeholder attribute should be written to on purpose call populate with isPlaceholder set to False")
 		try:
 			validatedValue 			= targetAttributeDefinition.checkValue(value)
 		except ValueError as e:

@@ -30,7 +30,7 @@ AttributeCollectionType 	= NewType('AttributeCollectionType', Dict[str, Attribut
 
 reservedConfigNames = ["require"]
 reservedElementNames = ["iterator"]
-reservedAttributeNames = ["id", "populatePlaceholder", "link"]
+reservedAttributeNames = ["id", "populate", "link"]
 
 def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 	attributeCollection: AttributeCollectionType = {}
@@ -212,8 +212,8 @@ if __name__ == "__main__":
 	workspace = Workspace(args.WORKSPACE)
 	parser = ConfigParser(workspace)
 	fullConfig = parser.parse()
-	fullConfig.require(['tasks/task_0:taskId'])
-	fullConfig.tasks.task_0.populatePlaceholder("taskId", 5)
+	fullConfig.require(['tasks/task_0:uniqueId'])
+	fullConfig.tasks.task_0.populate("uniqueId", 5)
 	with open("ConfigDump", "w") as file:
 		file.write(format(fullConfig))
 	pprint(fullConfig)

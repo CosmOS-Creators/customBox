@@ -2,7 +2,7 @@ from typing import List
 import re
 
 from Parser.ConfigTypes import ConfigElement, Configuration, Subconfig
-from Parser.helpers import Link, overrides, toInt
+from Parser.helpers import Link, forceLink, overrides, toInt
 
 LABEL_KEY 					= "label"
 TYPE_KEY 					= "type"
@@ -132,6 +132,8 @@ class StringType(AttributeType):
 				regex = re.compile(self.validation)
 			except Exception as e:
 				raise ValueError(f"The regex \"{self.validation}\" is not valid: \"{str(e)}\"")
+			if(not type(valueInput) is str):
+				reportValidationError(f"Input value \"{valueInput}\" is not of type str but the attribute definition was expecting a string")
 			if(not regex.match(valueInput)):
 				reportValidationError(f"\"{valueInput}\" does not match the validation regex \"{self.validation}\"")
 		return valueInput
@@ -209,8 +211,9 @@ class ReferenceListType(AttributeType):
 			raise TypeError("")
 		linkedTargets = []
 		for targetLink in value:
+			link = forceLink(targetLink)
 			try:
-				targetElement = Link.parse(targetLink).resolveElement(objConfig)
+				targetElement = link.resolveElement(objConfig)
 			except AttributeError as e:
 				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}")
 			linkedTargets.append(targetElement)
