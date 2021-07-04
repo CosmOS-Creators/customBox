@@ -190,6 +190,22 @@ class ReferenceListType(AttributeType):
 	_typeSpecificKeys	= [ELEMENTS_KEY]
 
 	@helpers.overrides(AttributeType)
+	def __init__(self, attribute_definition: dict, globalID: str):
+		super().__init__(attribute_definition, globalID)
+		self.elements: list[helpers.Link] = self.checkForKey(ELEMENTS_KEY, None)
+		if(not self.elements is None):
+			if(not type(self.elements) is list):
+				raise TypeError(f'The elements property must always be a list for reference list attribute types but found type "{type(self.elements)}" instead for attribute "{self.globalID}"')
+			elementLinks = []
+			for i, element in enumerate(self.elements):
+				try:
+					link = helpers.forceLink(element)
+				except Exception as e:
+					raise Exception(f'Every list item of the elements property of the attribute "{self.globalID}" has to be a link but parsing of item {i} was unsuccessful: {str(e)}')
+				elementLinks.append(link)
+			self.elements = elementLinks
+
+	@helpers.overrides(AttributeType)
 	def checkValue(self, valueInput: List[Union[str, helpers.Link, ConfigTypes.ConfigElement]]):
 		# just check the syntax here as no info about any valid choices is avaliable and validation will be done in the link method
 		if(type(valueInput) is list):
@@ -214,8 +230,17 @@ class ReferenceListType(AttributeType):
 		if(not type(value) is list):
 			raise TypeError(f"Values for elements of reference list attribute types must be of type list but found type \"{type(value)}\" instead")
 		linkedTargets = []
+		if(not self.elements is None):
+			objConfig.require(self.elements)
 		for targetLink in value:
 			link = helpers.forceLink(targetLink)
+			if(not self.elements is None):
+				linkFoundMatch = False
+				for element in self.elements:
+					if(element.config == link.config):
+						linkFoundMatch = True
+				if(linkFoundMatch == False):
+					raise ValueError(f'Error for attribute definition \"{self.globalID}\": Provided link in the value list ({link.getLink()}) does not match any of the allowed links for this attributes reference list ({self.elements})')
 			try:
 				targetElement = link.resolveElement(objConfig)
 			except AttributeError as e:
