@@ -185,6 +185,7 @@ class FloatType(IntType):
 class ReferenceListType(AttributeType):
 	_comparison_type 	= "referenceList"
 	_needs_linking		= True
+	_typeSpecificKeys	= [ELEMENTS_KEY]
 
 	@overrides(AttributeType)
 	def checkValue(self, valueInput: List[str]):

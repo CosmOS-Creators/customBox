@@ -57,6 +57,10 @@
         "highAddress": {
             "placeholder": true,
             "type": "int"
+        },
+        "taskId": {
+            "placeholder": true,
+            "type": "int"
         }
     },
     "elements": {}

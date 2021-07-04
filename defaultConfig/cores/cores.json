@@ -38,6 +38,14 @@
         },
         "cpu": {
             "type": "parentReference"
+        },
+        "coreId": {
+            "placeholder": true,
+            "type": "int"
+        },
+        "corePrograms": {
+            "placeholder": true,
+            "type": "referenceList"
         }
     },
     "elements": {}

@@ -29,6 +29,18 @@
         },
         "core": {
             "type": "parentReference"
+        },
+        "programId": {
+            "placeholder": true,
+            "type": "int"
+        },
+        "programThreads": {
+            "placeholder": true,
+            "type": "referenceList"
+        },
+        "programTasks": {
+            "placeholder": true,
+            "type": "referenceList"
         }
     },
     "elements": {}
