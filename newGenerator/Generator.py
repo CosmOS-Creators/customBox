@@ -1,11 +1,13 @@
 import json
 import os
-from pathlib import Path
-from typing import Dict, List, Union
-import Parser
-import Parser.helpers as helpers
-import Parser.ConfigTypes as configTypes
 import jinja2
+from datetime 	import datetime
+from pathlib 	import Path
+from typing 	import Dict, List, Union
+import Parser
+import Parser.helpers 		as helpers
+import Parser.ConfigTypes 	as configTypes
+import GeneratorCorePlugins as GeneratorPlugins
 
 templateExtension = ".j2"
 
@@ -21,28 +23,9 @@ TEMPLATE_PLACEHOLDER	= "{template}"
 
 mandatoryKeys = [TEMPLATES_KEY, OUTPUT_DIR_KEY]
 
+timestampFormat = "%Y-%m-%d"
+
 __version__ = "0.0.1"
-
-class GeneratorPlugin():
-	def preGeneration(self, systemConfig: configTypes.Configuration):
-		""" called once after parsing of inputs is finished
-		"""
-		pass
-
-	def postGeneration(self):
-		""" called once after all files have been generated
-		"""
-		pass
-
-	def preFileGeneration(self, currentTemplateDict: dict, systemConfig: configTypes.Configuration):
-		""" called once for every file before it is generated
-		"""
-		return currentTemplateDict
-
-	def postFileGeneration(self):
-		""" called once for every file after it is generated
-		"""
-		pass
 
 class generationElement():
 	__outputPath 		= ""
@@ -52,6 +35,8 @@ class generationElement():
 	__targetConfig 		= None
 	__targetName		= None
 	__pattern			= None
+	__preFileGenHook	= None
+	__postFileGenHook	= None
 
 	def __init__(self, outPath: str, templateFiles: List[Union[str, Path]]):
 		self.__outputPath 	= outPath
@@ -72,7 +57,18 @@ class generationElement():
 	def setPattern(self, pattern: dict):
 		self.__pattern = pattern
 
+	def registerPreFileGenHook(self, hook):
+		self.__preFileGenHook = hook
+
+	def registerPostFileGenHook(self, hook):
+		self.__postFileGenHook = hook
+
+	def registerHooks(self, preFileGenHook, postFileGenHook):
+		self.registerPreFileGenHook(preFileGenHook)
+		self.registerPostFileGenHook(postFileGenHook)
+
 	def injectTemplates(self, config: Dict[str, configTypes.Configuration], fileNamePattern: str):
+		generatedFiles = []
 		for template in self.__templates:
 			templateName = Path(template).stem
 			temp = Path(templateName)
@@ -96,20 +92,29 @@ class generationElement():
 			with open(template, "r") as template:
 				templateContent = template.read()
 			jinjaTemplate = jinja2.Template(templateContent)
+			self.__preFileGenHook(config, config["config"], outputFilePath)
 			try:
 				renderedFile = jinjaTemplate.render(config)
 			except Exception as e:
 				raise Exception(f"Error while rendering template \"{str(template.name)}\" to file \"{outputFilePath}\": {str(e)}")
 			with open(outputFilePath, "w") as file:
 				file.write(renderedFile)
+			self.__postFileGenHook(outputFilePath)
+			generatedFiles.append(outputFilePath)
+		return generatedFiles
 
 	def generate(self, config: configTypes.Configuration):
-		configDict = {"config": config, "version": __version__}
+		now = datetime.now()
+		configDict = {
+			"config": config,
+			"version": __version__,
+			"date": now.strftime(timestampFormat)}
+		generatedFiles = []
 		if(self.__loopElements is None):
 			if(not self.__specialOutName is None):
 				if(TARGET_PLACEHOLDER in self.__specialOutName):
 					raise AttributeError("The value for the key \"fileName\" included a placeholder for the target name but no loop property was defined. This is an invalid combination")
-			self.injectTemplates(configDict, self.__specialOutName)
+			generatedFiles += self.injectTemplates(configDict, self.__specialOutName)
 		else:
 			if(not self.__targetConfig is None):
 				link = Parser.Link.construct(config=self.__targetConfig)
@@ -122,10 +127,12 @@ class generationElement():
 				if(not filename is None):
 					filename = filename.replace(TARGET_PLACEHOLDER, element["target"])
 
-				self.injectTemplates(configDict, filename)
+				generatedFiles += self.injectTemplates(configDict, filename)
+		return generatedFiles
 
 class Generator():
-	__pluginList = []
+	__pluginList:list[GeneratorPlugins.GeneratorPlugin] = []
+
 	def __init__(self, workspace: Parser.Workspace):
 		try:
 			workspace.requireFolder(["config", "CoreConfig", "DefaultConfig", "TemplateDir"])
@@ -146,7 +153,7 @@ class Generator():
 		filepath = workspace.GeneratorConfig
 		with open(filepath, "r") as file:
 			jsonData = json.load(file)
-		GeneratorConfig = []
+		GeneratorConfig: list[generationElement] = []
 		for i, config in enumerate(jsonData):
 			for key in mandatoryKeys:
 				if(not key in config):
@@ -179,6 +186,7 @@ class Generator():
 			if(not outputPath.exists()):
 					os.makedirs(outputPath)
 			newElement = generationElement(outputPath, parsedTemplates)
+			newElement.registerHooks(self.__callPreFileGenerationPluginHooks, self.__callPostFileGenerationPluginHooks)
 			if(TARGET_KEY in config):
 				if(not LOOP_KEY in config):
 					raise KeyError(f"If a property \"{TARGET_KEY}\" exists the \"{LOOP_KEY}\" must also exist")
@@ -197,22 +205,37 @@ class Generator():
 		for plugin in self.__pluginList:
 			plugin.preGeneration(systemConfig)
 
-	def __callPreFileGenerationPluginHooks(self, currentTemplateDict: dict, systemConfig: configTypes.Configuration):
+	def __callPreFileGenerationPluginHooks(self, currentTemplateDict: dict, systemConfig: configTypes.Configuration, file_path: Path):
 		for plugin in self.__pluginList:
-			currentTemplateDict = plugin.preFileGeneration(currentTemplateDict, systemConfig)
+			currentTemplateDict = plugin.preFileGeneration(currentTemplateDict, systemConfig, file_path)
+
+	def __callPostFileGenerationPluginHooks(self, file_path: Path):
+		for plugin in self.__pluginList:
+			plugin.postFileGeneration(file_path)
+
+	def __callPostGenerationPluginHooks(self, file_paths: list[Path]):
+		for plugin in self.__pluginList:
+			plugin.postGeneration(file_paths)
 
 	def generate(self):
+		self.__callPreGenerationPluginHooks(self.__sysConfig)
+		generatedFiles = []
 		for genConf in self.__genConfig:
-			genConf.generate(self.__sysConfig)
+			generatedFiles += genConf.generate(self.__sysConfig)
+		self.__callPostGenerationPluginHooks(generatedFiles)
 
-	def registerPlugin(self, plugin: GeneratorPlugin):
+	def registerPlugin(self, plugin: GeneratorPlugins.GeneratorPlugin):
 		self.__pluginList.append(plugin)
 
 if __name__ == "__main__":
 	args = Parser.Workspace.getReqiredArgparse().parse_args()
 	workspace = Parser.Workspace(args.WORKSPACE)
+	loggerPlugin = GeneratorPlugins.loggerPlugin()
+	sectionPlugin = GeneratorPlugins.sectionParserPlugin()
 	try:
 		myGenerator = Generator(workspace)
+		myGenerator.registerPlugin(loggerPlugin)
+		myGenerator.registerPlugin(sectionPlugin)
 		myGenerator.generate()
 	except Exception as e:
 		print(f"[ERROR] Aborting execution of DefaultConfig.py: {str(e)}")
