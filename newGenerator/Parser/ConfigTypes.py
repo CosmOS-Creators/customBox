@@ -3,6 +3,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 from typing import List, Union
 import Parser.helpers as helpers
+import Parser.AttributeTypes as AttributeTypes
 
 class Configuration(SimpleNamespace):
 	def require(self, requiredProperties : Union[List[Union[str, helpers.Link]], Union[str, helpers.Link]]):
@@ -30,7 +31,7 @@ class ConfigElement(SimpleNamespace):
 	__attributeLookup 	= {}
 	__configLookup		= None
 	link 				= None
-	def __init__(self, config: ConfigElement, attribute: dict[str, object], link: Union[str, helpers.Link]):
+	def __init__(self, config: ConfigElement, attribute: dict[str, AttributeTypes.AttributeType], link: Union[str, helpers.Link]):
 		self.id 				= None
 		self.__attributeLookup	= attribute
 		self.__configLookup		= config

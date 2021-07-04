@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import List, Union
 
 import Parser.ConfigTypes as ConfigTypes
+import Parser.AttributeTypes as AttributeTypes
 
 # helper decorator to ensure proper naming of functions
 def overrides(interface_class):
@@ -26,7 +27,7 @@ class Link():
 	def __str__(self) -> str:
 		return self.getLink()
 
-	def __eq__(self, o: object) -> bool:
+	def __eq__(self, o: Link) -> bool:
 		return o.config == self.config and o.element == self.element and o.attribute == self.attribute
 
 	def __hash__(self) -> int:
@@ -113,32 +114,32 @@ class Link():
 		else:
 			return config
 
-	def __getSubconfig(self, config):
+	def __getSubconfig(self, config: ConfigTypes.Configuration) -> ConfigTypes.Subconfig:
 		try:
 			return getattr(config, self.config)
 		except AttributeError:
 			raise AttributeError(f"Error resolving link \"{self.getLink()}\": Config has no subconfig named \"{self.config}\"")
 
-	def __getElement(self, subconfig):
+	def __getElement(self, subconfig: ConfigTypes.Subconfig) -> ConfigTypes.ConfigElement:
 		try:
 			return getattr(subconfig, self.element)
 		except AttributeError:
 			raise AttributeError(f"Error resolving link \"{self.getLink()}\": subconfig \"{self.config}\" has no element named \"{self.element}\"")
 
-	def __getAttribute(self, element):
+	def __getAttribute(self, element: ConfigTypes.ConfigElement) -> AttributeTypes.AttributeType:
 		try:
 			return getattr(element, self.attribute)
 		except AttributeError:
 			raise AttributeError(f"Error resolving link \"{self.getLink()}\": element \"{element.id}\" has no attribute named \"{self.attribute}\"")
 
-	def resolveElement(self, config: object) -> object:
+	def resolveElement(self, config: ConfigTypes.Configuration) -> ConfigTypes.ConfigElement:
 		if(self.config and self.element):
 			subconfig = self.__getSubconfig(config)
 			return self.__getElement(subconfig)
 		else:
 			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved. Either the config or the element part of the link are missing but they are mandatory for resolving an element.")
 
-	def resolveAttributeList(self, config: object) -> object:
+	def resolveAttributeList(self, config: ConfigTypes.Configuration) -> list[AttributeTypes.AttributeType]:
 		subconfig = self.__getSubconfig(config)
 		if(self.config and self.attribute):
 			attributeCollection = []
@@ -149,7 +150,7 @@ class Link():
 		else:
 			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved. Either the config or the attribute part of the link are missing but they are mandatory for resolving an attribute list.")
 
-	def resolveAttribute(self, config: object) -> object:
+	def resolveAttribute(self, config: ConfigTypes.Configuration) -> AttributeTypes.AttributeType:
 		if(self.config and self.attribute and self.element):
 			subconfig = self.__getSubconfig(config)
 			element = self.__getElement(subconfig)
@@ -157,13 +158,13 @@ class Link():
 		else:
 			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved as it is missing at least one part. All three parts of the link are mandatory for resolving an attribute value.")
 
-	def resolveSubconfig(self, config: object) -> object:
+	def resolveSubconfig(self, config: ConfigTypes.Configuration) -> ConfigTypes.Subconfig:
 		if(self.config):
 			return self.__getSubconfig(config)
 		else:
 			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved. The link is missing the config part which is mandatory for resolving subconfigs.")
 
-	def resolve(self, config: object) -> object:
+	def resolve(self, config: ConfigTypes.Configuration) -> Union[ConfigTypes.ConfigElement, list[AttributeTypes.AttributeType], AttributeTypes.AttributeType, ConfigTypes.Subconfig]:
 		if(self.config is None):
 			raise AttributeError(f"For resolving a link at least the config must be set.")
 		if(self.config and self.element and not self.attribute): # link to an element

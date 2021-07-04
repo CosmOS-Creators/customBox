@@ -362,7 +362,7 @@ class ParentReferenceType(AttributeType):
 		return valueInput
 
 	@helpers.overrides(AttributeType)
-	def getDefault(self) -> object:
+	def getDefault(self) -> None:
 		return None
 
 	@helpers.overrides(AttributeType)
