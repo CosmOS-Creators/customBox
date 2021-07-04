@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from types import SimpleNamespace
 from typing import List, Union
 import Parser.helpers as helpers
@@ -17,8 +19,9 @@ class Configuration(SimpleNamespace):
 				raise AttributeError(f"The link \"{link.getLink()}\" was listed as required but it could not be resolved: {str(e)}")
 
 class Subconfig(SimpleNamespace):
-	def __init__(self):
-		self.iterator = []
+	def __init__(self, link: Union[str, helpers.Link, None]):
+		self.iterator 	= []
+		self.link		= helpers.forceLink(link)
 
 	def __repr__(self):
 		return f"Subconfig({self.iterator})"
@@ -26,12 +29,12 @@ class Subconfig(SimpleNamespace):
 class ConfigElement(SimpleNamespace):
 	__attributeLookup 	= {}
 	__configLookup		= None
-	link 				= ""
-	def __init__(self, config, attribute, link):
-		self.id = None
+	link 				= None
+	def __init__(self, config: ConfigElement, attribute: dict[str, object], link: Union[str, helpers.Link]):
+		self.id 				= None
 		self.__attributeLookup	= attribute
 		self.__configLookup		= config
-		self.link				= link
+		self.link				= helpers.forceLink(link)
 
 	def __repr__(self):
 		return f"ConfigElement({self.id})"

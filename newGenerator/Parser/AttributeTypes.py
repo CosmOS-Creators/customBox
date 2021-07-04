@@ -1,8 +1,8 @@
-from typing import List
+from typing import List, Union
 import re
 
-from Parser.ConfigTypes import ConfigElement, Configuration, Subconfig
-from Parser.helpers import Link, forceLink, overrides, toInt
+import Parser.ConfigTypes 	as ConfigTypes
+import Parser.helpers 		as helpers
 
 LABEL_KEY 					= "label"
 TYPE_KEY 					= "type"
@@ -72,7 +72,7 @@ class AttributeType():
 	def checkValue(self, valueInput):
 		return valueInput
 
-	def link(self, objConfig: Configuration, targetConfigObject: ConfigElement, targetAttributeName: str):
+	def link(self, objConfig: ConfigTypes.Configuration, targetConfigObject: ConfigTypes.ConfigElement, targetAttributeName: str):
 		pass
 
 	def checkForForbiddenKeys(self, listOfAllowedKeys: List[str]):
@@ -120,12 +120,12 @@ class StringType(AttributeType):
 	_comparison_type 	= "string"
 	_typeSpecificKeys	= [VALIDATION_KEY]
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def __init__(self, attribute_definition: dict, globalID: str):
 		super().__init__(attribute_definition, globalID)
 		self.validation = self.checkForKey(VALIDATION_KEY, "")
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def checkValue(self, valueInput: str):
 		if(self.validation != ""):
 			try:
@@ -138,18 +138,18 @@ class StringType(AttributeType):
 				reportValidationError(f"\"{valueInput}\" does not match the validation regex \"{self.validation}\"")
 		return valueInput
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def getDefault(self) -> str:
 		return str("")
 
 class BoolType(AttributeType):
 	_comparison_type 	= "bool"
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def checkValue(self, valueInput: bool):
 		return valueInput
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def getDefault(self) -> bool:
 		return False
 
@@ -157,13 +157,13 @@ class IntType(AttributeType):
 	_comparison_type 	= "int"
 	_typeSpecificKeys	= [MIN_KEY, MAX_KEY]
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def __init__(self, attribute_definition: dict, globalID: str):
 		super().__init__(attribute_definition, globalID)
 		self.min 			= self.checkForKey(MIN_KEY, None)
 		self.max 			= self.checkForKey(MAX_KEY, None)
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def checkValue(self, valueInput: int):
 		if(not self.min is None):
 			if(valueInput < self.min):
@@ -173,14 +173,14 @@ class IntType(AttributeType):
 				reportValidationError(f"The input value ({valueInput}) is higher than the maximum value({self.min}) for this attribute")
 		return int(valueInput)
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def getDefault(self) -> int:
 		return int(0)
 
 class FloatType(IntType):
 	_comparison_type 	= "float"
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def getDefault(self) -> float:
 		return float(0)
 
@@ -189,29 +189,33 @@ class ReferenceListType(AttributeType):
 	_needs_linking		= True
 	_typeSpecificKeys	= [ELEMENTS_KEY]
 
-	@overrides(AttributeType)
-	def checkValue(self, valueInput: List[str]):
+	@helpers.overrides(AttributeType)
+	def checkValue(self, valueInput: List[Union[str, helpers.Link, ConfigTypes.ConfigElement]]):
 		# just check the syntax here as no info about any valid choices is avaliable and validation will be done in the link method
 		if(type(valueInput) is list):
 			for i, value in enumerate(valueInput):
-				if(not Link.isGlobal(value)):
-					raise ValueError(f"All elements of a reference list must be global links but element {i} ({value}) was not")
+				if(type(value) is str or type(value) is helpers.Link):
+					if(not helpers.Link.isGlobal(value)):
+						raise ValueError(f"All elements of a reference list must be global links but element {i} ({value}) was not")
+				elif(type(value) is ConfigTypes.ConfigElement):
+					if(not value.link.isValidElementLink()):
+						raise ValueError(f"Reference list for attribute \"{self.globalID}\" contained a ConfigElement object with an invalid link. The link \"{value.link.getLink()}\" cannot be used to link to an element")
 		else:
 			raise TypeError(f"Values of reference list attribute types must be of type list but found type \"{type(valueInput)}\" instead")
 		return valueInput
 
-	@overrides(AttributeType)
-	def getDefault(self) -> List[ConfigElement]:
+	@helpers.overrides(AttributeType)
+	def getDefault(self) -> List[ConfigTypes.ConfigElement]:
 		return []
 
-	@overrides(AttributeType)
-	def link(self, objConfig: Configuration, targetConfigObject: ConfigElement, targetAttributeName: str):
+	@helpers.overrides(AttributeType)
+	def link(self, objConfig: ConfigTypes.Configuration, targetConfigObject: ConfigTypes.ConfigElement, targetAttributeName: str):
 		value = getattr(targetConfigObject, targetAttributeName)
 		if(not type(value) is list):
-			raise TypeError("")
+			raise TypeError(f"Values for elements of reference list attribute types must be of type list but found type \"{type(value)}\" instead")
 		linkedTargets = []
 		for targetLink in value:
-			link = forceLink(targetLink)
+			link = helpers.forceLink(targetLink)
 			try:
 				targetElement = link.resolveElement(objConfig)
 			except AttributeError as e:
@@ -222,7 +226,7 @@ class ReferenceListType(AttributeType):
 class StringListType(AttributeType):
 	_comparison_type 	= "stringList"
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def checkValue(self, valueInput: List[str]):
 		# The only requirement here is for the value to be of type list.
 		if(type(valueInput) is list):
@@ -233,7 +237,7 @@ class StringListType(AttributeType):
 			raise TypeError(f"Values of string list attribute types must be of type list but found type \"{type(valueInput)}\" instead")
 		return valueInput
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def getDefault(self) -> List[str]:
 		return []
 
@@ -242,7 +246,7 @@ class SelectionType(AttributeType):
 	_needs_linking		= True
 	_typeSpecificKeys	= [ELEMENTS_KEY]
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def __init__(self, attribute_definition: dict, globalID: str):
 		super().__init__(attribute_definition, globalID)
 		if(ELEMENTS_KEY in attribute_definition):
@@ -257,23 +261,23 @@ class SelectionType(AttributeType):
 		else:
 			raise AttributeError(f"Property \"{ELEMENTS_KEY}\" is required for type \"{self._comparison_type}\" but was missing for attribute \"{self.globalID}\"")
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def checkValue(self, valueInput: str):
 		if(type(self.elements) is list):
 			if(not valueInput in self.elements):
 				reportValidationError(f"The input value ({valueInput}) does not match any of the specified elements ({self.elements})")
 		return valueInput
 
-	@overrides(AttributeType)
-	def getDefault(self) -> ConfigElement:
+	@helpers.overrides(AttributeType)
+	def getDefault(self) -> ConfigTypes.ConfigElement:
 		return None
 
-	@overrides(AttributeType)
-	def link(self, objConfig: Configuration, targetConfigObject: ConfigElement, targetAttributeName: str):
+	@helpers.overrides(AttributeType)
+	def link(self, objConfig: ConfigTypes.Configuration, targetConfigObject: ConfigTypes.ConfigElement, targetAttributeName: str):
 		if(self._needs_linking):
 			possibleValues = []
 			foundMatch = False
-			link = Link(self.elements)
+			link = helpers.Link(self.elements)
 			try:
 				subconfig = link.resolveSubconfig(objConfig)
 			except AttributeError as e:
@@ -298,20 +302,20 @@ class HexType(IntType):
 	_comparison_type 	= "hex"
 	_typeSpecificKeys	= [MIN_KEY, MAX_KEY]
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def checkValue(self, valueInput: str):
-		convertedInput = toInt(valueInput)
+		convertedInput = helpers.toInt(valueInput)
 		if(not self.min is None):
-			convertedMin = toInt(self.min)
+			convertedMin = helpers.toInt(self.min)
 			if(convertedInput < convertedMin):
 				reportValidationError(f"The input value ({valueInput}) is lower than the minimum value({self.min}) for this attribute")
 		if(not self.max is None):
-			convertedMax = toInt(self.max)
+			convertedMax = helpers.toInt(self.max)
 			if(convertedInput > convertedMax):
 				reportValidationError(f"The input value ({valueInput}) is higher than the maximum value({self.min}) for this attribute")
 		return convertedInput
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def getDefault(self) -> int:
 		return int(0)
 
@@ -319,12 +323,12 @@ class SliderType(IntType):
 	_comparison_type 	= "slider"
 	_typeSpecificKeys	= [MIN_KEY, MAX_KEY, STEP_KEY]
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def __init__(self, attribute_definition: dict, globalID: str):
 		super().__init__(attribute_definition, globalID)
 		self.step 			= self.checkForKey(STEP_KEY, 1)
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def checkValue(self, valueInput: int):
 		super().checkValue(valueInput)
 		if(not self.step is None):
@@ -332,7 +336,7 @@ class SliderType(IntType):
 				raise ValueError(f"The value of a slider attribute must be a multiple of {self.step} but {valueInput} is not.")
 		return valueInput
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def getDefault(self) -> float:
 		return int(0)
 
@@ -340,41 +344,41 @@ class ParentReferenceType(AttributeType):
 	_comparison_type 	= "parentReference"
 	_needs_linking		= True
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def __init__(self, attribute_definition: dict, globalID: str):
 		if(HIDDEN_KEY in attribute_definition or PLACEHOLDER_KEY in attribute_definition):
 			raise KeyError(f"Attributes of type parent reference are not allowed to contain either the \"{HIDDEN_KEY}\" nor the \"{PLACEHOLDER_KEY}\" key.")
 		super().__init__(attribute_definition, globalID)
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def checkValue(self, valueInput: List[str]):
 		# just check if it is a valid link syntax
 		try:
-			link = Link.parse(valueInput)
+			link = helpers.Link.parse(valueInput)
 		except Exception as e:
 			reportValidationError(f"Values of type parent reference must have a link valid link. But parsing the link \"{valueInput}\" threw errors: {str(e)}")
 		if(not link.config or not link.element or link.attribute):
 			reportValidationError(f"Values of type parent reference must have a link which points to another config element but \"{valueInput}\" does not.")
 		return valueInput
 
-	@overrides(AttributeType)
+	@helpers.overrides(AttributeType)
 	def getDefault(self) -> object:
 		return None
 
-	@overrides(AttributeType)
-	def link(self, objConfig: Configuration, targetConfigObject: ConfigElement, targetAttributeName: str):
+	@helpers.overrides(AttributeType)
+	def link(self, objConfig: ConfigTypes.Configuration, targetConfigObject: ConfigTypes.ConfigElement, targetAttributeName: str):
 		value = getattr(targetConfigObject, targetAttributeName)
-		link = Link(value)
+		link = helpers.forceLink(value)
 		parentElement = link.resolveElement(objConfig)
-		targetObjectLink = Link(targetConfigObject.link)
+		targetObjectLink = helpers.forceLink(targetConfigObject.link)
 
 		# add this object to the parent
 		if(hasattr(parentElement, targetObjectLink.config)):
 			temp = getattr(parentElement, targetObjectLink.config)
-			if(type(temp) is ConfigElement):
+			if(type(temp) is ConfigTypes.ConfigElement):
 				raise AttributeError(f"Error during linking the element \"{targetObjectLink.getLink()}\" to the parent element \"{link.getLink()}\": The parent already has an attribute with the name \"{targetObjectLink.config}\"")
 		else:
-			temp = Subconfig()
+			temp = ConfigTypes.Subconfig(None)
 			setattr(parentElement, targetObjectLink.config, temp)
 
 		temp.iterator.append(targetConfigObject)

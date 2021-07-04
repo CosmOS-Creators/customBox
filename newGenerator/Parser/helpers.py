@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import List, Union
 
+import Parser.ConfigTypes as ConfigTypes
 
 # helper decorator to ensure proper naming of functions
 def overrides(interface_class):
@@ -86,6 +87,9 @@ class Link():
 			return True
 		else:
 			return False
+
+	def isValidElementLink(self):
+		return (not self.config is None) and (not self.element is None)
 
 	def set(self, config: str = None, element: str = None, attribute: str = None):
 		self.config		= config
@@ -210,11 +214,17 @@ class Link():
 				raise ValueError(f"A link part is not allowed to contain a \"/\" character. But the attribute part \"{value}\" does.")
 		self.__attribute = value
 
-def forceLink(input: Union[Link, str]) -> Link:
+def forceLink(input: Union[Link, str, ConfigTypes.ConfigElement]) -> Link:
+	if(input is None):
+		return Link()
 	if(type(input) is Link):
 		return input
-	else:
+	elif(type(input) is ConfigTypes.ConfigElement):
+		return input.link
+	elif(type(input) is str):
 		return Link(input)
+	else:
+		raise TypeError(f'Inputs of type "{type(input)}" cannot be converted to a Link object')
 
 def toInt(hexValue: str):
 	return int(hexValue, 16)

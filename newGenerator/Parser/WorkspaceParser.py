@@ -5,7 +5,7 @@ from pathlib import Path
 import argparse
 import re
 
-from Parser.helpers import forceStrList
+import Parser.helpers as helpers
 
 WORKSPACE_PLACEHOLDER 	= "workspace"
 
@@ -72,7 +72,7 @@ class Workspace():
 			@createMissingDirs 	If true will create missing dirs instead of throwing an exception.
 								If false will check that the path exists and is an actual directory. If not an exception will be raised.
 		"""
-		requiredKeys = forceStrList(requiredKeys)
+		requiredKeys = helpers.forceStrList(requiredKeys)
 		for key in requiredKeys:
 			try:
 				folderPaths = getattr(self, key)
@@ -94,7 +94,7 @@ class Workspace():
 			@createMissingDirs 	If true will create missing dirs instead of throwing an exception. This will not create a file, only the directory paths.
 								If false will check that the path exists and is an actual existing file. If not an exception will be raised.
 		"""
-		requiredKeys = forceStrList(requiredKeys)
+		requiredKeys = helpers.forceStrList(requiredKeys)
 		for key in requiredKeys:
 			try:
 				filePaths = getattr(self, key)
@@ -114,7 +114,7 @@ class Workspace():
 	def require(self, requiredKeys: Union[List[str], str]):
 		""" Check that a key exists in the workspace file
 		"""
-		requiredKeys = forceStrList(requiredKeys)
+		requiredKeys = helpers.forceStrList(requiredKeys)
 		for key in requiredKeys:
 			try:
 				getattr(self, key)

@@ -34,7 +34,7 @@ class GeneratorPlugin():
 		"""
 		pass
 
-	def preFileGeneration(self, currentTemplateDict: dict):
+	def preFileGeneration(self, currentTemplateDict: dict, systemConfig: configTypes.Configuration):
 		""" called once for every file before it is generated
 		"""
 		return currentTemplateDict
@@ -190,7 +190,6 @@ class Generator():
 			if(PATTERN_KEY in config):
 				newElement.setPattern(config[PATTERN_KEY])
 
-
 			GeneratorConfig.append(newElement)
 		return GeneratorConfig
 
@@ -198,16 +197,13 @@ class Generator():
 		for plugin in self.__pluginList:
 			plugin.preGeneration(systemConfig)
 
-	def __callPreFileGenerationPluginHooks(self, currentTemplateDict: dict):
+	def __callPreFileGenerationPluginHooks(self, currentTemplateDict: dict, systemConfig: configTypes.Configuration):
 		for plugin in self.__pluginList:
-			currentTemplateDict = plugin.preFileGeneration(currentTemplateDict)
+			currentTemplateDict = plugin.preFileGeneration(currentTemplateDict, systemConfig)
 
 	def generate(self):
 		for genConf in self.__genConfig:
-			try:
-				genConf.generate(self.__sysConfig)
-			except Exception as e:
-				raise Exception(f"Failed to generate files: \n{str(e)}")
+			genConf.generate(self.__sysConfig)
 
 	def registerPlugin(self, plugin: GeneratorPlugin):
 		self.__pluginList.append(plugin)

@@ -4,11 +4,10 @@ from pathlib import Path
 from typing import Dict, List, Union, NewType
 import re
 
-from Parser import AttributeTypes
-from Parser.ConfigTypes import Configuration, Subconfig, ConfigElement
-from Parser.AttributeTypes import AttributeType
+import Parser.AttributeTypes as AttributeTypes
+import Parser.ConfigTypes as ConfigTypes
 from Parser.helpers import Link, forceLink
-from Parser.WorkspaceParser import Workspace
+import Parser.WorkspaceParser as WorkspaceParser
 
 ELEMENTS_KEY				= "elements"
 ATTRIBUTES_KEY				= "attributes"
@@ -26,7 +25,7 @@ required_json_config_keys	= [ELEMENTS_KEY, ATTRIBUTES_KEY, VERSION_KEY]
 
 # type definitions for better linting
 jsonConfigType 				= NewType('jsonConfigType', Dict[str, object])
-AttributeCollectionType 	= NewType('AttributeCollectionType', Dict[str, AttributeType])
+AttributeCollectionType 	= NewType('AttributeCollectionType', Dict[str, AttributeTypes.AttributeType])
 
 reservedConfigNames = ["require"]
 reservedElementNames = ["iterator"]
@@ -34,7 +33,7 @@ reservedAttributeNames = ["id", "populate", "link"]
 
 def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 	attributeCollection: AttributeCollectionType = {}
-	AttributesToInherit: Dict[str, AttributeType] = {}
+	AttributesToInherit: Dict[str, AttributeTypes.AttributeType] = {}
 	for configName in config:
 		for attribute in config[configName][ATTRIBUTES_KEY]:
 			currentAttribute = config[configName][ATTRIBUTES_KEY][attribute]
@@ -61,7 +60,7 @@ def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 
 	return attributeCollection
 
-def processConfig(config: dict, configName: str, completeConfig: Configuration, attributeCollection: AttributeCollectionType):
+def processConfig(config: dict, configName: str, completeConfig: ConfigTypes.Configuration, attributeCollection: AttributeCollectionType):
 	if(configName in reservedConfigNames):
 		raise Exception(f"Creating a config with the name \"{configName}\" is not permitted as \"{configName}\" is a reserved keyword")
 	for element in config[ELEMENTS_KEY]:
@@ -69,13 +68,13 @@ def processConfig(config: dict, configName: str, completeConfig: Configuration, 
 			raise Exception(f"In config \"{configName}\" is was requested to create an element with the name \"{element}\" but this name is a reserved keyword thus the creation of such an element is prohibited")
 		currentElement = config[ELEMENTS_KEY][element]
 		if(not hasattr(completeConfig, configName)):
-			currentConfig = Subconfig()
+			currentConfig = ConfigTypes.Subconfig(Link.construct(config=configName))
 			setattr(completeConfig, configName, currentConfig)
 		else:
 			currentConfig = getattr(completeConfig, configName)
 
 		link 			= Link.construct(config=configName, element=element)
-		newElement 		= ConfigElement(completeConfig, attributeCollection, link.getLink())
+		newElement 		= ConfigTypes.ConfigElement(completeConfig, attributeCollection, link)
 		setattr(currentConfig, element, newElement)
 		newElement.id 	= element # add the key of the element as an id inside the object so that it can be accessed also when iterating over the elements
 		currentConfig.iterator.append(newElement)
@@ -110,7 +109,7 @@ def processConfig(config: dict, configName: str, completeConfig: Configuration, 
 			else:
 				raise Exception(f"Invalid attribute instance formatting in \"{configName}\" config. The following property is invalid: {attributeInstance}")
 
-def resolveElementLink(globalConfig: Configuration, localConfig: Subconfig, link: Union[str, Link]):
+def resolveElementLink(globalConfig: ConfigTypes.Configuration, localConfig: ConfigTypes.Subconfig, link: Union[str, Link]):
 	link = forceLink(link)
 	if(link.isGlobal()):
 		return link.resolveElement(globalConfig)
@@ -121,7 +120,7 @@ def resolveElementLink(globalConfig: Configuration, localConfig: Subconfig, link
 			raise AttributeError(f"Configuration has no element named \"{link}\"")
 		return linkTarget
 
-def resolveAttributeLink(attributeCollection: AttributeCollectionType, localConfig: str, link: str) -> AttributeType:
+def resolveAttributeLink(attributeCollection: AttributeCollectionType, localConfig: str, link: str) -> AttributeTypes.AttributeType:
 	if(Link.isGlobal(link)):
 		try:
 			linkTarget = attributeCollection[link]
@@ -135,7 +134,7 @@ def resolveAttributeLink(attributeCollection: AttributeCollectionType, localConf
 			raise KeyError(f"Could not find a target attribute for \"{link}\" in \"{localConfig}\" config")
 	return linkTarget
 
-def linkParents(jsonConfigs: jsonConfigType, objConfigs: Configuration, attributeCollection: AttributeCollectionType):
+def linkParents(jsonConfigs: jsonConfigType, objConfigs: ConfigTypes.Configuration, attributeCollection: AttributeCollectionType):
 	for config in jsonConfigs:
 		for element in jsonConfigs[config][ELEMENTS_KEY]:
 			for attributeInstance in jsonConfigs[config][ELEMENTS_KEY][element]:
@@ -171,11 +170,11 @@ def discoverConfigFiles(configPath: Union[str,List[str]]) -> List[str]:
 	return configFiles
 
 class ConfigParser():
-	def __init__(self, workspace: Workspace):
+	def __init__(self, workspace: WorkspaceParser.Workspace):
 		workspace.requireFolder(["config"])
 		self.__workspace 	= workspace
 
-	def parse(self)  -> Configuration:
+	def parse(self)  -> ConfigTypes.Configuration:
 		configFiles = discoverConfigFiles(self.__workspace.config)
 		jsonConfigs = {}
 		configFileNames = {}
@@ -196,7 +195,7 @@ class ConfigParser():
 					raise KeyError(f"Error in config file \"{configFile}\": {str(e)}")
 				configFileNames[configCleanName] = configFile
 				jsonConfigs[configCleanName] = loaded_json_config
-		configuration = Configuration()
+		configuration = ConfigTypes.Configuration()
 
 		# make sure to load all attributes before loading all configs
 		self.__attributeCollection = processAttributes(jsonConfigs)
@@ -207,13 +206,14 @@ class ConfigParser():
 
 if __name__ == "__main__":
 	from pretty_simple_namespace import pprint, format
-	parser = Workspace.getReqiredArgparse()
+	parser = WorkspaceParser.Workspace.getReqiredArgparse()
 	args = parser.parse_args()
-	workspace = Workspace(args.WORKSPACE)
+	workspace = WorkspaceParser.Workspace(args.WORKSPACE)
 	parser = ConfigParser(workspace)
 	fullConfig = parser.parse()
 	fullConfig.require(['tasks/task_0:uniqueId'])
 	fullConfig.tasks.task_0.populate("uniqueId", 5)
+	fullConfig.cores.core_0.populate("corePrograms", [fullConfig.programs.program_0])
 	with open("ConfigDump", "w") as file:
 		file.write(format(fullConfig))
 	pprint(fullConfig)
