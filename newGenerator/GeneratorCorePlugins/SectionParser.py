@@ -5,7 +5,18 @@ import GeneratorCorePlugins as GeneratorPlugins
 from Parser.helpers 		import overrides
 from Parser.ConfigTypes		import Configuration
 
-user_group_regex = re.compile(r"\/\*\**\n.*USER SECTION \| Start.*\n.*start_name =(\S+).*\n.*\*\/\n([.\n]*)\/\*\**\n.*stop_name =(\S+).*\n.*USER SECTION \| Stop.*\n.*\*\/")
+user_group_regex = re.compile(r"\/\*\**\n.*USER SECTION \| Start.*\n.*start_name =(\S+).*\n.*\*\/\n([\n\s\S]*?)\/\*\**\n.*stop_name =(?=\1).*\n.*USER SECTION \| Stop.*\n.*\*\/")
+ForbiddenSectionNames = ["getSection"]
+
+class Sections():
+	def getSection(self, sectionID):
+		if(hasattr(self, sectionID)):
+			return getattr(self, sectionID)
+		else:
+			return ""
+
+	def __getitem__(self, key):
+		return self.getSection(key)
 
 class sectionParserPlugin(GeneratorPlugins.GeneratorPlugin):
 	@overrides(GeneratorPlugins.GeneratorPlugin)
@@ -14,9 +25,10 @@ class sectionParserPlugin(GeneratorPlugins.GeneratorPlugin):
 			with open(file_path, "r") as file:
 				fileContent = file.read()
 			user_sections = user_group_regex.findall(fileContent)
-			print(fileContent)
-			for start, userSection, end in user_sections:
-				if(start != end):
-					raise Exception(f'The user section "{start}" or "{end}" inside the file"{file_path}" was illformed. Please make sure that the user sections are properly closed and opened and not nested.')
-				print(userSection)
+			sections = Sections()
+			for sectionID, userSection in user_sections:
+				if(sectionID in ForbiddenSectionNames):
+					raise AttributeError(f'A section id with the name "{sectionID}" was requested but this ID is a reserved keyword and thus cannot be used as a section name.')
+				setattr(sections, sectionID, userSection.rstrip())
+		currentTemplateDict["sections"] = sections
 		return currentTemplateDict
