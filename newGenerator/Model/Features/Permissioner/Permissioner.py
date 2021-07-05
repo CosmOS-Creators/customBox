@@ -1,5 +1,10 @@
-class Permissioner():
+import GeneratorCorePlugins.LogicRunner as logicRunnerPlugin
+from Parser.helpers import overrides
 
+
+class PermissionerLogic(logicRunnerPlugin.logicRunner):
+
+	@overrides(logicRunnerPlugin.logicRunner)
 	def doMagic(self,config):
 		try:
 			config.require([

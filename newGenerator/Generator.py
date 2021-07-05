@@ -224,18 +224,25 @@ class Generator():
 			generatedFiles += genConf.generate(self.__sysConfig)
 		self.__callPostGenerationPluginHooks(generatedFiles)
 
-	def registerPlugin(self, plugin: GeneratorPlugins.GeneratorPlugin):
-		self.__pluginList.append(plugin)
+	def registerPlugin(self, plugin: Union[GeneratorPlugins.GeneratorPlugin, list[GeneratorPlugins.GeneratorPlugin]]):
+		if(type(plugin) is list):
+			self.__pluginList.extend(plugin)
+		elif(type(plugin) is GeneratorPlugins.GeneratorPlugin):
+			self.__pluginList.append(plugin)
+		else:
+			raise TypeError(f'Plugin registration only works with lists of plugins or single plugins. But the plugin that was passed was of type "{type(plugin)}".')
 
 if __name__ == "__main__":
-	args = Parser.Workspace.getReqiredArgparse().parse_args()
-	workspace = Parser.Workspace(args.WORKSPACE)
-	loggerPlugin = GeneratorPlugins.loggerPlugin()
-	sectionPlugin = GeneratorPlugins.sectionParserPlugin()
+	from Model import InitializerLogic, MemoryMapperLogic, PermissionerLogic
+	args 				= Parser.Workspace.getReqiredArgparse().parse_args()
+	workspace 			= Parser.Workspace(args.WORKSPACE)
+	loggerPlugin 		= GeneratorPlugins.loggerPlugin()
+	sectionPlugin 		= GeneratorPlugins.sectionParserPlugin()
+	logicRunnerPlugin 	= GeneratorPlugins.logicRunnerPlugin()
+	logicRunnerPlugin.registerLogic([InitializerLogic(), MemoryMapperLogic(), PermissionerLogic()])
 	try:
 		myGenerator = Generator(workspace)
-		myGenerator.registerPlugin(loggerPlugin)
-		myGenerator.registerPlugin(sectionPlugin)
+		myGenerator.registerPlugin([loggerPlugin, sectionPlugin, logicRunnerPlugin])
 		myGenerator.generate()
 	except Exception as e:
 		print(f"[ERROR] Aborting execution of DefaultConfig.py: {str(e)}")

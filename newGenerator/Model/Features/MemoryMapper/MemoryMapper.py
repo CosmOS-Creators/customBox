@@ -1,7 +1,10 @@
-from privateClasses.chunk import Chunk
+from Model.Features.MemoryMapper.privateClasses.chunk import Chunk
+import GeneratorCorePlugins.LogicRunner as logicRunnerPlugin
+from Parser.helpers import overrides
 
-class MemoryMapper():
+class MemoryMapperLogic(logicRunnerPlugin.logicRunner):
 
+	@overrides(logicRunnerPlugin.logicRunner)
 	def doMagic(self,config):
 		try:
 			config.require([

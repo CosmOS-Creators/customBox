@@ -1,6 +1,10 @@
-class Initializer():
+import GeneratorCorePlugins.LogicRunner as logicRunnerPlugin
+from Parser.helpers import overrides
 
-	def doMagic(self,config):
+class InitializerLogic(logicRunnerPlugin.logicRunner):
+
+	@overrides(logicRunnerPlugin.logicRunner)
+	def doMagic(self, config):
 		try:
 			config.require([
 							'buffers/:readPermissions',

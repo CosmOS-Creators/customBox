@@ -1,1 +1,1 @@
-from Cosmos.customBox.newGenerator.Model.Features.MemoryMapping.privateClasses.chunk.helpers import Link
+from Model.Features.MemoryMapper.MemoryMapper import MemoryMapperLogic
