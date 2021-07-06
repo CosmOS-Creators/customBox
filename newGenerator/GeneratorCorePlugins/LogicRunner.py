@@ -1,6 +1,7 @@
-from typing import Union
+from typing import List, Union
 import GeneratorCorePlugins.GeneratorPluginSkeleton as GeneratorPulgins
 import Parser.ConfigTypes as ConfigTypes
+from Parser.helpers import overrides
 
 class logicRunner():
 	def doMagic(self, config: ConfigTypes.Configuration):
@@ -10,9 +11,9 @@ class logicRunner():
 		pass
 
 class logicRunnerPlugin(GeneratorPulgins.GeneratorPlugin):
-	logicRunners = [] # type: list[logicRunner]
+	logicRunners = [] # type: List[logicRunner]
 
-	def registerLogic(self, logic: Union[logicRunner, list[logicRunner]]):
+	def registerLogic(self, logic: Union[logicRunner, List[logicRunner]]):
 		if(type(logic) is list):
 			self.logicRunners.extend(logic)
 		elif(type(logic) is logicRunner):
@@ -20,6 +21,7 @@ class logicRunnerPlugin(GeneratorPulgins.GeneratorPlugin):
 		else:
 			raise TypeError(f'Logic runner registration only works with lists of logic runners or single logic runners. But the logic runner that was passed was of type "{type(logic)}".')
 
+	@overrides(GeneratorPulgins.GeneratorPlugin)
 	def preGeneration(self, systemConfig: ConfigTypes.Configuration):
 		for logic in self.logicRunners:
 			logic.doMagic(systemConfig)

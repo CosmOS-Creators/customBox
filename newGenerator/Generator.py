@@ -131,7 +131,7 @@ class generationElement():
 		return generatedFiles
 
 class Generator():
-	__pluginList:list[GeneratorPlugins.GeneratorPlugin] = []
+	__pluginList:List[GeneratorPlugins.GeneratorPlugin] = []
 
 	def __init__(self, workspace: Parser.Workspace):
 		try:
@@ -153,7 +153,7 @@ class Generator():
 		filepath = workspace.GeneratorConfig
 		with open(filepath, "r") as file:
 			jsonData = json.load(file)
-		GeneratorConfig: list[generationElement] = []
+		GeneratorConfig: List[generationElement] = []
 		for i, config in enumerate(jsonData):
 			for key in mandatoryKeys:
 				if(not key in config):
@@ -213,7 +213,7 @@ class Generator():
 		for plugin in self.__pluginList:
 			plugin.postFileGeneration(file_path)
 
-	def __callPostGenerationPluginHooks(self, file_paths: list[Path]):
+	def __callPostGenerationPluginHooks(self, file_paths: List[Path]):
 		for plugin in self.__pluginList:
 			plugin.postGeneration(file_paths)
 
@@ -224,7 +224,7 @@ class Generator():
 			generatedFiles += genConf.generate(self.__sysConfig)
 		self.__callPostGenerationPluginHooks(generatedFiles)
 
-	def registerPlugin(self, plugin: Union[GeneratorPlugins.GeneratorPlugin, list[GeneratorPlugins.GeneratorPlugin]]):
+	def registerPlugin(self, plugin: Union[GeneratorPlugins.GeneratorPlugin, List[GeneratorPlugins.GeneratorPlugin]]):
 		if(type(plugin) is list):
 			self.__pluginList.extend(plugin)
 		elif(type(plugin) is GeneratorPlugins.GeneratorPlugin):
@@ -240,10 +240,10 @@ if __name__ == "__main__":
 	sectionPlugin 		= GeneratorPlugins.sectionParserPlugin()
 	logicRunnerPlugin 	= GeneratorPlugins.logicRunnerPlugin()
 	logicRunnerPlugin.registerLogic([InitializerLogic(), MemoryMapperLogic(), PermissionerLogic()])
-	try:
-		myGenerator = Generator(workspace)
-		myGenerator.registerPlugin([loggerPlugin, sectionPlugin, logicRunnerPlugin])
-		myGenerator.generate()
-	except Exception as e:
-		print(f"[ERROR] Aborting execution of DefaultConfig.py: {str(e)}")
-		exit(1)
+	# try:
+	myGenerator = Generator(workspace)
+	myGenerator.registerPlugin([loggerPlugin, sectionPlugin, logicRunnerPlugin])
+	myGenerator.generate()
+	# except Exception as e:
+	# 	print(f"[ERROR] Aborting execution of DefaultConfig.py: {str(e)}")
+	# 	exit(1)

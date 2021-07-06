@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 
 import GeneratorCorePlugins as GeneratorPlugins
 from Parser.helpers 		import overrides
@@ -10,7 +11,7 @@ class loggerPlugin(GeneratorPlugins.GeneratorPlugin):
 		print(f'Starting file generation...')
 
 	@overrides(GeneratorPlugins.GeneratorPlugin)
-	def postGeneration(self, file_paths: list[Path]):
+	def postGeneration(self, file_paths: List[Path]):
 		print(f'All files have been generated successfully:')
 		for file in file_paths:
 			print(f'\t{file.name}')

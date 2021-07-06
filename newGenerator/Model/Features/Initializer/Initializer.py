@@ -1,5 +1,7 @@
+from typing import List
 import GeneratorCorePlugins.LogicRunner as logicRunnerPlugin
 from Parser.helpers import overrides
+from Parser.ConfigTypes import ConfigElement
 
 class InitializerLogic(logicRunnerPlugin.logicRunner):
 
@@ -29,11 +31,11 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 
 		self.maxUniqueId = None
 
-		self.cores = config.cores.iterator
-		self.programs = config.programs.iterator
-		self.tasks = config.tasks.iterator
-		self.threads = config.threads.iterator
-		self.buffers = config.buffers.iterator
+		self.cores = config.cores.iterator			#type: List[ConfigElement]
+		self.programs = config.programs.iterator	#type: List[ConfigElement]
+		self.tasks = config.tasks.iterator			#type: List[ConfigElement]
+		self.threads = config.threads.iterator		#type: List[ConfigElement]
+		self.buffers = config.buffers.iterator		#type: List[ConfigElement]
 		self.cpuBitWidth = config.mcu.MCU.cpuBitWidth
 
 		self.assigneUniqueId()
@@ -42,7 +44,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 	def assigneUniqueId(self):
 		uniqueId = 0
 		for task in self.tasks:
-			task.uniqueId = uniqueId
+			task.populate("uniqueId", uniqueId)
 			uniqueId += 1
 		for thread in self.threads:
 			thread.uniqueId = uniqueId

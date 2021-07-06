@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 from Parser.ConfigTypes  import Configuration
 
 class GeneratorPlugin():
@@ -7,7 +8,7 @@ class GeneratorPlugin():
 		"""
 		pass
 
-	def postGeneration(self, file_paths: list[Path]):
+	def postGeneration(self, file_paths: List[Path]):
 		""" called once after all files have been generated
 		"""
 		pass

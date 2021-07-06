@@ -192,7 +192,7 @@ class ReferenceListType(AttributeType):
 	@helpers.overrides(AttributeType)
 	def __init__(self, attribute_definition: dict, globalID: str):
 		super().__init__(attribute_definition, globalID)
-		self.elements: list[helpers.Link] = self.checkForKey(ELEMENTS_KEY, None)
+		self.elements: List[helpers.Link] = self.checkForKey(ELEMENTS_KEY, None)
 		if(not self.elements is None):
 			if(not type(self.elements) is list):
 				raise TypeError(f'The elements property must always be a list for reference list attribute types but found type "{type(self.elements)}" instead for attribute "{self.globalID}"')

@@ -139,7 +139,7 @@ class Link():
 		else:
 			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved. Either the config or the element part of the link are missing but they are mandatory for resolving an element.")
 
-	def resolveAttributeList(self, config: ConfigTypes.Configuration) -> list[AttributeTypes.AttributeType]:
+	def resolveAttributeList(self, config: ConfigTypes.Configuration) -> List[AttributeTypes.AttributeType]:
 		subconfig = self.__getSubconfig(config)
 		if(self.config and self.attribute):
 			attributeCollection = []
@@ -164,7 +164,7 @@ class Link():
 		else:
 			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved. The link is missing the config part which is mandatory for resolving subconfigs.")
 
-	def resolve(self, config: ConfigTypes.Configuration) -> Union[ConfigTypes.ConfigElement, list[AttributeTypes.AttributeType], AttributeTypes.AttributeType, ConfigTypes.Subconfig]:
+	def resolve(self, config: ConfigTypes.Configuration) -> Union[ConfigTypes.ConfigElement, List[AttributeTypes.AttributeType], AttributeTypes.AttributeType, ConfigTypes.Subconfig]:
 		if(self.config is None):
 			raise AttributeError(f"For resolving a link at least the config must be set.")
 		if(self.config and self.element and not self.attribute): # link to an element

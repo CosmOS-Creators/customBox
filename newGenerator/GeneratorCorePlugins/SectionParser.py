@@ -30,5 +30,7 @@ class sectionParserPlugin(GeneratorPlugins.GeneratorPlugin):
 				if(sectionID in ForbiddenSectionNames):
 					raise AttributeError(f'A section id with the name "{sectionID}" was requested but this ID is a reserved keyword and thus cannot be used as a section name.')
 				setattr(sections, sectionID, userSection.rstrip())
-		currentTemplateDict["sections"] = sections
+			currentTemplateDict["sections"] = sections
+		if(not "sections" in currentTemplateDict):
+			currentTemplateDict["sections"] = Sections()
 		return currentTemplateDict
