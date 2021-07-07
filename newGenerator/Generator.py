@@ -92,7 +92,7 @@ class generationElement():
 			with open(template, "r") as template:
 				templateContent = template.read()
 			jinjaTemplate = jinja2.Template(templateContent)
-			self.__preFileGenHook(config, config["config"], outputFilePath)
+			self.__preFileGenHook(config, config["model"], outputFilePath)
 			try:
 				renderedFile = jinjaTemplate.render(config)
 			except Exception as e:
@@ -106,7 +106,7 @@ class generationElement():
 	def generate(self, config: configTypes.Configuration):
 		now = datetime.now()
 		configDict = {
-			"config": config,
+			"model": config,
 			"version": __version__,
 			"date": now.strftime(timestampFormat)}
 		generatedFiles = []
