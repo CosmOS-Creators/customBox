@@ -27,6 +27,13 @@
             "max": 2048,
             "hidden": true
         },
+        "lastToFistTaskTicks": {
+            "label": "",
+            "type": "int",
+            "min": 0,
+            "max": 2048,
+            "hidden": true
+        },
         "preemptTick": {
             "label": "Preempt period",
             "type": "int",
@@ -36,6 +43,10 @@
         },
         "core": {
             "type": "parentReference"
+        },
+        "table": {
+            "placeholder": true,
+            "type": "referenceList"
         }
     },
     "elements": {}

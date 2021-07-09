@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "attributes": {
-        "name": {
+        "routedFuncName": {
             "label": "Name of the routed function",
             "type": "string",
             "validation": "^[A-Za-z][A-Za-z0-9_]*$",

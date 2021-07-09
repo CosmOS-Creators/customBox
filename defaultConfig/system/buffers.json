@@ -52,6 +52,14 @@
         "compressedWritePermissionInverted": {
             "placeholder": true,
             "type": "referenceList"
+        },
+        "bufferId": {
+            "placeholder": true,
+            "type": "int"
+        },
+        "doubleBufferId": {
+            "placeholder": true,
+            "type": "int"
         }
     },
     "elements": {}

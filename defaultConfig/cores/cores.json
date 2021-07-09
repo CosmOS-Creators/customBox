@@ -46,6 +46,26 @@
         "corePrograms": {
             "placeholder": true,
             "type": "referenceList"
+        },
+        "coreSysJobGroups": {
+            "placeholder": true,
+            "type": "referenceList"
+        },
+        "coreSysJobHyperTick": {
+            "placeholder": true,
+            "type": "int"
+        },
+        "coreScheduler": {
+            "placeholder": true,
+            "type": "referenceList"
+        },
+        "coreNumberOfThreads": {
+            "placeholder": true,
+            "type": "int"
+        },
+        "coreNumberOfTasks": {
+            "placeholder": true,
+            "type": "int"
         }
     },
     "elements": {}
