@@ -5,13 +5,13 @@
 *********************************************************************************
 **                       DOXYGEN DOCUMENTATION INFORMATION                     **
 *****************************************************************************//**
-** @file sysDefsBuffers.h
+** @file switchSchedulerSync.h
 *********************************************************************************
-<!--                   sysDefsBuffers Unit Group Definition                   -->
+<!--               switchSchedulerSync Unit Group Definition                -->
 *********************************************************************************
-** @defgroup sysDefsBuffers_unit sysDefsBuffers Unit
-** @ingroup sysDefs_module
-** @brief sysDefsBuffers Unit
+** @defgroup switchSchedulerSync_unit switchSchedulerSync Unit
+** @ingroup switch_module
+** @brief switchSchedulerSync Unit
 ** @details lorem
 *********************************************************************************
 <!--                           Version Information                            -->
@@ -25,18 +25,18 @@
 ** @warning Modifying code can lead to unexpected behaviour of the whole system
 ** @copyright MIT License
 *********************************************************************************
-<!--               sysDefsBuffers Unit Global Group Definition                -->
+<!--             switchSchedulerSync Unit Global Group Definition           -->
 *********************************************************************************
-** @defgroup Global_sysDefsBuffers Global
-** @ingroup sysDefsBuffers_unit
-** @brief sysDefsBuffers globals
+** @defgroup Global_switchSchedulerSync Global
+** @ingroup switchSchedulerSync_unit
+** @brief switchSchedulerSync globals
 ** @details lorem
 ********************************************************************************/
 /********************************************************************************
 **                           START OF THE HEADER FILE                          **
 ********************************************************************************/
-#ifndef __SYSDEFSBUFFERS_H__
-#define __SYSDEFSBUFFERS_H__
+#ifndef __SWITCHESSCHEDULERSYNC_H__
+#define __SWITCHESSCHEDULERSYNC_H__
 /********************************************************************************
 **                         START OF C++ SUPPORT SECTION                        **
 ********************************************************************************/
@@ -47,7 +47,7 @@
 **                            Include Files | Start                            **
 ********************************************************************************/
 /* CORE interfaces */
-#include "cosmosTypesStd.h"
+#include "schedulerSync.h"
 /********************************************************************************
 **                            Include Files | Stop                             **
 ********************************************************************************/
@@ -57,25 +57,20 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Macros_sysDefsBuffers_h Macros
-  * @ingroup Global_sysDefsBuffers
+  * @defgroup Macros_switchSchedulerSync_h Macros
+  * @ingroup Global_switchSchedulerSync
   * @{
 ********************************************************************************/
-#define BUFFER_NUM (BitWidthType){{model.os.os.buffersNum}}     /* Number of initialized buffers */
-
-{% for item in model.buffers.iterator -%}
-{{"\n"}}#define BUFFER_{{item.bufferId}}_ID      (BitWidthType){{item.bufferId}}      /* Buffer {{item.name}} id */
-#define BUFFER_{{item.bufferId}}_SIZE (BitWidthType){{item.bufferSize}}      /* Buffer {{item.name}} size in bytes */
-{% if item.isDoubleBuffer -%}
-{{"\n"}}#define BUFFER_{{item.bufferId+1}}_ID      (BitWidthType){{item.bufferId+1}}      /* Buffer {{item.name}} id */
-#define BUFFER_{{item.bufferId}}_SIZE (BitWidthType){{item.bufferSize}}      /* Buffer {{item.name}} size in bytes */
+{% if model.switches.coreSync.state -%}
+    #define SCHEDULER_SYNC ON
+{% else -%}
+    #define SCHEDULER_SYNC OFF
 {% endif -%}
-{% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Macros_sysDefsBuffers_h
+  * Macros_switchSchedulerSync_h
 ********************************************************************************/
 /********************************************************************************
 **                          Macro Definitions | Stop                           **
@@ -86,15 +81,15 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Variables_sysDefsBuffers_h Variables
-  * @ingroup Global_sysDefsBuffers
+  * @defgroup Variables_switchSchedulerSync_h Variables
+  * @ingroup Global_switchSchedulerSync
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Variables_sysDefsBuffers_h
+  * Variables_switchSchedulerSync_h
 ********************************************************************************/
 /********************************************************************************
 **                              Variables | Stop                               **
@@ -105,47 +100,47 @@
 /********************************************************************************
   * DOXYGEN DEF GROUP                                                          **
   * *************************************************************************//**
-  * @defgroup Apis_sysDefsBuffers_h API's
-  * @ingroup Global_sysDefsBuffers
+  * @defgroup Apis_switchSchedulerSync_h API's
+  * @ingroup Global_switchSchedulerSync
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_sysDefsBuffers_h Getters
-  * @ingroup Apis_sysDefsBuffers_h
+  * @addtogroup Getters_switchSchedulerSync_h Getters
+  * @ingroup Apis_switchSchedulerSync_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Getters_sysDefsBuffers_h
+  * Getters_switchSchedulerSync_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_sysDefsBuffers_h Setters
-  * @ingroup Apis_sysDefsBuffers_h
+  * @addtogroup Setters_switchSchedulerSync_h Setters
+  * @ingroup Apis_switchSchedulerSync_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Setters_sysDefsBuffers_h
+  * Setters_switchSchedulerSync_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_sysDefsBuffers_h General
-  * @ingroup Apis_sysDefsBuffers_h
+  * @addtogroup General_switchSchedulerSync_h General
+  * @ingroup Apis_switchSchedulerSync_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * General_sysDefsBuffers_h
+  * General_switchSchedulerSync_h
 ********************************************************************************/
 /********************************************************************************
 **                         Function Prototypes | Stop                          **
@@ -156,41 +151,59 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_sysDefsBuffers_h Getters
-  * @ingroup Apis_sysDefsBuffers_h
+  * @addtogroup Getters_switchSchedulerSync_h Getters
+  * @ingroup Apis_switchSchedulerSync_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Getters_sysDefsBuffers_h
+  * Getters_switchSchedulerSync_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_sysDefsBuffers_h Setters
-  * @ingroup Apis_sysDefsBuffers_h
+  * @addtogroup Setters_switchSchedulerSync_h Setters
+  * @ingroup Apis_switchSchedulerSync_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Setters_sysDefsBuffers_h
+  * Setters_switchSchedulerSync_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_sysDefsBuffers_h General
-  * @ingroup Apis_sysDefsBuffers_h
+  * @addtogroup General_switchSchedulerSync_h General
+  * @ingroup Apis_switchSchedulerSync_h
   * @{
 ********************************************************************************/
+/********************************************************************************
+  * DOXYGEN DOCUMENTATION INFORMATION                                          **
+  * *************************************************************************//**
+  * @fn switchSchedulerSync_sync(CosmOS_CoreVariableType * coreVar,BitWidthType currentTick,BitWidthType currentTick)
+  *
+  * @brief Algorithm for synchronization during runtime.
+  *
+  * @param[in] CosmOS_CoreVariableType * coreVar
+  * @param[in] BitWidthType currentTick
+  * @param[in] BitWidthType syncPeriod
+  *
+  * @return BitWidthType
+********************************************************************************/
+#if ( SCHEDULER_SYNC IS_EQUAL_TO ON )
+    #define switchSchedulerSync_sync(schedulerVar, coreVar, currentTick, hyperTick) schedulerSync_sync(schedulerVar, coreVar, currentTick, hyperTick)
+#else
+    #define switchSchedulerSync_sync(schedulerVar, coreVar, currentTick, hyperTick) SCHEDULER_SYNC_STATE_ENUM__NOT_IN_SYNC
+#endif
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * General_sysDefsBuffers_h
+  * General_switchSchedulerSync_h
 ********************************************************************************/
 /********************************************************************************
 **                        Function Definitions | Stop                          **
