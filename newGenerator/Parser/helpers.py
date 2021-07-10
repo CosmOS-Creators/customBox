@@ -12,10 +12,14 @@ def overrides(interface_class):
     return overrider
 
 class Link():
-	def __init__(self, link: str = None):
+	EMPHASIZE_CONFIG	= 0
+	EMPHASIZE_ELEMENT	= 1
+	EMPHASIZE_ATTRIBUTE	= 2
+
+	def __init__(self, link: str = None, emphasize: int = EMPHASIZE_ELEMENT):
 		self.isGlobal 			= self.__isGlobal
 		if(link):
-			self.config, self.element, self.attribute = self.split(link)
+			self.config, self.element, self.attribute = self.split(link, emphasize)
 		else:
 			self.config 		= None
 			self.element		= None
@@ -34,7 +38,7 @@ class Link():
 		return hash((self.config, self.element, self.attribute))
 
 	@staticmethod
-	def split(link: str):
+	def split(link: str, emphasize: int):
 		config 		= None
 		element 	= None
 		attribute 	= None
@@ -53,7 +57,12 @@ class Link():
 				config = temp[0]
 				element = temp[1]
 			else:
-				element = temp[0]
+				if(emphasize == Link.EMPHASIZE_CONFIG):
+					config = temp[0]
+				elif(emphasize == Link.EMPHASIZE_ELEMENT):
+					element = temp[0]
+				elif(emphasize == Link.EMPHASIZE_ATTRIBUTE):
+					attribute = temp[0]
 		else:
 			raise ValueError(f"The link \"{link}\" does not have a valid format in the form of \"config/element:attribute\"")
 		if(not config):
@@ -215,7 +224,7 @@ class Link():
 				raise ValueError(f"A link part is not allowed to contain a \"/\" character. But the attribute part \"{value}\" does.")
 		self.__attribute = value
 
-def forceLink(input: Union[Link, str, ConfigTypes.ConfigElement]) -> Link:
+def forceLink(input: Union[Link, str, ConfigTypes.ConfigElement], emphasize: int = Link.EMPHASIZE_ELEMENT) -> Link:
 	if(input is None):
 		return Link()
 	if(type(input) is Link):
@@ -223,7 +232,7 @@ def forceLink(input: Union[Link, str, ConfigTypes.ConfigElement]) -> Link:
 	elif(type(input) is ConfigTypes.ConfigElement):
 		return input.link
 	elif(type(input) is str):
-		return Link(input)
+		return Link(input, emphasize)
 	else:
 		raise TypeError(f'Inputs of type "{type(input)}" cannot be converted to a Link object')
 

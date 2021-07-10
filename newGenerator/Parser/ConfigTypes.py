@@ -10,10 +10,7 @@ class Configuration(SimpleNamespace):
 		if(not type(requiredProperties) is list):
 			requiredProperties = [requiredProperties]
 		for prop in requiredProperties:
-			link = helpers.forceLink(prop)
-			if(link.element and not link.config and not link.attribute): # dirty hack for the edge case where only a config is listed
-				link.config = link.element
-				link.element = None
+			link = helpers.forceLink(prop, helpers.Link.EMPHASIZE_CONFIG)
 			try:
 				link.resolve(self)
 			except Exception as e:

@@ -82,8 +82,9 @@ def processConfig(config: dict, configName: str, completeConfig: ConfigTypes.Con
 			raise Exception(f"In config \"{configName}\" the \"{ELEMENTS_KEY}\" property is required to be a list but found {type(currentElement)}")
 		for attributeInstance in currentElement:
 			if(TARGET_KEY in attributeInstance):
-				propertyName = attributeInstance[TARGET_KEY]
-				attribute = resolveAttributeLink(attributeCollection, configName, propertyName)
+				targetLink = Link(attributeInstance[TARGET_KEY], Link.EMPHASIZE_ATTRIBUTE)
+				propertyName = targetLink.attribute
+				attribute = resolveAttributeLink(attributeCollection, configName, targetLink)
 				if(propertyName in reservedAttributeNames):
 					raise Exception(f"In config \"{configName}\" is was requested to create an attribute with the name \"{propertyName}\" but this name is a reserved keyword thus the creation of such an attribute is prohibited")
 				if(attribute.is_placeholder):
@@ -120,16 +121,17 @@ def resolveElementLink(globalConfig: ConfigTypes.Configuration, localConfig: Con
 			raise AttributeError(f"Configuration has no element named \"{link}\"")
 		return linkTarget
 
-def resolveAttributeLink(attributeCollection: AttributeCollectionType, localConfig: str, link: str) -> AttributeTypes.AttributeType:
-	if(Link.isGlobal(link)):
+def resolveAttributeLink(attributeCollection: AttributeCollectionType, localConfig: str, link: Union[str, Link]) -> AttributeTypes.AttributeType:
+	link = forceLink(link)
+	if(link.isGlobal()):
 		try:
-			linkTarget = attributeCollection[link]
+			linkTarget = attributeCollection[link.getLink()]
 		except KeyError:
 			raise KeyError(f"Could not find a target attribute for \"{link}\" in \"{localConfig}\" config")
 	else:
-		globalLink = Link.construct(config=localConfig, attribute=link).getLink()
+		link.config = localConfig
 		try:
-			linkTarget = attributeCollection[globalLink]
+			linkTarget = attributeCollection[link.getLink()]
 		except KeyError:
 			raise KeyError(f"Could not find a target attribute for \"{link}\" in \"{localConfig}\" config")
 	return linkTarget
@@ -140,7 +142,11 @@ def linkParents(jsonConfigs: jsonConfigType, objConfigs: ConfigTypes.Configurati
 			for attributeInstance in jsonConfigs[config][ELEMENTS_KEY][element]:
 				local_config = getattr(objConfigs, config)
 				element_obj = getattr(local_config, element)
-				attribTarget = attributeCollection[Link.construct(config=config, attribute=attributeInstance[TARGET_KEY]).getLink()]
+				if(Link.isGlobal(attributeInstance[TARGET_KEY])):
+					link = Link(attributeInstance[TARGET_KEY])
+				else:
+					link = Link.construct(config=config, attribute=attributeInstance[TARGET_KEY])
+				attribTarget = attributeCollection[link.getLink()]
 				if(TARGET_NAME_OVERWRITE_KEY in attributeInstance):
 					attributeName = attributeInstance[TARGET_NAME_OVERWRITE_KEY]
 				else:
