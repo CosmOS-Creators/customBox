@@ -32,7 +32,7 @@
 **                         Function Prototypes | Start                         **
 ********************************************************************************/
 /* Task in the program {{program.name}} */
-{% for task in program.tasks.iterator -%}
+{% for task in program.programTasks -%}
 {% if not task.isSysJob -%}
 {% if task.isIdle -%}
 {% else -%}
@@ -40,9 +40,9 @@ extern void {{task.name}}(void);
 {% endif -%}
 {% endif -%}
 {% endfor -%}
-{% if program.threads is defined %}
+{% if program.programThreads is defined %}
 /* Threads in the program {{program.name}} */
-{% for thread in program.threads.iterator -%}
+{% for thread in program.programThreads -%}
 {% if thread.isIdle-%}
 {% else -%}
 extern void {{thread.name}}(void);
@@ -83,14 +83,14 @@ __SEC_START(__{{program.name.upper()}}_INIT_SECTION_START)
 ********************************************************************************/
 __SEC_STOP(__{{program.name.upper()}}_INIT_SECTION_STOP)
 
-{% for task in program.tasks.iterator -%}
+{% for task in program.programTasks -%}
 {% if not task.isSysJob -%}
 {% if task.isIdle -%}
 {% else -%}
 /********************************************************************************
-** Task ID macro = TASK_{{task.taskId}}_PROGRAM_{{task.programId}}_CORE_{{task.coreId}}_ID
-** Program ID macro = PROGRAM_{{task.programId}}_CORE_{{task.coreId}}_ID
-** WCET macro = TASK_{{task.taskId}}_PROGRAM_{{task.programId}}_CORE_{{task.coreId}}_WCET
+** Task ID macro = TASK_{{task.taskId}}_PROGRAM_{{program.programId}}_CORE_{{program.core.coreId}}_ID
+** Program ID macro = PROGRAM_{{program.programId}}_CORE_{{program.core.coreId}}_ID
+** WCET macro = TASK_{{task.taskId}}_PROGRAM_{{program.programId}}_CORE_{{program.core.coreId}}_WCET
 ** Period of task in ticks = {{task.period}}
 ********************************************************************************/
 void {{task.name}}(void)
@@ -109,13 +109,13 @@ void {{task.name}}(void)
 {% endif -%}
 {% endif -%}
 {% endfor -%}
-{% if program.threads is defined %}
-{% for thread in program.threads.iterator -%}
+{% if program.programThreads is defined %}
+{% for thread in program.programThreads -%}
 {% if thread.isIdle -%}
 {% else -%}
 /********************************************************************************
-** Thread ID macro = THREAD_{{thread.threadId}}_PROGRAM_{{thread.programId}}_CORE_{{thread.coreId}}_ID
-** Program ID macro = PROGRAM_{{thread.programId}}_CORE_{{thread.coreId}}_ID
+** Thread ID macro = THREAD_{{thread.threadId}}_PROGRAM_{{program.programId}}_CORE_{{program.core.coreId}}_ID
+** Program ID macro = PROGRAM_{{program.programId}}_CORE_{{program.core.coreId}}_ID
 ********************************************************************************/
 void {{thread.name}}(void)
 {
