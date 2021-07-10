@@ -1,15 +1,7 @@
 {
     "version": "1.0.0",
     "attributes": {
-        "maxSchedulablesOnOneCore": {
-            "placeholder": true,
-            "type": "int"
-        },
-        "buffersNum": {
-            "placeholder": true,
-            "type": "int"
-        },
-        "doubleBuffersNum": {
+        "schedulableNum": {
             "placeholder": true,
             "type": "int"
         }

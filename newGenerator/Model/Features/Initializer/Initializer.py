@@ -53,16 +53,15 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 	def assigneUniqueId(self):
 		uniqueId = 0
 		for task in self.tasks:
-			task.populate("uniqueId", uniqueId)
+			task.uniqueId = uniqueId
 			uniqueId += 1
 		for thread in self.threads:
 			thread.uniqueId = uniqueId
 			uniqueId += 1
-		self.maxUniqueId = uniqueId
+		self.os.schedulableNum = uniqueId
 
 	def assigneIterativeId(self):
 		coreIterativeId = 0
-		maxSchedulablesOnOneCore = 0
 		for core in self.cores:
 			core.coreId = coreIterativeId
 			programIterativeId = 0
@@ -99,10 +98,6 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 					core.coreScheduler.append(scheduler)
 			core.coreNumberOfThreads = coreNumberOfThreads
 			core.coreNumberOfTasks = coreNumberOfTasks
-			schedulablesNumber = coreNumberOfTasks + coreNumberOfThreads
-			if (maxSchedulablesOnOneCore < schedulablesNumber):
-				maxSchedulablesOnOneCore = schedulablesNumber
-		self.os.maxSchedulablesOnOneCore = maxSchedulablesOnOneCore
 		bufferIterativeId = 0
 		doubleBufferIterativeId = 0
 		for buffer in self.buffers:

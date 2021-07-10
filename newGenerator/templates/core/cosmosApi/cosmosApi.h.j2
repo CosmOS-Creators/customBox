@@ -5,13 +5,19 @@
 *********************************************************************************
 **                       DOXYGEN DOCUMENTATION INFORMATION                     **
 *****************************************************************************//**
-** @file sysDefsSchedulables.h
+** @file cosmosApi.h
 *********************************************************************************
-<!--                 sysDefsSchedulables Unit Group Definition                -->
+<!--                     cosmosApi Module Group Definition                    -->
 *********************************************************************************
-** @defgroup sysDefsSchedulables_unit sysDefsSchedulables Unit
-** @ingroup sysDefs_module
-** @brief sysDefsSchedulables Unit
+** @defgroup cosmosApi_module cosmosApi
+** @brief cosmosApi Module
+** @details lorem
+*********************************************************************************
+<!--                      cosmosApi Unit Group Definition                     -->
+*********************************************************************************
+** @defgroup cosmosApi_unit cosmosApi Unit
+** @ingroup cosmosApi_module
+** @brief cosmosApi Unit
 ** @details lorem
 *********************************************************************************
 <!--                           Version Information                            -->
@@ -25,18 +31,18 @@
 ** @warning Modifying code can lead to unexpected behaviour of the whole system
 ** @copyright MIT License
 *********************************************************************************
-<!--             sysDefsSchedulables Unit Global Group Definition             -->
+<!--                  cosmosApi Unit Global Group Definition                  -->
 *********************************************************************************
-** @defgroup Global_sysDefsSchedulables Global
-** @ingroup sysDefsSchedulables_unit
-** @brief sysDefsSchedulables globals
+** @defgroup Global_cosmosApi Global
+** @ingroup cosmosApi_unit
+** @brief cosmosApi globals
 ** @details lorem
 ********************************************************************************/
 /********************************************************************************
 **                           START OF THE HEADER FILE                          **
 ********************************************************************************/
-#ifndef __SYSDEFSSCHEDULABLES_H__
-#define __SYSDEFSSCHEDULABLES_H__
+#ifndef __COSMOSAPI_H__
+#define __COSMOSAPI_H__
 /********************************************************************************
 **                         START OF C++ SUPPORT SECTION                        **
 ********************************************************************************/
@@ -47,7 +53,8 @@
 **                            Include Files | Start                            **
 ********************************************************************************/
 /* CORE interfaces */
-#include "cosmosTypesStd.h"
+#include "sysCalls.h"
+#include "osBoot.h"
 /********************************************************************************
 **                            Include Files | Stop                             **
 ********************************************************************************/
@@ -57,32 +64,15 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Macros_sysDefsSchedulables_h Macros
-  * @ingroup Global_sysDefsSchedulables
+  * @defgroup Macros_cosmosApi_h Macros
+  * @ingroup Global_cosmosApi
   * @{
 ********************************************************************************/
-#define SCHEDULABLE_NUM                 (BitWidthType){{model.os.schedulableNum}}        /* Maximal number of configurated schedulables on one core  */
-{{"\n"}}{% for item in model.cores.iterator -%}
-#define SCHEDULABLE_NUM_CORE_{{item.coreId}}                       (BitWidthType){{item.coreNumberOfTasks + item.coreNumberOfThreads}}        /* Number of configurated schedulables for the core {{item.coreName}} */
-{% endfor -%}
-{{"\n"}}{% for item in model.tasks.iterator -%}
-#define SCHEDULABLE_TASK_{{item.taskId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_ID              (BitWidthType){{ loop.index - 1 }}    /* Task {{item.name}} schedulable identificator */
-{% endfor -%}
-{{"\n"}}{% for item in model.threads.iterator -%}
-#define SCHEDULABLE_THREAD_{{item.threadId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_ID            (BitWidthType){{ loop.index - 1 }}   /* Thread {{item.name}} schedulable identificator */
-{% endfor -%}
-
-{{"\n"}}{% for item in model.tasks.iterator -%}
-#define SCHEDULABLE_{{item.uniqueId}}_UNIQUE_ID            (BitWidthType){{item.uniqueId}}   /* Schedulable {{item.name}} unique identificator */
-{% endfor -%}
-{% for item in model.threads.iterator -%}
-#define SCHEDULABLE_{{item.uniqueId}}_UNIQUE_ID            (BitWidthType){{item.uniqueId}}   /* Schedulable {{item.name}} unique identificator */
-{% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Macros_sysDefsSchedulables_h
+  * Macros_cosmosApi_h
 ********************************************************************************/
 /********************************************************************************
 **                          Macro Definitions | Stop                           **
@@ -93,15 +83,15 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Variables_sysDefsSchedulables_h Variables
-  * @ingroup Global_sysDefsSchedulables
+  * @defgroup Variables_cosmosApi_h Variables
+  * @ingroup Global_cosmosApi
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Variables_sysDefsSchedulables_h
+  * Variables_cosmosApi_h
 ********************************************************************************/
 /********************************************************************************
 **                              Variables | Stop                               **
@@ -112,47 +102,47 @@
 /********************************************************************************
   * DOXYGEN DEF GROUP                                                          **
   * *************************************************************************//**
-  * @defgroup Apis_sysDefsSchedulables_h API's
-  * @ingroup Global_sysDefsSchedulables
+  * @defgroup Apis_cosmosApi_h API's
+  * @ingroup Global_cosmosApi
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_sysDefsSchedulables_h Getters
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup Getters_cosmosApi_h Getters
+  * @ingroup Apis_cosmosApi_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Getters_sysDefsSchedulables_h
+  * Getters_cosmosApi_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_sysDefsSchedulables_h Setters
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup Setters_cosmosApi_h Setters
+  * @ingroup Apis_cosmosApi_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Setters_sysDefsSchedulables_h
+  * Setters_cosmosApi_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_sysDefsSchedulables_h General
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup General_cosmosApi_h General
+  * @ingroup Apis_cosmosApi_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * General_sysDefsSchedulables_h
+  * General_cosmosApi_h
 ********************************************************************************/
 /********************************************************************************
 **                         Function Prototypes | Stop                          **
@@ -163,41 +153,60 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_sysDefsSchedulables_h Getters
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup Getters_cosmosApi_h Getters
+  * @ingroup Apis_cosmosApi_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Getters_sysDefsSchedulables_h
+  * Getters_cosmosApi_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_sysDefsSchedulables_h Setters
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup Setters_cosmosApi_h Setters
+  * @ingroup Apis_cosmosApi_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Setters_sysDefsSchedulables_h
+  * Setters_cosmosApi_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_sysDefsSchedulables_h General
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup General_cosmosApi_h General
+  * @ingroup Apis_cosmosApi_h
   * @{
 ********************************************************************************/
+{% for item in model.sysCallRoutes.iterator -%}
+{% if item.userVisible and item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" -%}
+#define cosmosApi_{{item.routedFuncName}}({% for arg in item.args -%}{% if loop.index > 1 -%} ,{% endif -%}{{arg}}{% endfor -%}) ({{item.returnType}}){{item.sysCall}}(SYSCALL_{{item.routedFuncName.upper()}}{% for arg in item.args -%},{{arg}}{% endfor -%})
+{% endif -%}
+{% endfor -%}
+#define cosmosApi_boot() osBoot_boot()
+
+{% for item in model.buffers.iterator -%}
+{% if item.isDoubleBuffer -%}
+#define cosmosApi_read_doubleBuffer_{{item.name}}_instance_0(array, size) (CosmOS_BufferStateType)sysCalls_readWrite(SYSCALL_READ_BUFFER_{{item.bufferId}}_ID, array, size)
+#define cosmosApi_write_doubleBuffer_{{item.name}}_instance_0(array, size) (CosmOS_BufferStateType)sysCalls_readWrite(SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID, array, size)
+#define cosmosApi_read_doubleBuffer_{{item.name}}_instance_1(array, size) (CosmOS_BufferStateType)sysCalls_readWrite(SYSCALL_READ_BUFFER_{{item.bufferId+1}}_ID, array, size)
+#define cosmosApi_write_doubleBuffer_{{item.name}}_instance_1(array, size) (CosmOS_BufferStateType)sysCalls_readWrite(SYSCALL_WRITE_BUFFER_{{item.bufferId+1}}_ID, array, size)
+
+{% else -%}
+#define cosmosApi_read_buffer_{{item.name}}(array, size) (CosmOS_BufferStateType)sysCalls_readWrite(SYSCALL_READ_BUFFER_{{item.bufferId}}_ID, array, size)
+#define cosmosApi_write_buffer_{{item.name}}(array, size) (CosmOS_BufferStateType)sysCalls_readWrite(SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID, array, size)
+{% endif -%}
+{% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * General_sysDefsSchedulables_h
+  * General_cosmosApi_h
 ********************************************************************************/
 /********************************************************************************
 **                        Function Definitions | Stop                          **

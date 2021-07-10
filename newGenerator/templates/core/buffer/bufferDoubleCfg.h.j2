@@ -5,13 +5,13 @@
 *********************************************************************************
 **                       DOXYGEN DOCUMENTATION INFORMATION                     **
 *****************************************************************************//**
-** @file sysDefsSchedulables.h
+** @file bufferDoubleCfg.h
 *********************************************************************************
-<!--                 sysDefsSchedulables Unit Group Definition                -->
+<!--                   bufferDoubleCfg Unit Group Definition                  -->
 *********************************************************************************
-** @defgroup sysDefsSchedulables_unit sysDefsSchedulables Unit
-** @ingroup sysDefs_module
-** @brief sysDefsSchedulables Unit
+** @defgroup bufferDoubleCfg_unit bufferDoubleCfg Unit
+** @ingroup os_module
+** @brief bufferDoubleCfg Unit
 ** @details lorem
 *********************************************************************************
 <!--                           Version Information                            -->
@@ -25,18 +25,18 @@
 ** @warning Modifying code can lead to unexpected behaviour of the whole system
 ** @copyright MIT License
 *********************************************************************************
-<!--             sysDefsSchedulables Unit Global Group Definition             -->
+<!--                bufferDoubleCfg Unit Global Group Definition              -->
 *********************************************************************************
-** @defgroup Global_sysDefsSchedulables Global
-** @ingroup sysDefsSchedulables_unit
-** @brief sysDefsSchedulables globals
+** @defgroup Global_bufferDoubleCfg Global
+** @ingroup bufferDoubleCfg_unit
+** @brief bufferDoubleCfg globals
 ** @details lorem
 ********************************************************************************/
 /********************************************************************************
 **                           START OF THE HEADER FILE                          **
 ********************************************************************************/
-#ifndef __SYSDEFSSCHEDULABLES_H__
-#define __SYSDEFSSCHEDULABLES_H__
+#ifndef __BUFFERDOUBLECFG_H__
+#define __BUFFERDOUBLECFG_H__
 /********************************************************************************
 **                         START OF C++ SUPPORT SECTION                        **
 ********************************************************************************/
@@ -47,7 +47,9 @@
 **                            Include Files | Start                            **
 ********************************************************************************/
 /* CORE interfaces */
+#include "sysDefs.h"
 #include "cosmosTypesStd.h"
+#include "memoryMapping.h"
 /********************************************************************************
 **                            Include Files | Stop                             **
 ********************************************************************************/
@@ -57,32 +59,15 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Macros_sysDefsSchedulables_h Macros
-  * @ingroup Global_sysDefsSchedulables
+  * @defgroup Macros_bufferDoubleCfg_h Macros
+  * @ingroup Global_bufferDoubleCfg
   * @{
 ********************************************************************************/
-#define SCHEDULABLE_NUM                 (BitWidthType){{model.os.schedulableNum}}        /* Maximal number of configurated schedulables on one core  */
-{{"\n"}}{% for item in model.cores.iterator -%}
-#define SCHEDULABLE_NUM_CORE_{{item.coreId}}                       (BitWidthType){{item.coreNumberOfTasks + item.coreNumberOfThreads}}        /* Number of configurated schedulables for the core {{item.coreName}} */
-{% endfor -%}
-{{"\n"}}{% for item in model.tasks.iterator -%}
-#define SCHEDULABLE_TASK_{{item.taskId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_ID              (BitWidthType){{ loop.index - 1 }}    /* Task {{item.name}} schedulable identificator */
-{% endfor -%}
-{{"\n"}}{% for item in model.threads.iterator -%}
-#define SCHEDULABLE_THREAD_{{item.threadId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_ID            (BitWidthType){{ loop.index - 1 }}   /* Thread {{item.name}} schedulable identificator */
-{% endfor -%}
-
-{{"\n"}}{% for item in model.tasks.iterator -%}
-#define SCHEDULABLE_{{item.uniqueId}}_UNIQUE_ID            (BitWidthType){{item.uniqueId}}   /* Schedulable {{item.name}} unique identificator */
-{% endfor -%}
-{% for item in model.threads.iterator -%}
-#define SCHEDULABLE_{{item.uniqueId}}_UNIQUE_ID            (BitWidthType){{item.uniqueId}}   /* Schedulable {{item.name}} unique identificator */
-{% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Macros_sysDefsSchedulables_h
+  * Macros_bufferDoubleCfg_h
 ********************************************************************************/
 /********************************************************************************
 **                          Macro Definitions | Stop                           **
@@ -93,15 +78,24 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Variables_sysDefsSchedulables_h Variables
-  * @ingroup Global_sysDefsSchedulables
+  * @defgroup Variables_bufferDoubleCfg_h Variables
+  * @ingroup Global_bufferDoubleCfg
   * @{
 ********************************************************************************/
+{% for buffer in model.buffers.iterator -%}
+{% if buffer.isDoubleBuffer -%}
+extern const CosmOS_BufferDoublePairConfigurationType BuffersDoublePair{{buffer.doubleBufferId}}Cfg[BUFFER_PAIR_NUM];
+{% endif -%}
+{% endfor -%}
+
+{{"\n"}}extern const CosmOS_BufferDoubleConfigurationType BuffersDoubleCfg[BUFFER_DOUBLE_NUM];
+
+extern CosmOS_BufferDoubleVariableType BuffersDoubleVar[BUFFER_DOUBLE_NUM];
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Variables_sysDefsSchedulables_h
+  * Variables_bufferDoubleCfg_h
 ********************************************************************************/
 /********************************************************************************
 **                              Variables | Stop                               **
@@ -112,47 +106,47 @@
 /********************************************************************************
   * DOXYGEN DEF GROUP                                                          **
   * *************************************************************************//**
-  * @defgroup Apis_sysDefsSchedulables_h API's
-  * @ingroup Global_sysDefsSchedulables
+  * @defgroup Apis_bufferDoubleCfg_h API's
+  * @ingroup Global_bufferDoubleCfg
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_sysDefsSchedulables_h Getters
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup Getters_bufferDoubleCfg_h Getters
+  * @ingroup Apis_bufferDoubleCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Getters_sysDefsSchedulables_h
+  * Getters_bufferDoubleCfg_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_sysDefsSchedulables_h Setters
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup Setters_bufferDoubleCfg_h Setters
+  * @ingroup Apis_bufferDoubleCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Setters_sysDefsSchedulables_h
+  * Setters_bufferDoubleCfg_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_sysDefsSchedulables_h General
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup General_bufferDoubleCfg_h General
+  * @ingroup Apis_bufferDoubleCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * General_sysDefsSchedulables_h
+  * General_bufferDoubleCfg_h
 ********************************************************************************/
 /********************************************************************************
 **                         Function Prototypes | Stop                          **
@@ -163,41 +157,41 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_sysDefsSchedulables_h Getters
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup Getters_bufferDoubleCfg_h Getters
+  * @ingroup Apis_bufferDoubleCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Getters_sysDefsSchedulables_h
+  * Getters_bufferDoubleCfg_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_sysDefsSchedulables_h Setters
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup Setters_bufferDoubleCfg_h Setters
+  * @ingroup Apis_bufferDoubleCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Setters_sysDefsSchedulables_h
+  * Setters_bufferDoubleCfg_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_sysDefsSchedulables_h General
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup General_bufferDoubleCfg_h General
+  * @ingroup Apis_bufferDoubleCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * General_sysDefsSchedulables_h
+  * General_bufferDoubleCfg_h
 ********************************************************************************/
 /********************************************************************************
 **                        Function Definitions | Stop                          **

@@ -5,13 +5,13 @@
 *********************************************************************************
 **                       DOXYGEN DOCUMENTATION INFORMATION                     **
 *****************************************************************************//**
-** @file sysDefsSchedulables.h
+** @file coreSyncCfg.h
 *********************************************************************************
-<!--                 sysDefsSchedulables Unit Group Definition                -->
+<!--                     coreSyncCfg Unit Group Definition                    -->
 *********************************************************************************
-** @defgroup sysDefsSchedulables_unit sysDefsSchedulables Unit
-** @ingroup sysDefs_module
-** @brief sysDefsSchedulables Unit
+** @defgroup coreSyncCfg_unit coreSyncCfg Unit
+** @ingroup core_module
+** @brief coreSyncCfg Unit
 ** @details lorem
 *********************************************************************************
 <!--                           Version Information                            -->
@@ -25,18 +25,18 @@
 ** @warning Modifying code can lead to unexpected behaviour of the whole system
 ** @copyright MIT License
 *********************************************************************************
-<!--             sysDefsSchedulables Unit Global Group Definition             -->
+<!--                coreSyncCfg Unit Global Group Definition                  -->
 *********************************************************************************
-** @defgroup Global_sysDefsSchedulables Global
-** @ingroup sysDefsSchedulables_unit
-** @brief sysDefsSchedulables globals
+** @defgroup Global_coreSyncCfg Global
+** @ingroup coreSyncCfg_unit
+** @brief coreSyncCfg globals
 ** @details lorem
 ********************************************************************************/
 /********************************************************************************
 **                           START OF THE HEADER FILE                          **
 ********************************************************************************/
-#ifndef __SYSDEFSSCHEDULABLES_H__
-#define __SYSDEFSSCHEDULABLES_H__
+#ifndef __CORESYNCCFG_H__
+#define __CORESYNCCFG_H__
 /********************************************************************************
 **                         START OF C++ SUPPORT SECTION                        **
 ********************************************************************************/
@@ -47,7 +47,9 @@
 **                            Include Files | Start                            **
 ********************************************************************************/
 /* CORE interfaces */
+#include "sysDefs.h"
 #include "cosmosTypesStd.h"
+#include "memoryMapping.h"
 /********************************************************************************
 **                            Include Files | Stop                             **
 ********************************************************************************/
@@ -57,32 +59,15 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Macros_sysDefsSchedulables_h Macros
-  * @ingroup Global_sysDefsSchedulables
+  * @defgroup Macros_coreSyncCfg_h Macros
+  * @ingroup Global_coreSyncCfg
   * @{
 ********************************************************************************/
-#define SCHEDULABLE_NUM                 (BitWidthType){{model.os.schedulableNum}}        /* Maximal number of configurated schedulables on one core  */
-{{"\n"}}{% for item in model.cores.iterator -%}
-#define SCHEDULABLE_NUM_CORE_{{item.coreId}}                       (BitWidthType){{item.coreNumberOfTasks + item.coreNumberOfThreads}}        /* Number of configurated schedulables for the core {{item.coreName}} */
-{% endfor -%}
-{{"\n"}}{% for item in model.tasks.iterator -%}
-#define SCHEDULABLE_TASK_{{item.taskId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_ID              (BitWidthType){{ loop.index - 1 }}    /* Task {{item.name}} schedulable identificator */
-{% endfor -%}
-{{"\n"}}{% for item in model.threads.iterator -%}
-#define SCHEDULABLE_THREAD_{{item.threadId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_ID            (BitWidthType){{ loop.index - 1 }}   /* Thread {{item.name}} schedulable identificator */
-{% endfor -%}
-
-{{"\n"}}{% for item in model.tasks.iterator -%}
-#define SCHEDULABLE_{{item.uniqueId}}_UNIQUE_ID            (BitWidthType){{item.uniqueId}}   /* Schedulable {{item.name}} unique identificator */
-{% endfor -%}
-{% for item in model.threads.iterator -%}
-#define SCHEDULABLE_{{item.uniqueId}}_UNIQUE_ID            (BitWidthType){{item.uniqueId}}   /* Schedulable {{item.name}} unique identificator */
-{% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Macros_sysDefsSchedulables_h
+  * Macros_coreSyncCfg_h
 ********************************************************************************/
 /********************************************************************************
 **                          Macro Definitions | Stop                           **
@@ -93,15 +78,18 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Variables_sysDefsSchedulables_h Variables
-  * @ingroup Global_sysDefsSchedulables
+  * @defgroup Variables_coreSyncCfg_h Variables
+  * @ingroup Global_coreSyncCfg
   * @{
 ********************************************************************************/
+{% for item in model.cores.iterator -%}
+extern CosmOS_BarrierVariableType BarriersCore{{item.coreId}}Var[BARRIERS_NUM];
+{% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Variables_sysDefsSchedulables_h
+  * Variables_coreSyncCfg_h
 ********************************************************************************/
 /********************************************************************************
 **                              Variables | Stop                               **
@@ -112,47 +100,47 @@
 /********************************************************************************
   * DOXYGEN DEF GROUP                                                          **
   * *************************************************************************//**
-  * @defgroup Apis_sysDefsSchedulables_h API's
-  * @ingroup Global_sysDefsSchedulables
+  * @defgroup Apis_coreSyncCfg_h API's
+  * @ingroup Global_coreSyncCfg
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_sysDefsSchedulables_h Getters
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup Getters_coreSyncCfg_h Getters
+  * @ingroup Apis_coreSyncCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Getters_sysDefsSchedulables_h
+  * Getters_coreSyncCfg_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_sysDefsSchedulables_h Setters
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup Setters_coreSyncCfg_h Setters
+  * @ingroup Apis_coreSyncCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Setters_sysDefsSchedulables_h
+  * Setters_coreSyncCfg_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_sysDefsSchedulables_h General
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup General_coreSyncCfg_h General
+  * @ingroup Apis_coreSyncCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * General_sysDefsSchedulables_h
+  * General_coreSyncCfg_h
 ********************************************************************************/
 /********************************************************************************
 **                         Function Prototypes | Stop                          **
@@ -163,41 +151,41 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_sysDefsSchedulables_h Getters
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup Getters_coreSyncCfg_h Getters
+  * @ingroup Apis_coreSyncCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Getters_sysDefsSchedulables_h
+  * Getters_coreSyncCfg_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_sysDefsSchedulables_h Setters
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup Setters_coreSyncCfg_h Setters
+  * @ingroup Apis_coreSyncCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Setters_sysDefsSchedulables_h
+  * Setters_coreSyncCfg_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_sysDefsSchedulables_h General
-  * @ingroup Apis_sysDefsSchedulables_h
+  * @addtogroup General_coreSyncCfg_h General
+  * @ingroup Apis_coreSyncCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * General_sysDefsSchedulables_h
+  * General_coreSyncCfg_h
 ********************************************************************************/
 /********************************************************************************
 **                        Function Definitions | Stop                          **
