@@ -62,8 +62,8 @@
   * @{
 ********************************************************************************/
 {% for core in model.cores.iterator -%}
-#define SCHEDULETABLE_SCHEDULER_{{core.coreId}}_ELEMENT_NUM   (BitWidthType){{core.coreScheduler.table|length}}             /* Number of elements in scheduletable for core {{core.coreName}} */
 {% for scheduler in core.coreScheduler -%}
+#define SCHEDULETABLE_SCHEDULER_{{core.coreId}}_ELEMENT_NUM   (BitWidthType){{scheduler.table|length}}             /* Number of elements in scheduletable for core {{core.CoreName}} */
 {{"\n"}}{% for entry in scheduler.table -%}
 #define TASK_{{entry.task.taskId}}_SCHEDULER_{{entry.scheduler.core.coreId}}_EXECUTION_TICK_{{entry.entryId}}     (BitWidthType){{entry.executionTick}}    /* ExecutionTick */
 {% endfor -%}

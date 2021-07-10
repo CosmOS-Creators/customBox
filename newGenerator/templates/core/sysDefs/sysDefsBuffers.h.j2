@@ -65,10 +65,10 @@
 
 {% for item in model.buffers.iterator -%}
 {{"\n"}}#define BUFFER_{{item.bufferId}}_ID      (BitWidthType){{item.bufferId}}      /* Buffer {{item.name}} id */
-#define BUFFER_{{item.bufferId}}_SIZE (BitWidthType){{item.bufferSize}}      /* Buffer {{item.name}} size in bytes */
+#define BUFFER_{{item.bufferId}}_SIZE (BitWidthType){{item.size}}      /* Buffer {{item.name}} size in bytes */
 {% if item.isDoubleBuffer -%}
 {{"\n"}}#define BUFFER_{{item.bufferId+1}}_ID      (BitWidthType){{item.bufferId+1}}      /* Buffer {{item.name}} id */
-#define BUFFER_{{item.bufferId}}_SIZE (BitWidthType){{item.bufferSize}}      /* Buffer {{item.name}} size in bytes */
+#define BUFFER_{{item.bufferId+1}}_SIZE (BitWidthType){{item.size}}      /* Buffer {{item.name}} size in bytes */
 {% endif -%}
 {% endfor -%}
 /********************************************************************************

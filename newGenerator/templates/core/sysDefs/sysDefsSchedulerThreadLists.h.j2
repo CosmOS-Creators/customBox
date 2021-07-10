@@ -62,7 +62,7 @@
   * @{
 ********************************************************************************/
 {% for core in model.cores.iterator -%}
-#define SCHEDULERTHREADLIST_SCHEDULER_{{core.coreId}}_ELEMENT_NUM     (BitWidthType){{core.coreNumberOfThreads}}             /* Number of elements in threadlist for core {{core.coreName}} */
+#define SCHEDULERTHREADLIST_SCHEDULER_{{core.coreId}}_ELEMENT_NUM     (BitWidthType){{core.coreNumberOfThreads}}             /* Number of elements in threadlist for core {{core.CoreName}} */
 {% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **

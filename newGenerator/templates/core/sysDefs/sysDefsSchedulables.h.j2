@@ -63,7 +63,7 @@
 ********************************************************************************/
 #define SCHEDULABLE_NUM                 (BitWidthType){{model.os.schedulableNum}}        /* Maximal number of configurated schedulables on one core  */
 {{"\n"}}{% for item in model.cores.iterator -%}
-#define SCHEDULABLE_NUM_CORE_{{item.coreId}}                       (BitWidthType){{item.coreNumberOfTasks + item.coreNumberOfThreads}}        /* Number of configurated schedulables for the core {{item.coreName}} */
+#define SCHEDULABLE_NUM_CORE_{{item.coreId}}                       (BitWidthType){{item.coreNumberOfTasks + item.coreNumberOfThreads}}        /* Number of configurated schedulables for the core {{item.CoreName}} */
 {% endfor -%}
 {{"\n"}}{% for item in model.tasks.iterator -%}
 #define SCHEDULABLE_TASK_{{item.taskId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_ID              (BitWidthType){{ loop.index - 1 }}    /* Task {{item.name}} schedulable identificator */

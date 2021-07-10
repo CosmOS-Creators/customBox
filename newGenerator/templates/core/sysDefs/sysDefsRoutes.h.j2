@@ -73,10 +73,14 @@
 {% set ns = namespace(index=0) -%}
 
 {% for item in model.buffers.iterator -%}
-{% if not item.isDoubleBuffer -%}
 #define SYSCALL_READ_BUFFER_{{item.bufferId}}_ID (BitWidthType){{ns.index}}   /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
 {% set ns.index = ns.index + 1 -%}
 #define SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID (BitWidthType){{ns.index}}  /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
+{% set ns.index = ns.index + 1 -%}
+{% if item.isDoubleBuffer -%}
+#define SYSCALL_READ_BUFFER_{{item.bufferId+1}}_ID (BitWidthType){{ns.index}}   /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
+{% set ns.index = ns.index + 1 -%}
+#define SYSCALL_WRITE_BUFFER_{{item.bufferId+1}}_ID (BitWidthType){{ns.index}}  /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
 {% set ns.index = ns.index + 1 -%}
 {% endif -%}
 {% endfor -%}

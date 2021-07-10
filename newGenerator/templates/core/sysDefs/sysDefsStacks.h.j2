@@ -63,10 +63,10 @@
 ********************************************************************************/
 #define KERNEL_NUM                                    (BitWidthType){{model.cores.iterator|length}}    /* Number of configurated kernels */
 {% for item in model.kernels.iterator %}
-#define STACK_KERNEL_0_CORE_{{item.core.coreId}}_ID                      (BitWidthType){{ loop.index - 1 }}    /* Kernel stack for core {{item.core.coreName}} identificator */
-#define STACK_KERNEL_0_CORE_{{item.core.coreId}}_HIGH_ADDRESS            (AddressType)0x{{'%04x' % item.highAddress}}    /* Kernel stack for core {{item.core.coreName}} high address configuration */
-#define STACK_KERNEL_0_CORE_{{item.core.coreId}}_LOW_ADDRESS             (AddressType)0x{{'%04x' % item.lowAddress}}    /* Kernel stack for core {{item.core.coreName}} low address configuration */
-#define STACK_KERNEL_0_CORE_{{item.core.coreId}}_SIZE                    (BitWidthType)0x{{'%04x' % item.stackSize}}	/* Kernel stack for core {{item.core.coreName}} size configuration */
+#define STACK_KERNEL_0_CORE_{{item.core.coreId}}_ID                      (BitWidthType){{ loop.index - 1 }}    /* Kernel stack for core {{item.core.CoreName}} identificator */
+#define STACK_KERNEL_0_CORE_{{item.core.coreId}}_HIGH_ADDRESS            (AddressType)0x{{'%04x' % item.highAddress}}    /* Kernel stack for core {{item.core.CoreName}} high address configuration */
+#define STACK_KERNEL_0_CORE_{{item.core.coreId}}_LOW_ADDRESS             (AddressType)0x{{'%04x' % item.lowAddress}}    /* Kernel stack for core {{item.core.CoreName}} low address configuration */
+#define STACK_KERNEL_0_CORE_{{item.core.coreId}}_SIZE                    (BitWidthType)0x{{'%04x' % item.stackSize}}	/* Kernel stack for core {{item.core.CoreName}} size configuration */
 {% endfor -%}
 {{"\n"}}#define TASK_NUM                                      (BitWidthType){{model.tasks.iterator|length}}     /* Number of configurated tasks */
 {% for item in model.tasks.iterator %}

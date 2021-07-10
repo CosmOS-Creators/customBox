@@ -64,7 +64,7 @@
 #define SCHEDULER_NUM                           (BitWidthType){{model.cores.iterator|length}}                 /* Number of configurated schedulers      */
 {% for item in model.cores.iterator %}
 {% for scheduler in item.coreScheduler -%}
-#define SCHEDULER_CORE_{{item.coreId}}_ID                     (BitWidthType){{item.coreId}}        /* Scheduler for core {{item.name}} identificator     */
+#define SCHEDULER_CORE_{{item.coreId}}_ID                     (BitWidthType){{item.coreId}}        /* Scheduler for core {{item.CoreName}} identificator     */
 #define HYPERTICK_SCHEDULER_{{item.coreId}}                   (BitWidthType){{scheduler.hyperTick}}        /* HyperTick for scheduler {{item.coreId}} in ticks   */
 #define PREEMPTTICK_SCHEDULER_{{item.coreId}}                   (BitWidthType){{scheduler.preemptTick}}        /* PreemptTick for scheduler {{item.coreId}} in ticks   */
 #define LAST_TO_FIRST_TASK_TICK_SCHEDULER_{{item.coreId}}     (BitWidthType){{scheduler.lastToFistTaskTicks}}        /* Last to first task for scheduler {{item.coreId}} in ticks */

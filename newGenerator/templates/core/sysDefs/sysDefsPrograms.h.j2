@@ -62,7 +62,7 @@
   * @{
 ********************************************************************************/
 {% for item in model.cores.iterator -%}
-#define PROGRAM_CORE_{{item.coreId}}_NUM      (BitWidthType){{item.corePrograms|length}}    /* Number of configurated programs for core {{item.coreName}} */
+#define PROGRAM_CORE_{{item.coreId}}_NUM      (BitWidthType){{item.corePrograms|length}}    /* Number of configurated programs for core {{item.CoreName}} */
 {% endfor -%}
 {% for item in model.programs.iterator %}
 #define PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_ID     (BitWidthType){{item.programId}}    /* Program {{item.name}} identificator */
