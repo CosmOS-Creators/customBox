@@ -25,7 +25,7 @@ mandatoryKeys = [TEMPLATES_KEY, OUTPUT_DIR_KEY]
 
 timestampFormat = "%Y-%m-%d"
 
-__version__ = "0.0.1"
+__version__ = "2.0.0"
 
 class generationElement():
 	__outputPath 		= ""
