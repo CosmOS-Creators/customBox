@@ -1,5 +1,5 @@
 from typing import List
-import GeneratorCorePlugins.LogicRunner as logicRunnerPlugin
+import Generator.GeneratorCorePlugins.LogicRunner as logicRunnerPlugin
 from Parser.helpers import overrides
 from Parser.ConfigTypes import ConfigElement
 

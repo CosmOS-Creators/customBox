@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List
 
-import GeneratorCorePlugins as GeneratorPlugins
+import Generator.GeneratorCorePlugins as GeneratorPlugins
 from Parser.helpers 		import overrides
 from Parser.ConfigTypes		import Configuration
 
@@ -22,5 +22,6 @@ class loggerPlugin(GeneratorPlugins.GeneratorPlugin):
 		return currentTemplateDict
 
 	@overrides(GeneratorPlugins.GeneratorPlugin)
-	def postFileGeneration(self, file_path: Path):
+	def postFileGeneration(self, file_path: Path, file_content: str):
 		print(f'File generated successfully: {file_path}')
+		return True

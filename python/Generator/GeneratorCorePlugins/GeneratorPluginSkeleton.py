@@ -18,7 +18,9 @@ class GeneratorPlugin():
 		"""
 		return currentTemplateDict
 
-	def postFileGeneration(self, file_path: Path):
-		""" called once for every file after it is generated
+	def postFileGeneration(self, file_path: Path, file_content: str):
+		""" Called once for every file after the template was populated.
+			If this hook returns false the file will not be stored in the output folder.
+			If this hook returns true the output file will be generated normally.
 		"""
-		pass
+		return True

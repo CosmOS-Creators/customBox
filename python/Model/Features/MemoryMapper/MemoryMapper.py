@@ -1,5 +1,5 @@
 from Model.Features.MemoryMapper.privateClasses.chunk import Chunk
-import GeneratorCorePlugins.LogicRunner as logicRunnerPlugin
+import Generator.GeneratorCorePlugins.LogicRunner as logicRunnerPlugin
 from Parser.helpers import overrides
 
 class MemoryMapperLogic(logicRunnerPlugin.logicRunner):

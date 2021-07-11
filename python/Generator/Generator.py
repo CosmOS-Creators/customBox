@@ -5,9 +5,9 @@ from datetime 	import datetime
 from pathlib 	import Path
 from typing 	import Dict, List, Union
 import Parser
-import Parser.helpers 		as helpers
-import Parser.ConfigTypes 	as configTypes
-import GeneratorCorePlugins as GeneratorPlugins
+import Parser.helpers 					as helpers
+import Parser.ConfigTypes 				as configTypes
+import Generator.GeneratorCorePlugins 	as GeneratorPlugins
 
 templateExtension = ".j2"
 
@@ -92,14 +92,18 @@ class generationElement():
 			with open(template, "r") as template:
 				templateContent = template.read()
 			jinjaTemplate = jinja2.Template(templateContent)
-			self.__preFileGenHook(config, config["model"], outputFilePath)
+			if(self.__preFileGenHook):
+				self.__preFileGenHook(config, config["model"], outputFilePath)
 			try:
 				renderedFile = jinjaTemplate.render(config)
 			except Exception as e:
 				raise Exception(f"Error while rendering template \"{str(template.name)}\" to file \"{outputFilePath}\": {str(e)}")
-			with open(outputFilePath, "w") as file:
-				file.write(renderedFile)
-			self.__postFileGenHook(outputFilePath)
+			generateFile = True
+			if(self.__postFileGenHook):
+				generateFile = self.__postFileGenHook(outputFilePath, renderedFile)
+			if(generateFile == True):
+				with open(outputFilePath, "w") as file:
+					file.write(renderedFile)
 			generatedFiles.append(outputFilePath)
 		return generatedFiles
 
@@ -209,9 +213,11 @@ class Generator():
 		for plugin in self.__pluginList:
 			currentTemplateDict = plugin.preFileGeneration(currentTemplateDict, systemConfig, file_path)
 
-	def __callPostFileGenerationPluginHooks(self, file_path: Path):
+	def __callPostFileGenerationPluginHooks(self, file_path: Path, file_content: str):
+		fileShouldBeGenerated = True
 		for plugin in self.__pluginList:
-			plugin.postFileGeneration(file_path)
+			fileShouldBeGenerated &= plugin.postFileGeneration(file_path, file_content)
+		return fileShouldBeGenerated
 
 	def __callPostGenerationPluginHooks(self, file_paths: List[Path]):
 		for plugin in self.__pluginList:
@@ -233,16 +239,10 @@ class Generator():
 			raise TypeError(f'Plugin registration only works with lists of plugins or single plugins. But the plugin that was passed was of type "{type(plugin)}".')
 
 if __name__ == "__main__":
-	from Model import InitializerLogic, MemoryMapperLogic, PermissionerLogic
 	args 				= Parser.Workspace.getReqiredArgparse().parse_args()
 	workspace 			= Parser.Workspace(args.WORKSPACE)
-	loggerPlugin 		= GeneratorPlugins.loggerPlugin()
-	sectionPlugin 		= GeneratorPlugins.sectionParserPlugin()
-	logicRunnerPlugin 	= GeneratorPlugins.logicRunnerPlugin()
-	logicRunnerPlugin.registerLogic([InitializerLogic(), MemoryMapperLogic(), PermissionerLogic()])
 	# try:
 	myGenerator = Generator(workspace)
-	myGenerator.registerPlugin([loggerPlugin, sectionPlugin, logicRunnerPlugin])
 	myGenerator.generate()
 	# except Exception as e:
 	# 	print(f"[ERROR] Aborting execution of DefaultConfig.py: {str(e)}")

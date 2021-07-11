@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 
-import GeneratorCorePlugins as GeneratorPlugins
+import Generator.GeneratorCorePlugins as GeneratorPlugins
 from Parser.helpers 		import overrides
 from Parser.ConfigTypes		import Configuration
 
