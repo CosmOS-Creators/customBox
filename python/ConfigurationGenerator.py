@@ -10,10 +10,12 @@ if __name__ == "__main__":
 	loggerPlugin 		= GeneratorPlugins.loggerPlugin()
 	sectionPlugin 		= GeneratorPlugins.sectionParserPlugin()
 	logicRunnerPlugin 	= GeneratorPlugins.logicRunnerPlugin()
+	FileCleaner 		= GeneratorPlugins.fileCleanerPlugin([workspace.ApplicationGenDir, workspace.CoreGeneratedDir])
+
 	logicRunnerPlugin.registerLogic([InitializerLogic(), MemoryMapperLogic(), PermissionerLogic()])
 	# try:
 	myGenerator = FileGenerator.Generator(workspace)
-	myGenerator.registerPlugin([loggerPlugin, sectionPlugin, logicRunnerPlugin])
+	myGenerator.registerPlugin([loggerPlugin, sectionPlugin, logicRunnerPlugin, FileCleaner])
 	myGenerator.generate()
 	# except Exception as e:
 	# 	print(f"[ERROR] Aborting execution of DefaultConfig.py: {str(e)}")
