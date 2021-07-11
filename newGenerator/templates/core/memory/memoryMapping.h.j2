@@ -91,7 +91,7 @@
     #define __UNMAPPED__SECTION_START
     #define __UNMAPPED__SECTION_STOP
 {% for item in model.osPartitions.iterator %}
-    #define __OS_{{item.name.upper()}}_SECTION        __attribute__((section(".os_{{item.name}}")))
+    #define __OS_{{item.name.upper()}}_SECTION
     #define __OS_{{item.name.upper()}}_SECTION_START
     #define __OS_{{item.name.upper()}}_SECTION_STOP
 {% endfor -%}
