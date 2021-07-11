@@ -73,9 +73,9 @@
   * @{
 ********************************************************************************/
 /* @cond S */
-__SEC_START(__OS_CONST_SECTION_START)
+__SEC_START(__OS_CONSTS_SECTION_START)
 /* @endcond*/
-const unsigned char SchedulableIdToBitLock[((SCHEDULABLE_NUM/(sizeof(BitWidthType)*8)) + 1)*(sizeof(BitWidthType)*8)] __OS_CONST_SECTION
+const unsigned char SchedulableIdToBitLock[((SCHEDULABLE_NUM/(sizeof(BitWidthType)*8)) + 1)*(sizeof(BitWidthType)*8)] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 {% for iterator in range((model.os.os.schedulableNum/model.mcu.MCU.cpuBitWidth)|int +1) -%}
@@ -84,7 +84,7 @@ IS_INITIALIZED_TO
 };
 {{"\n"}}
 {% for item in model.buffers.iterator -%}
-const BitWidthType BitLockBuffer{{item.bufferId}}ReadCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONST_SECTION
+const BitWidthType BitLockBuffer{{item.bufferId}}ReadCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in item.compressedReadPermission -%}
@@ -92,7 +92,7 @@ IS_INITIALIZED_TO
 {% endfor -%}
 };
 {% if item.isDoubleBuffer -%}
-const BitWidthType BitLockBuffer{{item.bufferId+1}}ReadCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONST_SECTION
+const BitWidthType BitLockBuffer{{item.bufferId+1}}ReadCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in item.compressedReadPermission -%}
@@ -103,7 +103,7 @@ IS_INITIALIZED_TO
 {% endfor -%}
 {{"\n"}}
 {% for item in model.buffers.iterator -%}
-const BitWidthType BitLockBuffer{{item.bufferId}}WriteCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONST_SECTION
+const BitWidthType BitLockBuffer{{item.bufferId}}WriteCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in item.compressedWritePermission -%}
@@ -111,7 +111,7 @@ IS_INITIALIZED_TO
 {% endfor -%}
 };
 {% if item.isDoubleBuffer -%}
-const BitWidthType BitLockBuffer{{item.bufferId+1}}WriteCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONST_SECTION
+const BitWidthType BitLockBuffer{{item.bufferId+1}}WriteCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in item.compressedWritePermission -%}
@@ -122,7 +122,7 @@ IS_INITIALIZED_TO
 {% endfor -%}
 {{"\n"}}
 {% for item in model.buffers.iterator -%}
-const BitWidthType BitLockBuffer{{item.bufferId}}ReadCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONST_SECTION
+const BitWidthType BitLockBuffer{{item.bufferId}}ReadCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in item.compressedReadPermissionInverted -%}
@@ -130,7 +130,7 @@ IS_INITIALIZED_TO
 {% endfor -%}
 };
 {% if item.isDoubleBuffer -%}
-const BitWidthType BitLockBuffer{{item.bufferId+1}}ReadCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONST_SECTION
+const BitWidthType BitLockBuffer{{item.bufferId+1}}ReadCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in item.compressedReadPermissionInverted -%}
@@ -141,7 +141,7 @@ IS_INITIALIZED_TO
 {% endfor -%}
 {{"\n"}}
 {% for item in model.buffers.iterator -%}
-const BitWidthType BitLockBuffer{{item.bufferId}}WriteCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONST_SECTION
+const BitWidthType BitLockBuffer{{item.bufferId}}WriteCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in item.compressedWritePermissionInverted -%}
@@ -149,7 +149,7 @@ IS_INITIALIZED_TO
 {% endfor -%}
 };
 {% if item.isDoubleBuffer -%}
-const BitWidthType BitLockBuffer{{item.bufferId+1}}WriteCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONST_SECTION
+const BitWidthType BitLockBuffer{{item.bufferId+1}}WriteCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in item.compressedWritePermissionInverted -%}
@@ -160,14 +160,14 @@ IS_INITIALIZED_TO
 {% endfor -%}
 {{"\n"}}
 {% for item in model.buffers.iterator -%}
-const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}ReadCfgConst __OS_CONST_SECTION
+const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}ReadCfgConst __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 	BitLockBuffer{{item.bufferId}}ReadCfgConst,
 	BitLockBuffer{{item.bufferId}}ReadCfgInvertedConst,
 };
 {% if item.isDoubleBuffer -%}
-const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId+1}}ReadCfgConst __OS_CONST_SECTION
+const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId+1}}ReadCfgConst __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 	BitLockBuffer{{item.bufferId+1}}ReadCfgConst,
@@ -177,14 +177,14 @@ IS_INITIALIZED_TO
 {% endfor %}
 {{"\n"}}
 {% for item in model.buffers.iterator -%}
-const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}WriteCfgConst __OS_CONST_SECTION
+const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}WriteCfgConst __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 	BitLockBuffer{{item.bufferId}}WriteCfgConst,
 	BitLockBuffer{{item.bufferId}}WriteCfgInvertedConst,
 };
 {% if item.isDoubleBuffer -%}
-const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId+1}}WriteCfgConst __OS_CONST_SECTION
+const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId+1}}WriteCfgConst __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 	BitLockBuffer{{item.bufferId+1}}WriteCfgConst,
@@ -193,7 +193,7 @@ IS_INITIALIZED_TO
 {% endif -%}
 {% endfor -%}
 /* @cond S */
-__SEC_STOP(__OS_CONST_SECTION_STOP)
+__SEC_STOP(__OS_CONSTS_SECTION_STOP)
 /* @endcond*/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **

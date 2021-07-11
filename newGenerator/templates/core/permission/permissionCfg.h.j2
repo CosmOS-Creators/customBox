@@ -85,11 +85,11 @@
 extern const unsigned char SchedulableIdToBitLock[((SCHEDULABLE_NUM/(sizeof(BitWidthType)*8)) + 1)*(sizeof(BitWidthType)*8)];
 
 {% for item in model.buffers.iterator -%}
-extern const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}ReadCfgConst[CORE_NUM];
-extern const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}WriteCfgConst[CORE_NUM];
+extern const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}ReadCfgConst;
+extern const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}WriteCfgConst;
 {% if item.isDoubleBuffer -%}
-extern const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId+1}}ReadCfgConst[CORE_NUM];
-extern const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId+1}}WriteCfgConst[CORE_NUM];
+extern const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId+1}}ReadCfgConst;
+extern const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId+1}}WriteCfgConst;
 {% endif -%}
 {% endfor -%}
 /********************************************************************************

@@ -56,10 +56,10 @@
   * @{
 ********************************************************************************/
 /* @cond S */
-__SEC_START(__OS_CONST_SECTION_START)
+__SEC_START(__OS_CONSTS_SECTION_START)
 /* @endcond*/
 {% for item in model.cores.iterator -%}
-const CosmOS_ScheduleTableConfigurationType ScheduleTableScheduler{{item.coreId}}CfgConst[SCHEDULETABLE_SCHEDULER_{{item.coreId}}_ELEMENT_NUM] __OS_CONST_SECTION
+const CosmOS_ScheduleTableConfigurationType ScheduleTableScheduler{{item.coreId}}CfgConst[SCHEDULETABLE_SCHEDULER_{{item.coreId}}_ELEMENT_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 {% for scheduler in item.coreScheduler -%}

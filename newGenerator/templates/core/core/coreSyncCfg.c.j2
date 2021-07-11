@@ -55,10 +55,10 @@
   * @{
 ********************************************************************************/
 /* @cond S */
-__SEC_START(__OS_VAR_SECTION_START)
+__SEC_START(__OS_VARS_SECTION_START)
 /* @endcond*/
 {% for item in model.cores.iterator -%}
-CosmOS_BarrierVariableType BarriersCore{{item.coreId}}Var[BARRIERS_NUM] __OS_VAR_SECTION
+CosmOS_BarrierVariableType BarriersCore{{item.coreId}}Var[BARRIERS_NUM] __OS_VARS_SECTION
 IS_INITIALIZED_TO
 {
     {                 /* BarriersCore{{item.coreId}}Var[OS_INIT_ID]                     */
@@ -76,7 +76,7 @@ IS_INITIALIZED_TO
 };
 {% endfor -%}
 /* @cond S */
-__SEC_STOP(__OS_VAR_SECTION_STOP)
+__SEC_STOP(__OS_VARS_SECTION_STOP)
 /* @endcond*/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
