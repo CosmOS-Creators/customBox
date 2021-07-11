@@ -47,6 +47,7 @@ class generationElement():
 		Link = Parser.Link(loopConfigTarget)
 		self.__loopElements = Link.resolve(config)
 		self.__targetConfig = Link.config
+		return len(self.__loopElements)
 
 	def setOutName(self, name: str):
 		self.__specialOutName = name
@@ -138,6 +139,7 @@ class Generator():
 	__pluginList:List[GeneratorPlugins.GeneratorPlugin] = []
 
 	def __init__(self, workspace: Parser.Workspace):
+		self.total_num_generated_files = 0
 		try:
 			workspace.requireFolder(["config", "CoreConfig", "DefaultConfig", "TemplateDir"])
 			workspace.requireFile(["GeneratorConfig"])
@@ -183,6 +185,7 @@ class Generator():
 					pattern = Path(template).stem + '*' + templateExtension
 					for file in testpath.rglob(pattern):
 						parsedTemplates.append(file)
+			self.total_num_generated_files += len(parsedTemplates)
 			try:
 				outputPath = Path(workspace.resolvePath(config[OUTPUT_DIR_KEY]))
 			except TypeError as e:
@@ -196,7 +199,7 @@ class Generator():
 					raise KeyError(f"If a property \"{TARGET_KEY}\" exists the \"{LOOP_KEY}\" must also exist")
 				newElement.setTargetName(config[TARGET_KEY])
 			if(LOOP_KEY in config):
-				newElement.addLoop(config[LOOP_KEY], SysConfig)
+				self.total_num_generated_files += newElement.addLoop(config[LOOP_KEY], SysConfig)
 			if(FILE_NAME_KEY in config):
 				newElement.setOutName(config[FILE_NAME_KEY])
 			if(PATTERN_KEY in config):
@@ -205,9 +208,9 @@ class Generator():
 			GeneratorConfig.append(newElement)
 		return GeneratorConfig
 
-	def __callPreGenerationPluginHooks(self, systemConfig: configTypes.Configuration):
+	def __callPreGenerationPluginHooks(self, systemConfig: configTypes.Configuration, num_of_files: int):
 		for plugin in self.__pluginList:
-			plugin.preGeneration(systemConfig)
+			plugin.preGeneration(systemConfig, num_of_files)
 
 	def __callPreFileGenerationPluginHooks(self, currentTemplateDict: dict, systemConfig: configTypes.Configuration, file_path: Path):
 		for plugin in self.__pluginList:
@@ -224,7 +227,7 @@ class Generator():
 			plugin.postGeneration(file_paths)
 
 	def generate(self):
-		self.__callPreGenerationPluginHooks(self.__sysConfig)
+		self.__callPreGenerationPluginHooks(self.__sysConfig, self.total_num_generated_files)
 		generatedFiles = []
 		for genConf in self.__genConfig:
 			generatedFiles += genConf.generate(self.__sysConfig)

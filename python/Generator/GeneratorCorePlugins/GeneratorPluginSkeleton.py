@@ -3,7 +3,7 @@ from typing import List
 from Parser.ConfigTypes  import Configuration
 
 class GeneratorPlugin():
-	def preGeneration(self, systemConfig: Configuration):
+	def preGeneration(self, systemConfig: Configuration, num_of_files: int):
 		""" called once after parsing of inputs is finished
 		"""
 		pass

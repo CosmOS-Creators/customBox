@@ -22,6 +22,6 @@ class logicRunnerPlugin(GeneratorPlugins.GeneratorPlugin):
 			raise TypeError(f'Logic runner registration only works with lists of logic runners or single logic runners. But the logic runner that was passed was of type "{type(logic)}".')
 
 	@overrides(GeneratorPlugins.GeneratorPlugin)
-	def preGeneration(self, systemConfig: ConfigTypes.Configuration):
+	def preGeneration(self, systemConfig: ConfigTypes.Configuration, num_of_files: int):
 		for logic in self.logicRunners:
 			logic.doMagic(systemConfig)
