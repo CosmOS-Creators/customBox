@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 
-import Generator.GeneratorCorePlugins as GeneratorPlugins
+import Generator.GeneratorPluginSkeleton as PluginSkeleton
 from Parser.helpers 		import overrides
 from Parser.ConfigTypes		import Configuration
 
@@ -18,8 +18,8 @@ class Sections():
 	def __getitem__(self, key):
 		return self.getSection(key)
 
-class sectionParserPlugin(GeneratorPlugins.GeneratorPlugin):
-	@overrides(GeneratorPlugins.GeneratorPlugin)
+class sectionParserPlugin(PluginSkeleton.GeneratorPlugin):
+	@overrides(PluginSkeleton.GeneratorPlugin)
 	def preFileGeneration(self, currentTemplateDict: dict, systemConfig: Configuration, file_path: Path):
 		if(file_path.exists()):
 			with open(file_path, "r") as file:

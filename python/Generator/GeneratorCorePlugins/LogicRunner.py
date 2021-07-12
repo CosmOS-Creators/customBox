@@ -1,5 +1,5 @@
 from typing import List, Union
-import Generator.GeneratorCorePlugins as GeneratorPlugins
+import Generator.GeneratorPluginSkeleton as PluginSkeleton
 import Parser.ConfigTypes as ConfigTypes
 from Parser.helpers import overrides
 
@@ -10,7 +10,7 @@ class logicRunner():
 		"""
 		pass
 
-class logicRunnerPlugin(GeneratorPlugins.GeneratorPlugin):
+class logicRunnerPlugin(PluginSkeleton.GeneratorPlugin):
 	logicRunners = [] # type: List[logicRunner]
 
 	def registerLogic(self, logic: Union[logicRunner, List[logicRunner]]):
@@ -21,7 +21,7 @@ class logicRunnerPlugin(GeneratorPlugins.GeneratorPlugin):
 		else:
 			raise TypeError(f'Logic runner registration only works with lists of logic runners or single logic runners. But the logic runner that was passed was of type "{type(logic)}".')
 
-	@overrides(GeneratorPlugins.GeneratorPlugin)
+	@overrides(PluginSkeleton.GeneratorPlugin)
 	def preGeneration(self, systemConfig: ConfigTypes.Configuration, num_of_files: int):
 		for logic in self.logicRunners:
 			logic.doMagic(systemConfig)

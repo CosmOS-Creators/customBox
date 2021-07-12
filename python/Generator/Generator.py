@@ -1,13 +1,12 @@
 import json
 import os
 import jinja2
-from datetime 	import datetime
 from pathlib 	import Path
 from typing 	import Dict, List, Union
 import Parser
-import Parser.helpers 					as helpers
-import Parser.ConfigTypes 				as configTypes
-import Generator.GeneratorCorePlugins 	as GeneratorPlugins
+import Parser.helpers 					 as helpers
+import Parser.ConfigTypes 				 as configTypes
+import Generator.GeneratorPluginSkeleton as GeneratorPlugins
 
 templateExtension = ".j2"
 
@@ -22,8 +21,6 @@ TARGET_PLACEHOLDER		= "{target}"
 TEMPLATE_PLACEHOLDER	= "{template}"
 
 mandatoryKeys = [TEMPLATES_KEY, OUTPUT_DIR_KEY]
-
-timestampFormat = "%Y-%m-%d"
 
 __version__ = "2.0.0"
 
@@ -109,11 +106,10 @@ class generationElement():
 		return generatedFiles
 
 	def generate(self, config: configTypes.Configuration):
-		now = datetime.now()
 		configDict = {
 			"model": config,
-			"version": __version__,
-			"date": now.strftime(timestampFormat)}
+			"version": __version__
+			}
 		generatedFiles = []
 		if(self.__loopElements is None):
 			if(not self.__specialOutName is None):
@@ -244,5 +240,5 @@ class Generator():
 if __name__ == "__main__":
 	args 				= Parser.Workspace.getReqiredArgparse().parse_args()
 	workspace 			= Parser.Workspace(args.WORKSPACE)
-	myGenerator = Generator(workspace)
+	myGenerator 		= Generator(workspace)
 	myGenerator.generate()

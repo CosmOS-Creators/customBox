@@ -3,16 +3,16 @@ from pathlib import Path
 from typing import List
 from tqdm import tqdm
 
-import Generator.GeneratorCorePlugins as GeneratorPlugins
+import Generator.GeneratorPluginSkeleton as PluginSkeleton
 from Parser.helpers 		import overrides
 
-class fileCleanerPlugin(GeneratorPlugins.GeneratorPlugin):
+class fileCleanerPlugin(PluginSkeleton.GeneratorPlugin):
 	def __init__(self, outputPaths: List[str]):
 		self.__output_paths = []
 		for item in outputPaths:
 			self.__output_paths.append(Path(item))
 
-	@overrides(GeneratorPlugins.GeneratorPlugin)
+	@overrides(PluginSkeleton.GeneratorPlugin)
 	def postGeneration(self, file_paths: List[Path]):
 		fileList = []
 		for out_path in self.__output_paths:
