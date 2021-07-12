@@ -27,9 +27,9 @@ required_json_config_keys	= [ELEMENTS_KEY, ATTRIBUTES_KEY, VERSION_KEY]
 jsonConfigType 				= NewType('jsonConfigType', Dict[str, object])
 AttributeCollectionType 	= NewType('AttributeCollectionType', Dict[str, AttributeTypes.AttributeType])
 
-reservedConfigNames = ["require"]
-reservedElementNames = ["iterator"]
-reservedAttributeNames = ["id", "populate", "link"]
+reservedConfigNames = ["require", "activateValueGuards"]
+reservedElementNames = ["iterator", "activateValueGuards"]
+reservedAttributeNames = ["id", "populate", "link", "activateValueGuards"]
 
 def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 	attributeCollection: AttributeCollectionType = {}
@@ -208,6 +208,7 @@ class ConfigParser():
 		for config in jsonConfigs:
 			processConfig(jsonConfigs[config], config, configuration, self.__attributeCollection)
 		linkParents(jsonConfigs, configuration, self.__attributeCollection)
+		configuration.activateValueGuards(True)
 		return configuration
 
 if __name__ == "__main__":
