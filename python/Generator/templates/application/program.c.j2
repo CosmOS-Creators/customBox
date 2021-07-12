@@ -56,7 +56,7 @@ extern void {{thread.name}}(void);
 **                           START OF THE SOURCE FILE                          **
 ********************************************************************************/
 __SEC_START(__{{program.name.upper()}}_NOINIT_SECTION_START)
-// If your compiler does not support pragmas use __{{program.name.upper()}}_NOINIT__SECTION
+// If your compiler does not support pragmas use __{{program.name.upper()}}_NOINIT_SECTION
 {% set section_name = program.name + '_noInit' -%}
 /********************************************************************************
 ** DO NOT MODIFY THIS COMMENT !                      USER SECTION | Start      **
