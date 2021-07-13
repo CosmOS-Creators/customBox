@@ -53,16 +53,12 @@ class PermissionerLogic(logicRunnerPlugin.logicRunner):
 					arrayIterator = self.getPermissionArrayIterator(schedulable.uniqueId)
 					readPermissionTemp[arrayIterator] = (readPermissionTemp[arrayIterator] | (1 << (schedulable.uniqueId - (self.cpuBitWidth * arrayIterator))))
 
-				buffer.compressedReadPermission = readPermissionTemp[:]
-
-				buffer.compressedReadPermission = ['{0:0{1}b}'.format(element,self.cpuBitWidth) for element in buffer.compressedReadPermission]
+				buffer.compressedReadPermission = ['{0:0{1}b}'.format(element,self.cpuBitWidth) for element in readPermissionTemp]
 				buffer.compressedReadPermissionInverted = [''.join('1' if x == '0' else '0' for x in element) for element in buffer.compressedReadPermission]
 			else:
 				readPermissionTemp = [0] * self.getPermissionArraySize(self.maxUniqueId)
 
-				buffer.compressedReadPermission = readPermissionTemp[:]
-
-				buffer.compressedReadPermission = ['{0:0{1}b}'.format(element,self.cpuBitWidth) for element in buffer.compressedReadPermission]
+				buffer.compressedReadPermission = ['{0:0{1}b}'.format(element,self.cpuBitWidth) for element in readPermissionTemp]
 				buffer.compressedReadPermissionInverted = [''.join('1' if x == '0' else '0' for x in element) for element in buffer.compressedReadPermission]
 
 			if((len(buffer.writePermissions))):
@@ -74,16 +70,12 @@ class PermissionerLogic(logicRunnerPlugin.logicRunner):
 					arrayIterator = self.getPermissionArrayIterator(schedulable.uniqueId)
 					writePermissionTemp[arrayIterator] = (writePermissionTemp[arrayIterator] | (1 << (schedulable.uniqueId - (self.cpuBitWidth * arrayIterator))))
 
-				buffer.compressedWritePermission = writePermissionTemp[:]
-
-				buffer.compressedWritePermission = ['{0:0{1}b}'.format(element,self.cpuBitWidth) for element in buffer.compressedWritePermission]
+				buffer.compressedWritePermission = ['{0:0{1}b}'.format(element,self.cpuBitWidth) for element in writePermissionTemp]
 				buffer.compressedWritePermissionInverted = [''.join('1' if x == '0' else '0' for x in element) for element in buffer.compressedWritePermission]
 			else:
 				writePermissionTemp = [0] * self.getPermissionArraySize(self.maxUniqueId)
 
-				buffer.compressedWritePermission = writePermissionTemp[:]
-
-				buffer.compressedWritePermission = ['{0:0{1}b}'.format(element,self.cpuBitWidth) for element in buffer.compressedWritePermission]
+				buffer.compressedWritePermission = ['{0:0{1}b}'.format(element,self.cpuBitWidth) for element in writePermissionTemp]
 				buffer.compressedWritePermissionInverted = [''.join('1' if x == '0' else '0' for x in element) for element in buffer.compressedWritePermission]
 
 	def getPermissionArrayIterator(self, uniqueId):

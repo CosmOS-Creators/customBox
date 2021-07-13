@@ -9,6 +9,9 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 	def doMagic(self, config):
 		try:
 			config.require([
+							'buffers/:bufferId',
+							'buffers/:doubleBufferId',
+							'buffers/:isDoubleBuffer',
 							'buffers/:readPermissions',
 							'buffers/:writePermissions',
 							'buffers/:compressedReadPermission',
@@ -18,8 +21,13 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 							'mcu/:cpuBitWidth',
 							'cores/:coreId',
 							'cores/:coreSysJobGroups',
+							'cores/:coreScheduler',
+							'cores/:coreSysJobHyperTick',
+							'cores/:corePrograms',
 							'programs/:programId',
 							'programs/:core',
+							'programs/:programThreads',
+							'programs/:programTasks',
 							'tasks/:program',
 							'tasks/:taskId',
 							'tasks/:uniqueId',
@@ -27,6 +35,15 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 							'threads/:threadId',
 							'threads/:uniqueId',
 							'sysJobs/:groupId',
+							'sysJobs/:core',
+							'sysJobs/:tickMultiplicator',
+							'os/:schedulableNum',
+							'os/:buffersNum',
+							'os/:doubleBuffersNum',
+							'scheduleTableEntries/:scheduler',
+							'scheduleTableEntries/:entryId',
+							'scheduleTableEntries/:executionTick',
+							'schedulers/:table',
 							])
 		except Exception as e:
 			raise Exception(f"Initializer is missing required attribute, more info : {str(e)}")
