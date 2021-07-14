@@ -40,33 +40,33 @@ class Subconfig(SimpleNamespace):
 
 class ConfigElement(SimpleNamespace):
 	__attributeLookup 		= {}
-	__configLookup			= None
 	__setting_guard_active 	= False
 	link 					= None
-	def __init__(self, config: ConfigElement, attribute: dict[str, AttributeTypes.AttributeType], link: Union[str, helpers.Link]):
+	def __init__(self, config: ConfigElement, link: Union[str, helpers.Link]):
 		self.id 				= None
-		self.__attributeLookup	= attribute
 		self.__configLookup		= config
 		self.link				= helpers.forceLink(link)
 
 	def __repr__(self):
 		return f"ConfigElement({self.id})"
 
+	def assignAttribute(self, propertyName: str, attribute: AttributeTypes.AttributeType):
+		self.__attributeLookup[propertyName] = attribute
+
 	def activateValueGuards(self, activate: bool = False):
 		self.__setting_guard_active = activate
 
-	def populate(self, attribute: str, value, isPlaceholder: bool = True):
+	def populate(self, property_name: str, value, isPlaceholder: bool = True):
 		"""
 			Populate any attribute with a value. If the attribute is not a placeholder isPlaceholder has to be set to False explicitly
 		"""
 		link = helpers.forceLink(self.link)
-		link.attribute = attribute
+		link.attribute = property_name
 		if(not link.isGlobal()):
 			raise ValueError(f"Target link must be global but \"{link}\" is not")
-		attributeDefinitionTarget 	= link.getLink(Element=False)
-		if(not attributeDefinitionTarget in self.__attributeLookup):
+		if(not property_name in self.__attributeLookup):
 			raise AttributeError(f"Element \"{link.getLink()}\" does not point to an exiting attribute definition. Most likely the link is pointing to a wrong location")
-		targetAttributeDefinition 	= self.__attributeLookup[attributeDefinitionTarget]
+		targetAttributeDefinition 	= self.__attributeLookup[property_name]
 		if(not targetAttributeDefinition.is_placeholder and isPlaceholder == True):
 			raise AttributeError(f"Element \"{link.getLink(Attribute=False)}\" is not a placeholder but the populate method was expecting a placeholder attribute. If a non placeholder attribute should be written to on purpose call populate with isPlaceholder set to False")
 		try:
@@ -74,12 +74,14 @@ class ConfigElement(SimpleNamespace):
 		except ValueError as e:
 			raise ValueError(f"Error validating the new value for the placeholder \"{link.getLink()}\": {str(e)}")
 		try:
-			object.__setattr__(self, link.attribute, validatedValue)
+			object.__setattr__(self, property_name, validatedValue)
+			pass
 		except AttributeError:
 			raise AttributeError(f"Element \"{link.getLink(Attribute=False)}\" has no attribute called \"{link.attribute}\"")
 		try:
 			if(targetAttributeDefinition.needsLinking):
-				targetAttributeDefinition.link(self.__configLookup, self, link.attribute)
+				targetAttributeDefinition.link(self.__configLookup, self, link.attribute, True)
+				pass
 		except Exception as e:
 			raise Exception(f'Error while linking element "{link.getLink()}" of type "{targetAttributeDefinition.type}": {str(e)}')
 
@@ -92,3 +94,6 @@ class ConfigElement(SimpleNamespace):
 				object.__setattr__(self, name, val)
 		else:
 			object.__setattr__(self, name, val)
+
+	def _setattr_direct(self, name, val):
+		object.__setattr__(self, name, val)

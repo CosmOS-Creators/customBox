@@ -29,7 +29,7 @@ AttributeCollectionType 	= NewType('AttributeCollectionType', Dict[str, Attribut
 
 reservedConfigNames = ["require", "activateValueGuards"]
 reservedElementNames = ["iterator", "activateValueGuards"]
-reservedAttributeNames = ["id", "populate", "link", "activateValueGuards"]
+reservedAttributeNames = ["id", "populate", "link", "activateValueGuards", "assignAttribute", "_setattr_direct"]
 
 def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 	attributeCollection: AttributeCollectionType = {}
@@ -74,41 +74,41 @@ def processConfig(config: dict, configName: str, completeConfig: ConfigTypes.Con
 			currentConfig = getattr(completeConfig, configName)
 
 		link 			= Link.construct(config=configName, element=element)
-		newElement 		= ConfigTypes.ConfigElement(completeConfig, attributeCollection, link)
+		newElement 		= ConfigTypes.ConfigElement(completeConfig, link)
 		setattr(currentConfig, element, newElement)
 		newElement.id 	= element # add the key of the element as an id inside the object so that it can be accessed also when iterating over the elements
 		currentConfig.iterator.append(newElement)
 		if(not type(currentElement) is list):
 			raise Exception(f"In config \"{configName}\" the \"{ELEMENTS_KEY}\" property is required to be a list but found {type(currentElement)}")
 		for attributeInstance in currentElement:
-			if(TARGET_KEY in attributeInstance):
-				targetLink = Link(attributeInstance[TARGET_KEY], Link.EMPHASIZE_ATTRIBUTE)
-				propertyName = targetLink.attribute
-				attribute = resolveAttributeLink(attributeCollection, configName, targetLink)
-				if(propertyName in reservedAttributeNames):
-					raise Exception(f"In config \"{configName}\" is was requested to create an attribute with the name \"{propertyName}\" but this name is a reserved keyword thus the creation of such an attribute is prohibited")
-				if(attribute.is_placeholder):
-					if(VALUE_KEY in attributeInstance):
-						raise Exception(f"In config \"{configName}\" element \"{element}\" instantiates the attribute definition \"{propertyName}\" which is a placeholder but the value key ist also defined which is invalid for placeholder entries.")
-					if(hasattr(newElement, propertyName)):
-						raise Exception(f"In config \"{configName}\" is was requested to create a property for the element \"{element}\" with the name \"{propertyName}\" but a property with that name already exists for that element")
-					setattr(newElement, propertyName, attribute.getDefault())
-				elif(VALUE_KEY in attributeInstance): # this is a normal attribute instance
-					if(TARGET_NAME_OVERWRITE_KEY in attributeInstance):
-						propertyName = attributeInstance[TARGET_NAME_OVERWRITE_KEY]
-						attributeCollection[Link.construct(config=configName, attribute=propertyName)] = attribute # create an alias for the same attribute
-					if(hasattr(newElement, propertyName)):
-						raise Exception(f"In config \"{configName}\" is was requested to create a property for the element \"{element}\" with the name \"{propertyName}\" but a property with that name already exists for that element")
-					try:
-						parsedValue = attribute.checkValue(attributeInstance[VALUE_KEY])
-					except ValueError as e:
-						location = Link.construct(config=configName, element=element)
-						raise Exception(f"Validation in \"{location}\" for property \"{propertyName}\" failed: {str(e)}")
-					setattr(newElement, propertyName, parsedValue)
-				else:
-					raise Exception(f"Invalid attribute instance formatting in \"{configName}\" config. The following property is missing the \"{VALUE_KEY}\" property: {attributeInstance}")
-			else:
+			if(not TARGET_KEY in attributeInstance):
 				raise Exception(f"Invalid attribute instance formatting in \"{configName}\" config. The following property is invalid: {attributeInstance}")
+			targetLink = Link(attributeInstance[TARGET_KEY], Link.EMPHASIZE_ATTRIBUTE)
+			propertyName = targetLink.attribute
+			attribute = resolveAttributeLink(attributeCollection, configName, targetLink)
+			newElement.assignAttribute(propertyName, attribute)
+			if(propertyName in reservedAttributeNames):
+				raise Exception(f"In config \"{configName}\" is was requested to create an attribute with the name \"{propertyName}\" but this name is a reserved keyword thus the creation of such an attribute is prohibited")
+			if(attribute.is_placeholder):
+				if(VALUE_KEY in attributeInstance):
+					raise Exception(f"In config \"{configName}\" element \"{element}\" instantiates the attribute definition \"{propertyName}\" which is a placeholder but the value key ist also defined which is invalid for placeholder entries.")
+				if(hasattr(newElement, propertyName)):
+					raise Exception(f"In config \"{configName}\" is was requested to create a property for the element \"{element}\" with the name \"{propertyName}\" but a property with that name already exists for that element")
+				setattr(newElement, propertyName, attribute.getDefault())
+			elif(VALUE_KEY in attributeInstance): # this is a normal attribute instance
+				if(TARGET_NAME_OVERWRITE_KEY in attributeInstance):
+					propertyName = attributeInstance[TARGET_NAME_OVERWRITE_KEY]
+					attributeCollection[Link.construct(config=configName, attribute=propertyName)] = attribute # create an alias for the same attribute
+				if(hasattr(newElement, propertyName)):
+					raise Exception(f"In config \"{configName}\" is was requested to create a property for the element \"{element}\" with the name \"{propertyName}\" but a property with that name already exists for that element")
+				try:
+					parsedValue = attribute.checkValue(attributeInstance[VALUE_KEY])
+				except ValueError as e:
+					location = Link.construct(config=configName, element=element)
+					raise Exception(f"Validation in \"{location}\" for property \"{propertyName}\" failed: {str(e)}")
+				setattr(newElement, propertyName, parsedValue)
+			else:
+				raise Exception(f"Invalid attribute instance formatting in \"{configName}\" config. The following property is missing the \"{VALUE_KEY}\" property: {attributeInstance}")
 
 def resolveElementLink(globalConfig: ConfigTypes.Configuration, localConfig: ConfigTypes.Subconfig, link: Union[str, Link]):
 	link = forceLink(link)

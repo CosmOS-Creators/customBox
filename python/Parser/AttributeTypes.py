@@ -72,7 +72,7 @@ class AttributeType():
 	def checkValue(self, valueInput):
 		return valueInput
 
-	def link(self, objConfig: ConfigTypes.Configuration, targetConfigObject: ConfigTypes.ConfigElement, targetAttributeName: str):
+	def link(self, objConfig: ConfigTypes.Configuration, targetConfigObject: ConfigTypes.ConfigElement, targetAttributeName: str, fromPopulate: bool = False):
 		pass
 
 	def checkForForbiddenKeys(self, listOfAllowedKeys: List[str]):
@@ -225,8 +225,9 @@ class ReferenceListType(AttributeType):
 		return []
 
 	@helpers.overrides(AttributeType)
-	def link(self, objConfig: ConfigTypes.Configuration, targetConfigObject: ConfigTypes.ConfigElement, targetAttributeName: str):
-		value = getattr(targetConfigObject, targetAttributeName)
+	def link(self, objConfig: ConfigTypes.Configuration, targetConfigObject: ConfigTypes.ConfigElement, targetAttributeName: Union[helpers.Link, str], fromPopulate: bool = False):
+		targetAttributeLink = helpers.forceLink(targetAttributeName, emphasize=helpers.Link.EMPHASIZE_ATTRIBUTE)
+		value = getattr(targetConfigObject, targetAttributeLink.attribute)
 		if(not type(value) is list):
 			raise TypeError(f"Values for elements of reference list attribute types must be of type list but found type \"{type(value)}\" instead")
 		linkedTargets = []
@@ -246,7 +247,10 @@ class ReferenceListType(AttributeType):
 			except AttributeError as e:
 				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}")
 			linkedTargets.append(targetElement)
-		setattr(targetConfigObject, targetAttributeName, linkedTargets)
+		if(fromPopulate):
+			targetConfigObject._setattr_direct(targetAttributeLink.attribute, linkedTargets)
+		else:
+			setattr(targetConfigObject, targetAttributeLink.attribute, linkedTargets)
 
 class StringListType(AttributeType):
 	_comparison_type 	= "stringList"
@@ -298,11 +302,12 @@ class SelectionType(AttributeType):
 		return None
 
 	@helpers.overrides(AttributeType)
-	def link(self, objConfig: ConfigTypes.Configuration, targetConfigObject: ConfigTypes.ConfigElement, targetAttributeName: str):
+	def link(self, objConfig: ConfigTypes.Configuration, targetConfigObject: ConfigTypes.ConfigElement, targetAttributeName: Union[helpers.Link, str], fromPopulate: bool = False):
 		if(self._needs_linking):
 			possibleValues = []
 			foundMatch = False
 			link = helpers.Link(self.elements)
+			targetAttributeLink = helpers.forceLink(targetAttributeName, emphasize=helpers.Link.EMPHASIZE_ATTRIBUTE)
 			try:
 				subconfig = link.resolveSubconfig(objConfig)
 			except AttributeError as e:
@@ -314,9 +319,9 @@ class SelectionType(AttributeType):
 					print(f"WARNING: Attribute definition \"{self.globalID}\" requested an attribute instance named \"{link.element}\" from the config \"{link.config}\" but the element \"{element.id}\" does not have an instance of that attribute. Skipping this element.")
 					continue
 				possibleValues.append(targetValue)
-				value = getattr(targetConfigObject, targetAttributeName)
+				value = getattr(targetConfigObject, targetAttributeLink.attribute)
 				if(value == targetValue):
-					setattr(targetConfigObject, targetAttributeName, element)
+					setattr(targetConfigObject, targetAttributeLink.attribute, element)
 					foundMatch = True
 			if(self.resolvedElements is None):
 				self.resolvedElements = possibleValues
@@ -391,8 +396,9 @@ class ParentReferenceType(AttributeType):
 		return None
 
 	@helpers.overrides(AttributeType)
-	def link(self, objConfig: ConfigTypes.Configuration, targetConfigObject: ConfigTypes.ConfigElement, targetAttributeName: str):
-		value = getattr(targetConfigObject, targetAttributeName)
+	def link(self, objConfig: ConfigTypes.Configuration, targetConfigObject: ConfigTypes.ConfigElement, targetAttributeName: Union[helpers.Link, str], fromPopulate: bool = False):
+		targetAttributeLink = helpers.forceLink(targetAttributeName, emphasize=helpers.Link.EMPHASIZE_ATTRIBUTE)
+		value = getattr(targetConfigObject, targetAttributeLink.attribute)
 		link = helpers.forceLink(value)
 		parentElement = link.resolveElement(objConfig)
 		targetObjectLink = helpers.forceLink(targetConfigObject.link)
@@ -412,7 +418,10 @@ class ParentReferenceType(AttributeType):
 		else:
 			setattr(temp, targetObjectLink.element, targetConfigObject)
 		# add the parent to this object
-		setattr(targetConfigObject, targetAttributeName, parentElement)
+		if(fromPopulate):
+			targetConfigObject._setattr_direct(targetAttributeLink.attribute, parentElement)
+		else:
+			setattr(targetConfigObject, targetAttributeLink.attribute, parentElement)
 
 attributeTypeList = [StringType, BoolType, IntType, FloatType, ReferenceListType, StringListType, SelectionType, SelectionType, HexType, SliderType, ParentReferenceType]
 
