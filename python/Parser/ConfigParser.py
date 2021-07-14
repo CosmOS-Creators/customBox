@@ -1,13 +1,12 @@
 import json
 import os
-from pathlib import Path
-from typing import Dict, List, Union, NewType
 import re
-
-import Parser.AttributeTypes as AttributeTypes
-import Parser.ConfigTypes as ConfigTypes
-from Parser.helpers import Link, forceLink
-import Parser.WorkspaceParser as WorkspaceParser
+import Parser.AttributeTypes 	as AttributeTypes
+import Parser.ConfigTypes 		as ConfigTypes
+import Parser.WorkspaceParser 	as WorkspaceParser
+from pathlib 					import Path
+from typing 					import Dict, List, Union, NewType
+from Parser.LinkElement 		import Link
 
 ELEMENTS_KEY				= "elements"
 ATTRIBUTES_KEY				= "attributes"
@@ -111,7 +110,7 @@ def processConfig(config: dict, configName: str, completeConfig: ConfigTypes.Con
 				raise Exception(f"Invalid attribute instance formatting in \"{configName}\" config. The following property is missing the \"{VALUE_KEY}\" property: {attributeInstance}")
 
 def resolveElementLink(globalConfig: ConfigTypes.Configuration, localConfig: ConfigTypes.Subconfig, link: Union[str, Link]):
-	link = forceLink(link)
+	link = Link.force(link)
 	if(link.isGlobal()):
 		return link.resolveElement(globalConfig)
 	else:
@@ -122,7 +121,7 @@ def resolveElementLink(globalConfig: ConfigTypes.Configuration, localConfig: Con
 		return linkTarget
 
 def resolveAttributeLink(attributeCollection: AttributeCollectionType, localConfig: str, link: Union[str, Link]) -> AttributeTypes.AttributeType:
-	link = forceLink(link)
+	link = Link.force(link)
 	if(link.isGlobal()):
 		try:
 			linkTarget = attributeCollection[link.getLink()]

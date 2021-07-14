@@ -1,8 +1,8 @@
 import json
 import os
 import Parser
-from pathlib import Path
-from Parser.ConfigParser import discoverConfigFiles, ELEMENTS_KEY
+from pathlib 				import Path
+from Parser.ConfigParser 	import discoverConfigFiles, ELEMENTS_KEY
 
 if __name__ == "__main__":
 	parser = Parser.Workspace.getReqiredArgparse()

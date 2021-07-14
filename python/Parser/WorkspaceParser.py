@@ -1,11 +1,10 @@
 import os
 import json
-from typing import List, Union
-from pathlib import Path
 import argparse
 import re
-
 import Parser.helpers as helpers
+from pathlib import Path
+from typing import List, Union
 
 WORKSPACE_PLACEHOLDER 	= "workspace"
 

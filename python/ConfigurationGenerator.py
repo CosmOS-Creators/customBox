@@ -1,5 +1,5 @@
 import Parser
-from Generator import FileGenerator
+from Generator 							import FileGenerator
 import Generator.GeneratorCorePlugins 	as GeneratorPlugins
 
 

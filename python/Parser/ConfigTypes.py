@@ -1,17 +1,16 @@
-from __future__ import annotations
-
-from types import SimpleNamespace
-from typing import List, Union
-import Parser.helpers as helpers
-import Parser.AttributeTypes as AttributeTypes
+from __future__ 				import annotations
+from types 						import SimpleNamespace
+from typing 					import List, Union
+from Parser.LinkElement 		import Link
+import Parser.AttributeTypes 	as AttributeTypes
 
 class Configuration(SimpleNamespace):
 	__allConfigs: List[Subconfig] = []
-	def require(self, requiredProperties : Union[List[Union[str, helpers.Link]], Union[str, helpers.Link]]):
+	def require(self, requiredProperties : Union[List[Union[str, Link]], Union[str, Link]]):
 		if(not type(requiredProperties) is list):
 			requiredProperties = [requiredProperties]
 		for prop in requiredProperties:
-			link = helpers.forceLink(prop, helpers.Link.EMPHASIZE_CONFIG)
+			link = Link.force(prop, Link.EMPHASIZE_CONFIG)
 			try:
 				link.resolve(self)
 			except Exception as e:
@@ -27,9 +26,9 @@ class Configuration(SimpleNamespace):
 			subconfig.activateValueGuards(activate)
 
 class Subconfig(SimpleNamespace):
-	def __init__(self, link: Union[str, helpers.Link, None]):
+	def __init__(self, link: Union[str, Link, None]):
 		self.iterator: List[ConfigElement] 	= []
-		self.link							= helpers.forceLink(link)
+		self.link							= Link.force(link)
 
 	def __repr__(self):
 		return f"Subconfig({self.iterator})"
@@ -42,10 +41,10 @@ class ConfigElement(SimpleNamespace):
 	__attributeLookup 		= {}
 	__setting_guard_active 	= False
 	link 					= None
-	def __init__(self, config: ConfigElement, link: Union[str, helpers.Link]):
+	def __init__(self, config: ConfigElement, link: Union[str, Link]):
 		self.id 				= None
 		self.__configLookup		= config
-		self.link				= helpers.forceLink(link)
+		self.link				= Link.force(link)
 
 	def __repr__(self):
 		return f"ConfigElement({self.id})"
@@ -60,7 +59,7 @@ class ConfigElement(SimpleNamespace):
 		"""
 			Populate any attribute with a value. If the attribute is not a placeholder isPlaceholder has to be set to False explicitly
 		"""
-		link = helpers.forceLink(self.link)
+		link = Link.force(self.link)
 		link.attribute = property_name
 		if(not link.isGlobal()):
 			raise ValueError(f"Target link must be global but \"{link}\" is not")
