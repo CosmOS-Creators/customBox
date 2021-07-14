@@ -90,8 +90,7 @@ class ConfigElement(SimpleNamespace):
 			try:
 				self.populate(name, val)
 			except Exception as e:
-				print(f"Error while populating property {name}: {str(e)}")
-				object.__setattr__(self, name, val)
+				raise Exception(f"Error while populating property {name}: {str(e)}")
 		else:
 			object.__setattr__(self, name, val)
 
