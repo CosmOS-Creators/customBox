@@ -29,7 +29,8 @@ class AttributeType():
 	_needs_linking			= False
 	_typeSpecificKeys		= []
 
-	def __init__(self, attribute_definition: dict, globalID: str):
+	def __init__(self, attribute_definition: dict, globalID: Union[Link, str]):
+		globalID = Link.force(globalID, Link.EMPHASIZE_ATTRIBUTE)
 		# internal helpers
 		self._is_inherited 			= False
 		self._attribute_definition 	= attribute_definition.copy()
@@ -38,15 +39,15 @@ class AttributeType():
 		try:
 			self.checkForForbiddenKeys(self._typeSpecificKeys)
 		except KeyError as e:
-			raise KeyError(f"Error in attribute \"{globalID}\" of type \"{self._comparison_type}\" : {str(e)}")
+			raise KeyError(f"Error in attribute \"{globalID.getLink()}\" of type \"{self._comparison_type}\" : {str(e)}")
 
 		# special helpers
 		self._is_placeholder 		= self.checkForKey(PLACEHOLDER_KEY, False)
 		# required properties
 		self.globalID 				= globalID
-		self.id 					= globalID.split("/")[1]
+		self.id 					= globalID.attribute
 
-		error_message = "Attribute \"" + self.globalID + "\" is missing the required \"{}\" key."
+		error_message = "Attribute \"" + self.globalID.getLink() + "\" is missing the required \"{}\" key."
 		if(TYPE_KEY in attribute_definition):
 			self.type 				= attribute_definition[TYPE_KEY]
 		else:
@@ -73,7 +74,7 @@ class AttributeType():
 	def checkValue(self, valueInput):
 		return valueInput
 
-	def link(self, objConfig: ConfigTypes.Configuration, targetConfigObject: ConfigTypes.ConfigElement, targetAttributeName: str, fromPopulate: bool = False):
+	def link(self, objConfig: ConfigTypes.Configuration, attributeInstance: ConfigTypes.AttributeInstance):
 		pass
 
 	def checkForForbiddenKeys(self, listOfAllowedKeys: List[str]):
@@ -165,14 +166,17 @@ class IntType(AttributeType):
 		self.max 			= self.checkForKey(MAX_KEY, None)
 
 	@overrides(AttributeType)
-	def checkValue(self, valueInput: int):
-		if(not self.min is None):
-			if(valueInput < self.min):
-				reportValidationError(f"The input value ({valueInput}) is lower than the minimum value({self.min}) for this attribute")
-		if(not self.max is None):
-			if(valueInput > self.max):
-				reportValidationError(f"The input value ({valueInput}) is higher than the maximum value({self.min}) for this attribute")
-		return int(valueInput)
+	def checkValue(self, valueInput):
+		if(type(valueInput) is int or type(valueInput) is float):
+			if(not self.min is None):
+				if(valueInput < self.min):
+					reportValidationError(f"The input value ({valueInput}) is lower than the minimum value({self.min}) for this attribute")
+			if(not self.max is None):
+				if(valueInput > self.max):
+					reportValidationError(f"The input value ({valueInput}) is higher than the maximum value({self.min}) for this attribute")
+			return int(valueInput)
+		else:
+			reportValidationError(f"The input value ({valueInput}) must be of type int or float but got type ({type(valueInput)}) instead")
 
 	@overrides(AttributeType)
 	def getDefault(self) -> int:
@@ -226,15 +230,13 @@ class ReferenceListType(AttributeType):
 		return []
 
 	@overrides(AttributeType)
-	def link(self, objConfig: ConfigTypes.Configuration, targetConfigObject: ConfigTypes.ConfigElement, targetAttributeName: Union[Link, str], fromPopulate: bool = False):
-		targetAttributeLink = Link.force(targetAttributeName, emphasize=Link.EMPHASIZE_ATTRIBUTE)
-		value = getattr(targetConfigObject, targetAttributeLink.attribute)
-		if(not type(value) is list):
+	def link(self, objConfig: ConfigTypes.Configuration, attributeInstance: ConfigTypes.AttributeInstance):
+		if(not type(attributeInstance.value) is list):
 			raise TypeError(f"Values for elements of reference list attribute types must be of type list but found type \"{type(value)}\" instead")
 		linkedTargets = []
 		if(not self.elements is None):
 			objConfig.require(self.elements)
-		for targetLink in value:
+		for targetLink in attributeInstance.value:
 			link = Link.force(targetLink)
 			if(not self.elements is None):
 				linkFoundMatch = False
@@ -248,10 +250,8 @@ class ReferenceListType(AttributeType):
 			except AttributeError as e:
 				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}")
 			linkedTargets.append(targetElement)
-		if(fromPopulate):
-			targetConfigObject._setattr_direct(targetAttributeLink.attribute, linkedTargets)
-		else:
-			setattr(targetConfigObject, targetAttributeLink.attribute, linkedTargets)
+		attributeInstance.setValueDirect(linkedTargets)
+
 
 class StringListType(AttributeType):
 	_comparison_type 	= "stringList"
@@ -303,31 +303,30 @@ class SelectionType(AttributeType):
 		return None
 
 	@overrides(AttributeType)
-	def link(self, objConfig: ConfigTypes.Configuration, targetConfigObject: ConfigTypes.ConfigElement, targetAttributeName: Union[Link, str], fromPopulate: bool = False):
+	def link(self, objConfig: ConfigTypes.Configuration, attributeInstance: ConfigTypes.AttributeInstance):
 		if(self._needs_linking):
 			possibleValues = []
 			foundMatch = False
-			link = Link(self.elements)
-			targetAttributeLink = Link.force(targetAttributeName, emphasize=Link.EMPHASIZE_ATTRIBUTE)
+			link = Link(self.elements, Link.EMPHASIZE_ELEMENT)
 			try:
 				subconfig = link.resolveSubconfig(objConfig)
 			except AttributeError as e:
 				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}")
 			for element in subconfig.iterator:
 				try:
-					targetValue = getattr(element, link.element)
+					targetValue = element.getAttribute(link.element)
 				except AttributeError:
 					print(f"WARNING: Attribute definition \"{self.globalID}\" requested an attribute instance named \"{link.element}\" from the config \"{link.config}\" but the element \"{element.id}\" does not have an instance of that attribute. Skipping this element.")
 					continue
 				possibleValues.append(targetValue)
-				value = getattr(targetConfigObject, targetAttributeLink.attribute)
-				if(value == targetValue):
-					setattr(targetConfigObject, targetAttributeLink.attribute, element)
+				if(attributeInstance.value == targetValue.value):
+					attributeInstance.setValueDirect(attributeInstance)
 					foundMatch = True
 			if(self.resolvedElements is None):
 				self.resolvedElements = possibleValues
 			if(foundMatch == False):
-				raise NameError(f"\"{value}\" is not a valid choice for Attribute instances of \"{self.globalID}\". Valid choices are: {possibleValues}")
+				raise NameError(f'"{attributeInstance.value}" is not a valid choice for Attribute instances of "{self.globalID}". Valid choices are: {possibleValues}')
+
 
 class HexType(IntType):
 	_comparison_type 	= "hex"
@@ -382,7 +381,7 @@ class ParentReferenceType(AttributeType):
 		super().__init__(attribute_definition, globalID)
 
 	@overrides(AttributeType)
-	def checkValue(self, valueInput: List[str]):
+	def checkValue(self, valueInput: Link):
 		# just check if it is a valid link syntax
 		try:
 			link = Link.parse(valueInput)
@@ -397,39 +396,18 @@ class ParentReferenceType(AttributeType):
 		return None
 
 	@overrides(AttributeType)
-	def link(self, objConfig: ConfigTypes.Configuration, targetConfigObject: ConfigTypes.ConfigElement, targetAttributeName: Union[Link, str], fromPopulate: bool = False):
-		targetAttributeLink = Link.force(targetAttributeName, emphasize=Link.EMPHASIZE_ATTRIBUTE)
-		value = getattr(targetConfigObject, targetAttributeLink.attribute)
-		link = Link.force(value)
-		parentElement = link.resolveElement(objConfig)
-		targetObjectLink = Link.force(targetConfigObject.link)
-
-		# add this object to the parent
-		if(hasattr(parentElement, targetObjectLink.config)):
-			temp = getattr(parentElement, targetObjectLink.config)
-			if(type(temp) is ConfigTypes.ConfigElement):
-				raise AttributeError(f"Error during linking the element \"{targetObjectLink.getLink()}\" to the parent element \"{link.getLink()}\": The parent already has an attribute with the name \"{targetObjectLink.config}\"")
-		else:
-			temp = ConfigTypes.Subconfig(None)
-			setattr(parentElement, targetObjectLink.config, temp)
-
-		temp.iterator.append(targetConfigObject)
-		if(hasattr(temp, targetObjectLink.element)):
-			raise Exception(f"In config \"{targetObjectLink.config}\" in element \"{targetObjectLink.element}\" is was requested to create an element for the parent object \"{link.getLink()}\" but a property with the name \"{link.element}\" already exists.")
-		else:
-			setattr(temp, targetObjectLink.element, targetConfigObject)
-		# add the parent to this object
-		if(fromPopulate):
-			targetConfigObject._setattr_direct(targetAttributeLink.attribute, parentElement)
-		else:
-			setattr(targetConfigObject, targetAttributeLink.attribute, parentElement)
+	def link(self, objConfig: ConfigTypes.Configuration, attributeInstance: ConfigTypes.AttributeInstance):
+		linkTarget 		= Link.force(attributeInstance.value, Link.EMPHASIZE_ELEMENT)
+		targetedElement = linkTarget.resolveElement(objConfig)
+		targetedElement.addReferenceObject(attributeInstance.link.config, attributeInstance.link.element, attributeInstance)
+		attributeInstance.setValueDirect(targetedElement)
 
 attributeTypeList = [StringType, BoolType, IntType, FloatType, ReferenceListType, StringListType, SelectionType, SelectionType, HexType, SliderType, ParentReferenceType]
 
 def reportValidationError(errorMsg: str):
 	raise ValueError(errorMsg)
 
-def parseAttribute(attributeDefinition: dict, AttributeGlobalID: str) -> AttributeType:
+def parseAttribute(attributeDefinition: dict, AttributeGlobalID: Link) -> AttributeType:
 	if(not TYPE_KEY in attributeDefinition):
 		raise KeyError("Type key is required for every attribute but it is missing")
 	parseType = attributeDefinition[TYPE_KEY]
