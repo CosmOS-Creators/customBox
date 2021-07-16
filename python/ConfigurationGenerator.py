@@ -11,7 +11,7 @@ if __name__ == "__main__":
 	sectionPlugin 		= GeneratorPlugins.sectionParserPlugin()
 	logicRunnerPlugin 	= GeneratorPlugins.logicRunnerPlugin()
 	timestampPlugin 	= GeneratorPlugins.timeStampPlugin()
-	FileCleaner 		= GeneratorPlugins.fileCleanerPlugin([workspace.ApplicationGenDir, workspace.CoreGeneratedDir])
+	FileCleaner 		= GeneratorPlugins.fileCleanerPlugin([workspace.ApplicationGeneratedDir, workspace.CoreGeneratedDir])
 
 	logicRunnerPlugin.registerLogic([InitializerLogic(), MemoryMapperLogic(), PermissionerLogic()])
 	# try:

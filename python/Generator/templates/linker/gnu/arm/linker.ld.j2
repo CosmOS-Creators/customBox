@@ -28,7 +28,7 @@ MEMORY
 FLASH (rx)      : ORIGIN = 0x{{'%04x' % core.cpu.flashMemory.lowAddress}}, LENGTH = 0x{{'%04x' % core.cpu.flashMemory.size}}
 UNMAPPED_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % core.unmappedDataLowAddress}}, LENGTH = 0x{{'%04x' % core.unmappedDataSize}}
 {% for item in model.osPartitions.iterator -%}
-OS_{{item.name.upper()}}_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % item.lowAddress}}, LENGTH = 0x{{'%04x' % item.highAddress}}
+OS_{{item.name.upper()}}_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % item.lowAddress}}, LENGTH = 0x{{'%04x' % item.size}}
 {% endfor -%}
 {% for item in model.programs.iterator -%}
 PROGRAM_{{item.name.upper()}}_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % item.lowAddress}}, LENGTH = 0x{{'%04x' % item.size}}
