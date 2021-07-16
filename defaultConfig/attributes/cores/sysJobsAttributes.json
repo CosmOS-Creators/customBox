@@ -1,0 +1,32 @@
+{
+	"version": "1.0.0",
+
+	"attributes": {
+		"tickMultiplicator": {
+			"label": "",
+			"type": "int",
+			"min": 0,
+			"max": 2048,
+			"tooltip": "Multiplicator of the sysJob task tick for the current group, this group will be triggered with tick multiplicator*tick of sysJob task"
+		},
+		"handlers": {
+			"label": "",
+			"type": "string",
+			"tooltip": "API names, be aware that the name must be the same as defined in header file"
+		},
+		"apiHeaders": {
+			"label": "API header files",
+			"type": "string",
+			"tooltip": "API headers providing definitions of sysJobs used in the current group"
+		},
+		"core": {
+			"type": "parentReference"
+		},
+		"groupId": {
+			"placeholder": true,
+			"type": "int"
+		}
+	},
+
+	"elements": {}
+}

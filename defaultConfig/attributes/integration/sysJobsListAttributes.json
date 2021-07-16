@@ -1,0 +1,13 @@
+{
+	"version": "1.0.0",
+
+	"attributes": {
+		"name": {
+			"label": "Name of the sysJob",
+			"type": "string",
+			"tooltip": "Implemented system job in the integration layer"
+		}
+	},
+
+	"elements": {}
+}

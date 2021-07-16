@@ -1,0 +1,50 @@
+{
+	"version": "1.0.0",
+
+	"attributes": {
+		"name": {
+			"label": "Name of the thread",
+			"type": "string",
+			"validation": "^[A-Za-z][A-Za-z0-9_]*$",
+			"tooltip": "Name of the thread, be aware that the thread name is used also as a function name"
+		},
+		"floatingPoint": {
+			"label": "Floating point",
+			"type": "bool",
+			"tooltip": "Enable floating point for the current thread"
+		},
+		"isIdle": {
+			"label": "Is thread idle",
+			"type": "bool",
+			"tooltip": "Is the thread idle"
+		},
+		"stackSize": {
+			"label": "Stack size",
+			"type": "int",
+			"min": 0,
+			"max": 2048,
+			"tooltip": "Stack size of the current thread"
+		},
+		"uniqueId": {
+			"placeholder": true,
+			"type": "int"
+		},
+		"program": {
+			"type": "parentReference"
+		},
+		"lowAddress": {
+			"placeholder": true,
+			"type": "int"
+		},
+		"highAddress": {
+			"placeholder": true,
+			"type": "int"
+		},
+		"threadId": {
+			"placeholder": true,
+			"type": "int"
+		}
+	},
+
+	"elements": {}
+}
