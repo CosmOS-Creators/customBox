@@ -1,10 +1,11 @@
 import pytest
+import os
 from Parser import Workspace, ConfigParser, ConfigTypes
 
 class TestClassBasicFunctions:
 	@pytest.fixture
 	def parsed_config(self):
-		workspace = Workspace("./tests/testConfigs/workspaces/BasicConfig.json")
+		workspace = Workspace("./Cosmos/customBox/python/Parser/tests/testConfigs/workspaces/BasicConfig.json")
 		parser = ConfigParser(workspace)
 		return parser.parse()
 
@@ -25,4 +26,4 @@ class TestClassBasicFunctions:
 			"selectionType": "selection_1"
 			}
 		for name, attribute in configElement.attributes.items():
-			assert element_1_attribute_values[name] == attribute
+			assert element_1_attribute_values[name] == attribute.value

@@ -1,5 +1,5 @@
 {
     "config": [
-		"./tests/testConfigs/configs/BasicConfig"
+		"./Cosmos/customBox/python/Parser/tests/testConfigs/configs/BasicConfig"
 	]
 }

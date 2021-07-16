@@ -133,8 +133,6 @@ class Subconfig(dynamicObject):
 
 	def getElement(self, name: Union[str, Link]) -> ConfigElement:
 		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
-		if(elementLink.config != self.link.config):
-			raise AttributeError(f'Tried to get an element from config "{elementLink.config}" but the subconfig the element was requested from is "{self.link.element}"')
 		return self._get(elementLink.element)
 
 	@property

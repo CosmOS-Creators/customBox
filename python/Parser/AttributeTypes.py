@@ -150,18 +150,21 @@ class IntType(AttributeType):
 		self.min 			= self.checkForKey(const.MIN_KEY, None)
 		self.max 			= self.checkForKey(const.MAX_KEY, None)
 
+	def _checkMinMax(self, value):
+		if(type(value) is int or type(value) is float):
+			if(not self.min is None):
+				if(value < self.min):
+					reportValidationError(f"The input value ({value}) is lower than the minimum value({self.min}) for this attribute")
+			if(not self.max is None):
+				if(value > self.max):
+					reportValidationError(f"The input value ({value}) is higher than the maximum value({self.min}) for this attribute")
+			return value
+		else:
+			reportValidationError(f"The input value ({value}) must be of type int or float but got type ({type(value)}) instead")
+
 	@overrides(AttributeType)
 	def checkValue(self, valueInput):
-		if(type(valueInput) is int or type(valueInput) is float):
-			if(not self.min is None):
-				if(valueInput < self.min):
-					reportValidationError(f"The input value ({valueInput}) is lower than the minimum value({self.min}) for this attribute")
-			if(not self.max is None):
-				if(valueInput > self.max):
-					reportValidationError(f"The input value ({valueInput}) is higher than the maximum value({self.min}) for this attribute")
-			return int(valueInput)
-		else:
-			reportValidationError(f"The input value ({valueInput}) must be of type int or float but got type ({type(valueInput)}) instead")
+		return int(self._checkMinMax(valueInput))
 
 	@overrides(AttributeType)
 	def getDefault(self) -> int:
@@ -173,6 +176,10 @@ class FloatType(IntType):
 	@overrides(AttributeType)
 	def getDefault(self) -> float:
 		return float(0)
+
+	@overrides(AttributeType)
+	def checkValue(self, valueInput):
+		return float(self._checkMinMax(valueInput))
 
 class ReferenceListType(AttributeType):
 	_comparison_type 	= "referenceList"
