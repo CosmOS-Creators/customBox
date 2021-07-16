@@ -9,11 +9,39 @@
 			"label": "Int Type",
 			"type": "parentReference"
 		},
-        "selectionLinkType": {
-            "label": "Selection Type",
-            "type": "selection",
+		"selectionLinkType": {
+			"label": "Selection Type",
+			"type": "selection",
 			"elements": "basicTypes/:stringType"
-        }
+		},
+		"InheritedSelectionType": {
+			"inherit": "basicTypes/:selectionType"
+		}
 	},
-	"elements": {}
+	"elements": {
+		"reference_test_0": [
+			{
+				"target": "referenceListType",
+				"value": [
+					"basicTypes/element_1",
+					"basicTypes/element_2"
+				]
+			},
+			{
+				"target": "parentReferenceType",
+				"value": "basicTypes/element_1"
+			},
+			{
+				"target": "selectionLinkType",
+				"value": "StringTest"
+			},
+			{
+				"target": "InheritedSelectionType",
+				"value": "selection_1"
+			}
+		],
+		"reference_test_1": [
+
+		]
+	}
 }

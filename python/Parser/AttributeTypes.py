@@ -304,11 +304,11 @@ class SelectionType(AttributeType):
 				subconfig = link.resolveSubconfig(objConfig)
 			except AttributeError as e:
 				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}")
-			for element in subconfig:
+			for name, element in subconfig.elements.items():
 				try:
-					targetValue = element.getAttribute(link.element)
+					targetValue = element.getAttribute(link.attribute)
 				except AttributeError:
-					print(f"WARNING: Attribute definition \"{self.globalID}\" requested an attribute instance named \"{link.element}\" from the config \"{link.config}\" but the element \"{element.id}\" does not have an instance of that attribute. Skipping this element.")
+					print(f"WARNING: Attribute definition \"{self.globalID}\" requested an attribute instance named \"{link.element}\" from the config \"{link.config}\" but the element \"{name}\" does not have an instance of that attribute. Skipping this element.")
 					continue
 				possibleValues.append(targetValue)
 				if(attributeInstance.value == targetValue.value):
@@ -389,6 +389,7 @@ class ParentReferenceType(AttributeType):
 
 	@overrides(AttributeType)
 	def link(self, objConfig: ConfigTypes.Configuration, attributeInstance: ConfigTypes.AttributeInstance):
+		#TODO: wrong element is linked to the parent
 		linkTarget 		= Link.force(attributeInstance.value, Link.EMPHASIZE_ELEMENT)
 		targetedElement = linkTarget.resolveElement(objConfig)
 		targetedElement.addReferenceObject(attributeInstance.link.config, attributeInstance.link.element, attributeInstance)
