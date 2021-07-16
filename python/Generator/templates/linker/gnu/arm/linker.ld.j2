@@ -27,10 +27,10 @@ MEMORY
 {
 FLASH (rx)      : ORIGIN = 0x{{'%04x' % core.cpu.flashMemory.lowAddress}}, LENGTH = 0x{{'%04x' % core.cpu.flashMemory.size}}
 UNMAPPED_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % core.unmappedDataLowAddress}}, LENGTH = 0x{{'%04x' % core.unmappedDataSize}}
-{% for item in model.osPartitions.iterator -%}
+{% for item in model.osPartitions -%}
 OS_{{item.name.upper()}}_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % item.lowAddress}}, LENGTH = 0x{{'%04x' % item.size}}
 {% endfor -%}
-{% for item in model.programs.iterator -%}
+{% for item in model.programs -%}
 PROGRAM_{{item.name.upper()}}_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % item.lowAddress}}, LENGTH = 0x{{'%04x' % item.size}}
 {% endfor -%}
 }
@@ -45,7 +45,7 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-{% for item in model.programs.iterator -%}
+{% for item in model.programs -%}
   _flash_program_{{item.name}}_section_init = LOADADDR(.program_{{item.name}}_section_init);
 
   /* Init section */
@@ -67,7 +67,7 @@ SECTIONS
   } >PROGRAM_{{item.name.upper()}}_PARTITION_IN_{{item.memory.name.upper()}}
 {% endfor -%}
 
-{% for item in model.osPartitions.iterator -%}
+{% for item in model.osPartitions -%}
   _flash_os_section_{{item.name}}_start = LOADADDR(.os_section_{{item.name}});
 
   /* Initialized data sections goes into RAM, load LMA copy after code */
@@ -182,7 +182,7 @@ SECTIONS
     libc.a ( * )
     libm.a ( * )
     libgcc.a ( * )
-    {% for item in model.programs.iterator -%}
+    {% for item in model.programs -%}
     {% if item.core != core -%}
     *(.program_{{item.name}}_section_init*)
     *(.program_{{item.name}}_section_noInit*)

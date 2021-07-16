@@ -138,14 +138,14 @@ extern CosmOS_SchedulableVariableType ThreadsSchedulablesVar[THREAD_NUM];
   * @ingroup Apis_schedulableCfg_h
   * @{
 ********************************************************************************/
-{% for item in model.programs.iterator -%}
+{% for item in model.programs -%}
 {% for task in item.programTasks -%}
 void {{task.name}}(void);
 void wrapped_{{task.name}}(void);
 {% endfor -%}
 {% endfor -%}
 
-{% for item in model.programs.iterator -%}
+{% for item in model.programs -%}
 {% for thread in item.programThreads -%}
 void {{thread.name}}(void);
 void wrapped_{{thread.name}}(void);
@@ -196,13 +196,13 @@ void wrapped_{{thread.name}}(void);
   * @ingroup Apis_schedulableCfg_h
   * @{
 ********************************************************************************/
-{% for item in model.programs.iterator -%}
+{% for item in model.programs -%}
 {% for task in item.programTasks -%}
 __WEAK void {{task.name}}(void){};
 {% endfor -%}
 {% endfor -%}
 
-{% for item in model.programs.iterator -%}
+{% for item in model.programs -%}
 {% for thread in item.programThreads -%}
 __WEAK void {{thread.name}}(void){};
 {% endfor -%}

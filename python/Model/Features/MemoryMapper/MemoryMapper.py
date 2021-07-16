@@ -46,13 +46,13 @@ class MemoryMapperLogic(logicRunnerPlugin.logicRunner):
 		except Exception as e:
 			raise Exception(f"MemoryMapper is missing required attribute, more info : {str(e)}")
 
-		self.memories = config.memories.iterator
-		self.kernels = config.kernels.iterator
-		self.osPartitions = config.osPartitions.iterator
-		self.programs = config.programs.iterator
-		self.cores = config.cores.iterator
-		self.tasks = config.tasks.iterator
-		self.threads = config.threads.iterator
+		self.memories = config.memories
+		self.kernels = config.kernels
+		self.osPartitions = config.osPartitions
+		self.programs = config.programs
+		self.cores = config.cores
+		self.tasks = config.tasks
+		self.threads = config.threads
 		self.architecture = config.mcu.MCU.architecture
 
 		self.assignFreeChunks()

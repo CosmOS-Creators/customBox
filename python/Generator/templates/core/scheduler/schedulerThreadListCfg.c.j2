@@ -58,7 +58,7 @@
 /* @cond S */
 __SEC_START(__OS_CONSTS_SECTION_START)
 /* @endcond*/
-{% for core in model.cores.iterator -%}
+{% for core in model.cores -%}
 const CosmOS_ThreadListConfigurationType SchedulerThreadListScheduler{{core.coreId}}CfgConst[SCHEDULERTHREADLIST_SCHEDULER_{{core.coreId}}_ELEMENT_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {

@@ -82,7 +82,7 @@
   * @ingroup Global_schedulerThreadListCfg
   * @{
 ********************************************************************************/
-{% for core in model.cores.iterator -%}
+{% for core in model.cores -%}
 extern const CosmOS_ThreadListConfigurationType SchedulerThreadListScheduler{{core.coreId}}CfgConst[SCHEDULERTHREADLIST_SCHEDULER_{{core.coreId}}_ELEMENT_NUM];
 {% endfor -%}
 /********************************************************************************

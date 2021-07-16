@@ -82,10 +82,10 @@
   * @ingroup Global_taskCfg
   * @{
 ********************************************************************************/
-{% for item in model.programs.iterator -%}
+{% for item in model.programs -%}
 extern const CosmOS_TaskConfigurationType TasksProgram{{item.programId}}Core{{item.core.coreId}}CfgConst[TASK_PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_NUM];
 {% endfor -%}
-{% for item in model.programs.iterator -%}
+{% for item in model.programs -%}
 extern CosmOS_TaskVariableType TasksProgram{{item.programId}}Core{{item.core.coreId}}Var[TASK_PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_NUM];
 {% endfor -%}
 /********************************************************************************

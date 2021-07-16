@@ -57,7 +57,7 @@
 /* @cond S */
 __SEC_START(__OS_VARS_SECTION_START)
 /* @endcond*/
-{% for item in model.cores.iterator -%}
+{% for item in model.cores -%}
 CosmOS_BarrierVariableType BarriersCore{{item.coreId}}Var[BARRIERS_NUM] __OS_VARS_SECTION
 IS_INITIALIZED_TO
 {

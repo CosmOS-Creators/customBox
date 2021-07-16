@@ -82,7 +82,7 @@
   * @ingroup Global_bufferDoubleCfg
   * @{
 ********************************************************************************/
-{% for buffer in model.buffers.iterator -%}
+{% for buffer in model.buffers -%}
 {% if buffer.isDoubleBuffer -%}
 extern const CosmOS_BufferDoublePairConfigurationType BuffersDoublePair{{buffer.doubleBufferId}}Cfg[BUFFER_PAIR_NUM];
 {% endif -%}

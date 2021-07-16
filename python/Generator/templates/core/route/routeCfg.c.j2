@@ -23,7 +23,7 @@
 /* CORE interfaces */
 #include "routeCfg.h"
 /* GENERATED interfaces */
-{% for route in model.sysCallRoutes.iterator -%}
+{% for route in model.sysCallRoutes -%}
 #include "{{route.apiHeader}}"
 {% endfor -%}
 /********************************************************************************
@@ -64,7 +64,7 @@ __SEC_START(__OS_CONSTS_SECTION_START)
 const CosmOS_GenericVoidType RoutesFuncConst[ROUTES_FUNC_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
-{% for item in model.sysCallRoutes.iterator -%}
+{% for item in model.sysCallRoutes -%}
 {{"\t\t"}}(CosmOS_GenericVoidType){{item.routedFuncName}},
 {% endfor -%}
 };
@@ -72,7 +72,7 @@ IS_INITIALIZED_TO
 const BitWidthType RoutesIdToFuncConst[ROUTES_ID_TO_FUNC_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
-{% for item in model.buffers.iterator -%}
+{% for item in model.buffers -%}
 {{"\t\t"}}BUFFER_READARRAY,
 {{"\t\t"}}BUFFER_WRITEARRAY,
 {% if item.isDoubleBuffer -%}
@@ -80,7 +80,7 @@ IS_INITIALIZED_TO
 {{"\t\t"}}BUFFER_WRITEARRAY,
 {% endif -%}
 {% endfor -%}
-{% for item in model.sysCallRoutes.iterator -%}
+{% for item in model.sysCallRoutes -%}
 {% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" -%}
 {{"\t\t"}}{{item.routedFuncName.upper()}},
 {% endif -%}
@@ -90,7 +90,7 @@ IS_INITIALIZED_TO
 const BitWidthType RoutesIdToEntityConst[ROUTES_ID_TO_ENTITY_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
-{% for item in model.buffers.iterator -%}
+{% for item in model.buffers -%}
 {{"\t\t"}}BUFFER_{{item.bufferId}}_ID,
 {{"\t\t"}}BUFFER_{{item.bufferId}}_ID,
 {% if item.isDoubleBuffer -%}
@@ -98,7 +98,7 @@ IS_INITIALIZED_TO
 {{"\t\t"}}BUFFER_{{item.bufferId+1}}_ID,
 {% endif -%}
 {% endfor -%}
-{% for item in model.sysCallRoutes.iterator -%}
+{% for item in model.sysCallRoutes -%}
 {% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" -%}
 {{"\t\t"}}ROUTES_ID_TO_ENTITY_DUMMY,
 {% endif -%}

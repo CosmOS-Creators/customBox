@@ -142,7 +142,7 @@ class Link():
 		subconfig = config.getSubconfig(self)
 		if(self.config and self.attribute):
 			attributeCollection = []
-			for element in subconfig.iterator:
+			for element in subconfig:
 				targetAttribute = element.getAttributeInstance(self)
 				attributeCollection.append({"target": targetAttribute, "element": element})
 			return attributeCollection

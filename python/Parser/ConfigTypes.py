@@ -1,14 +1,25 @@
 from __future__ 				import annotations
 from types 						import SimpleNamespace
-from typing 					import Dict, Iterable, List, Union
+from typing 					import List, Union
 from Parser.LinkElement 		import Link
 from Parser.helpers 			import overrides
 import Parser.AttributeTypes 	as AttributeTypes
+import Parser.constants			as const
 
-TARGET_KEY					= "target"
-VALUE_KEY					= "value"
-INHERIT_KEY					= "inherit"
-TARGET_NAME_OVERWRITE_KEY	= "targetNameOverwrite"
+def formatConfig(config: Configuration, indent: int = 1):
+	stringRepresentation = ""
+	indentStr = " "*indent
+	crossingStr = "|-"
+	lineStr = "|"
+	for name, subconfig in config.configs.items():
+		stringRepresentation += f'{crossingStr}Subconfig({name})\n'
+		for name, configElement in subconfig.elements.items():
+			stringRepresentation += f'{lineStr}{indentStr}{crossingStr}ConfigElement({name})\n'
+			for name, attributeInstance in configElement.attributeInstances.items():
+				stringRepresentation += f'{lineStr}{indentStr}{lineStr}{indentStr}{crossingStr}AttributeInstance({name}: {attributeInstance.value})\n'
+			for name, reference in configElement.references.items():
+				stringRepresentation += f'{lineStr}{indentStr}{lineStr}{indentStr}{crossingStr}Reference({name}: {reference})\n'
+	return stringRepresentation
 
 class dynamicObject:
 	def __init__(self, className: str, nameClashError: str, duplicatedError: str, notExistantError: str):
@@ -23,11 +34,10 @@ class dynamicObject:
 		return f"{self.__class_name}({list(self.dynamic_items.values())})"
 
 	def __iter__(self):
-		return iter(list(self.dynamic_items.values()))
+		return iter(self.dynamic_items.values())
 
-	@property
-	def iterator(self):
-		return list(self.dynamic_items.values())
+	def __len__(self):
+		return len(self.dynamic_items)
 
 	def _getItems(self):
 		return self.dynamic_items
@@ -90,7 +100,7 @@ class Configuration(dynamicObject):
 	def configs(self):
 		return self._getItems()
 
-	def createSubconfig(self, name: Union[str,Link]):
+	def createSubconfig(self, name: Union[str,Link]) -> Subconfig:
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
 		return self._create(link.config, Subconfig(link.config, self))
 
@@ -98,7 +108,7 @@ class Configuration(dynamicObject):
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
 		return self._has(link.config)
 
-	def getSubconfig(self, name: Union[str,Link]):
+	def getSubconfig(self, name: Union[str,Link]) -> Subconfig:
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
 		return self._get(link.config)
 
@@ -116,12 +126,12 @@ class Subconfig(dynamicObject):
 		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
 		return self._has(elementLink.element)
 
-	def createElement(self, name: Union[str, Link]):
+	def createElement(self, name: Union[str, Link]) -> ConfigElement:
 		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
 		elementName = elementLink.element
 		return self._create(elementName, ConfigElement(elementName, self))
 
-	def getElement(self, name: Union[str, Link]):
+	def getElement(self, name: Union[str, Link]) -> ConfigElement:
 		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
 		if(elementLink.config != self.link.config):
 			raise AttributeError(f'Tried to get an element from config "{elementLink.config}" but the subconfig the element was requested from is "{self.link.element}"')
@@ -141,18 +151,18 @@ class Subconfig(dynamicObject):
 
 class ConfigElement(dynamicObject):
 	def __init__(self, name: str, parent: Subconfig):
-		self.id 					= name
+		self.__name 				= name
 		self.__link					= parent.link.copy()
 		self.__link.element			= name 				# example: cores/core_0
 		self.__parent				= parent
 		forbidden = f'Creating an attribute named "{{0}}" within the element "{self.link}" is not permitted as "{{0}}" is a reserved keyword'
 		duplicated = f'The creation of a new attribute named "{{0}}" was requested for element "{self.link}" but an attribute with that name already exists for this element'
-		doesNotExist = f'Tried to get attribute "{{0}}" from subconfig "{self.parent.link}" but this subconfig has no element with that name'
+		doesNotExist = f'Tried to get attribute "{{0}}" from element "{self.link}" but this element has no attribute with that name'
 		super().__init__("ConfigElement", forbidden, duplicated, doesNotExist)
 
 	@overrides(dynamicObject)
 	def __repr__(self):
-		return f"ConfigElement({self.id})"
+		return f"ConfigElement({self.__name})"
 
 	@property
 	def link(self):
@@ -163,23 +173,27 @@ class ConfigElement(dynamicObject):
 		return self.__parent
 
 	@property
+	def attributes(self):
+		return self._getItems()
+
+	@property
 	def attributeInstances(self):
-		AttributeInstances = list()
+		AttributeInstances = dict()
 		items = self._getItems()
-		for item in items:
-			itemValue = self._get(item)
+		for name, item in items.items():
+			itemValue = self._get(name)
 			if(type(itemValue) is AttributeInstance):
-				AttributeInstances.append(itemValue)
+				AttributeInstances[name] = itemValue
 		return AttributeInstances
 
 	@property
 	def references(self):
-		References = list()
+		References = dict()
 		items = self._getItems()
-		for item in items:
-			itemValue = self._get(item)
+		for name, item in items.items():
+			itemValue = self._get(name)
 			if(type(itemValue) is ReferenceCollection):
-				References.append(itemValue)
+				References[name] = itemValue
 		return References
 
 	def getAttribute(self, name: str):
@@ -212,9 +226,9 @@ class ConfigElement(dynamicObject):
 		return item
 
 	def createAttributeInstance(self, element_definition: dict, attribute_lookup: dict[str,AttributeTypes.AttributeType]):
-		if(not TARGET_KEY in element_definition):
-			raise KeyError(f'Error creating an attribute instance in "{self.parent.link}", Element definition "{element_definition}" is missing the mandatory key "{TARGET_KEY}"')
-		targetLink = Link.force(element_definition[TARGET_KEY], Link.EMPHASIZE_ATTRIBUTE)
+		if(not const.TARGET_KEY in element_definition):
+			raise KeyError(f'Error creating an attribute instance in "{self.parent.link}", Element definition "{element_definition}" is missing the mandatory key "{const.TARGET_KEY}"')
+		targetLink = Link.force(element_definition[const.TARGET_KEY], Link.EMPHASIZE_ATTRIBUTE)
 		targetLink = self.link.merge(targetLink, Link.EMPHASIZE_ATTRIBUTE)
 		attribute_lookup_key = targetLink.getLink(Element=False)
 		if(targetLink.attribute in self.__dict__):
@@ -224,16 +238,16 @@ class ConfigElement(dynamicObject):
 		targetedAttribute 							= attribute_lookup[attribute_lookup_key]
 		AttributeInstanceLink 						= self.link.copy()
 		AttributeInstanceLink.attribute 			= targetedAttribute.id
-		if(TARGET_NAME_OVERWRITE_KEY in element_definition):
-			AttributeInstanceLink.attribute = element_definition[TARGET_NAME_OVERWRITE_KEY]
+		if(const.TARGET_NAME_OVERWRITE_KEY in element_definition):
+			AttributeInstanceLink.attribute = element_definition[const.TARGET_NAME_OVERWRITE_KEY]
 		if(targetedAttribute.is_placeholder):
-			if(VALUE_KEY in element_definition):
+			if(const.VALUE_KEY in element_definition):
 				raise Exception(f'Element "{self.link}" instantiates the attribute definition "{AttributeInstanceLink}" which is a placeholder but the value key ist also defined, which is an invalid combination for placeholder entries.')
 			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute)
-		elif(VALUE_KEY in element_definition): # this is a normal attribute instance
-			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute, element_definition[VALUE_KEY])
+		elif(const.VALUE_KEY in element_definition): # this is a normal attribute instance
+			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute, element_definition[const.VALUE_KEY])
 		else:
-			raise Exception(f'Invalid attribute instance formatting in element "{self.link}". The following element definition is missing the "{VALUE_KEY}" property: {element_definition}')
+			raise Exception(f'Invalid attribute instance formatting in element "{self.link}". The following element definition is missing the "{const.VALUE_KEY}" property: {element_definition}')
 		return self._create(targetedAttribute.id, newAttributeInstance)
 
 	def populate(self, property_name: str, value, isPlaceholder: bool = True):
@@ -263,7 +277,8 @@ class ConfigElement(dynamicObject):
 			if(name in items):
 				return items[name].value
 			else:
-				raise AttributeError(self.__non_existant_error.format(name))
+				error_msg = object.__getattribute__(self, '_dynamicObject__non_existant_error')
+				raise AttributeError(error_msg.format(name))
 
 class AttributeInstance(SimpleNamespace):
 	def __init__(self, name: Union[str, Link], parent: ConfigElement, attribute: AttributeTypes.AttributeType, value = None):

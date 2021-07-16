@@ -63,7 +63,7 @@
 ********************************************************************************/
 #define BUFFER_NUM (BitWidthType){{model.os.os.buffersNum}}     /* Number of initialized buffers */
 
-{% for item in model.buffers.iterator -%}
+{% for item in model.buffers -%}
 {{"\n"}}#define BUFFER_{{item.bufferId}}_ID      (BitWidthType){{item.bufferId}}      /* Buffer {{item.name}} id */
 #define BUFFER_{{item.bufferId}}_SIZE (BitWidthType){{item.size}}      /* Buffer {{item.name}} size in bytes */
 {% if item.isDoubleBuffer -%}

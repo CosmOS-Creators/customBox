@@ -82,10 +82,10 @@
   * @ingroup Global_threadCfg
   * @{
 ********************************************************************************/
-{% for item in model.programs.iterator -%}
+{% for item in model.programs -%}
 extern const CosmOS_ThreadConfigurationType ThreadsProgram{{item.programId}}Core{{item.core.coreId}}CfgConst[THREAD_PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_NUM];
 {% endfor -%}
-{% for item in model.programs.iterator -%}
+{% for item in model.programs -%}
 extern CosmOS_ThreadVariableType ThreadsProgram{{item.programId}}Core{{item.core.coreId}}Var[THREAD_PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_NUM];
 {% endfor -%}
 /********************************************************************************

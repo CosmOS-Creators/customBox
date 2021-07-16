@@ -89,7 +89,7 @@ class generationElement():
 
 			with open(template, "r") as template:
 				templateContent = template.read()
-			jinjaTemplate = jinja2.Template(templateContent)
+			jinjaTemplate = jinja2.Template(templateContent, undefined=jinja2.StrictUndefined)
 			if(self.__preFileGenHook):
 				self.__preFileGenHook(config, config["model"], outputFilePath)
 			try:
@@ -126,7 +126,7 @@ class generationElement():
 				if(not self.__targetName is None):
 					configDict[self.__targetName] = element["element"]
 				if(not filename is None):
-					filename = filename.replace(TARGET_PLACEHOLDER, element["target"])
+					filename = filename.replace(TARGET_PLACEHOLDER, element["target"].value)
 
 				generatedFiles += self.injectTemplates(configDict, filename)
 		return generatedFiles

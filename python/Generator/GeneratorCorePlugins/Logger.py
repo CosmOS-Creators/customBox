@@ -9,8 +9,8 @@ from Parser.ConfigTypes		import Configuration
 class loggerPlugin(PluginSkeleton.GeneratorPlugin):
 	@overrides(PluginSkeleton.GeneratorPlugin)
 	def preGeneration(self, systemConfig: Configuration, num_of_files: int):
-		self.pbar = tqdm(total=num_of_files)
-		tqdm.write(f'Starting file generation for {num_of_files} files...')
+		self.pbar = tqdm(total=num_of_files + 1)
+		tqdm.write(f'Starting file generation for {num_of_files + 1} files...')
 
 	@overrides(PluginSkeleton.GeneratorPlugin)
 	def postGeneration(self, file_paths: List[Path]):

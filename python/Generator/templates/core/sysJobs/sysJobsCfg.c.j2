@@ -23,7 +23,7 @@
 /* CORE interfaces */
 #include "sysJobsCfg.h"
 /* GENERATED interfaces */
-{% for sysJobGroup in model.sysJobs.iterator -%}
+{% for sysJobGroup in model.sysJobs -%}
 {% for item in sysJobGroup.apiHeaders -%}
 #include "{{item}}"
 {% endfor -%}
@@ -63,7 +63,7 @@
 /* @cond S */
 __SEC_START(__OS_CONSTS_SECTION_START)
 /* @endcond*/
-{% for sysJobGroup in model.sysJobs.iterator -%}
+{% for sysJobGroup in model.sysJobs -%}
 const CosmOS_GenericVoidType SysJobsHandlersGroup{{sysJobGroup.groupId}}Core{{sysJobGroup.core.coreId}}Const[SYSJOBS_HANDLERS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
@@ -73,7 +73,7 @@ IS_INITIALIZED_TO
 };
 {% endfor -%}
 
-{% for core in model.cores.iterator -%}
+{% for core in model.cores -%}
 const CosmOS_SysJobsGroupConfigurationType SysJobsGroupsCore{{core.coreId}}ConstCfg[SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
@@ -90,7 +90,7 @@ IS_INITIALIZED_TO
 const CosmOS_SysJobsConfigurationType SysJobsConstCfg[CORE_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
-    {% for core in model.cores.iterator -%}
+    {% for core in model.cores -%}
     {
         SysJobsGroupsCore{{core.coreId}}ConstCfg,                   /* const CosmOS_SysJobsGroupConfigurationType * const groups    */
         SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM,                    /* const BitWidthType numOfGroups                               */
@@ -108,7 +108,7 @@ __SEC_START(__OS_VARS_SECTION_START)
 CosmOS_SysJobsVariableType SysJobsVar[CORE_NUM] __OS_VARS_SECTION
 IS_INITIALIZED_TO
 {
-    {% for core in model.cores.iterator -%}
+    {% for core in model.cores -%}
     {
         &SysJobsConstCfg[CORE_{{core.coreId}}_ID],    /* const CosmOS_SysJobsConfigurationType * const cfg  */
         0,                              /* BitWidthType currentTick                           */

@@ -82,7 +82,7 @@
   * @ingroup Global_schedulerScheduleTableCfg
   * @{
 ********************************************************************************/
-{% for item in model.cores.iterator -%}
+{% for item in model.cores -%}
 extern const CosmOS_ScheduleTableConfigurationType ScheduleTableScheduler{{item.coreId}}CfgConst[SCHEDULETABLE_SCHEDULER_{{item.coreId}}_ELEMENT_NUM];
 {% endfor -%}
 /********************************************************************************

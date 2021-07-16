@@ -82,7 +82,7 @@
   * @ingroup Global_coreSyncCfg
   * @{
 ********************************************************************************/
-{% for item in model.cores.iterator -%}
+{% for item in model.cores -%}
 extern CosmOS_BarrierVariableType BarriersCore{{item.coreId}}Var[BARRIERS_NUM];
 {% endfor -%}
 /********************************************************************************

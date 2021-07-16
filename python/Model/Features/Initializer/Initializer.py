@@ -50,15 +50,15 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 
 		self.maxUniqueId = None
 
-		self.cores = config.cores.iterator										#type: List[ConfigElement]
-		self.programs = config.programs.iterator								#type: List[ConfigElement]
-		self.buffers = config.buffers.iterator									#type: List[ConfigElement]
-		self.tasks = config.tasks.iterator										#type: List[ConfigElement]
-		self.threads = config.threads.iterator									#type: List[ConfigElement]
-		self.buffers = config.buffers.iterator									#type: List[ConfigElement]
-		self.sysJobs = config.sysJobs.iterator									#type: List[ConfigElement]
-		self.schedulers = config.schedulers.iterator							#type: List[ConfigElement]
-		self.scheduleTableEntries = config.scheduleTableEntries.iterator		#type: List[ConfigElement]
+		self.cores = config.cores									#type: List[ConfigElement]
+		self.programs = config.programs								#type: List[ConfigElement]
+		self.buffers = config.buffers								#type: List[ConfigElement]
+		self.tasks = config.tasks									#type: List[ConfigElement]
+		self.threads = config.threads								#type: List[ConfigElement]
+		self.buffers = config.buffers								#type: List[ConfigElement]
+		self.sysJobs = config.sysJobs								#type: List[ConfigElement]
+		self.schedulers = config.schedulers							#type: List[ConfigElement]
+		self.scheduleTableEntries = config.scheduleTableEntries		#type: List[ConfigElement]
 		self.cpuBitWidth = config.mcu.MCU.cpuBitWidth
 		self.os = config.os.os
 

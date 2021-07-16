@@ -82,7 +82,7 @@
   * @ingroup Global_bufferCfg
   * @{
 ********************************************************************************/
-{% for item in model.buffers.iterator -%}
+{% for item in model.buffers -%}
 extern unsigned char buffer{{item.bufferId}}Arr[BUFFER_{{item.bufferId}}_SIZE];
 {% if item.isDoubleBuffer -%}
 extern unsigned char buffer{{item.bufferId+1}}Arr[BUFFER_{{item.bufferId+1}}_SIZE];

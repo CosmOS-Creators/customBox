@@ -83,7 +83,7 @@ IS_INITIALIZED_TO
 {% endfor -%}
 };
 {{"\n"}}
-{% for item in model.buffers.iterator -%}
+{% for item in model.buffers -%}
 const BitWidthType BitLockBuffer{{item.bufferId}}ReadCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
@@ -102,7 +102,7 @@ IS_INITIALIZED_TO
 {% endif -%}
 {% endfor -%}
 {{"\n"}}
-{% for item in model.buffers.iterator -%}
+{% for item in model.buffers -%}
 const BitWidthType BitLockBuffer{{item.bufferId}}WriteCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
@@ -121,7 +121,7 @@ IS_INITIALIZED_TO
 {% endif -%}
 {% endfor -%}
 {{"\n"}}
-{% for item in model.buffers.iterator -%}
+{% for item in model.buffers -%}
 const BitWidthType BitLockBuffer{{item.bufferId}}ReadCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
@@ -140,7 +140,7 @@ IS_INITIALIZED_TO
 {% endif -%}
 {% endfor -%}
 {{"\n"}}
-{% for item in model.buffers.iterator -%}
+{% for item in model.buffers -%}
 const BitWidthType BitLockBuffer{{item.bufferId}}WriteCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
@@ -159,7 +159,7 @@ IS_INITIALIZED_TO
 {% endif -%}
 {% endfor -%}
 {{"\n"}}
-{% for item in model.buffers.iterator -%}
+{% for item in model.buffers -%}
 const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}ReadCfgConst __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
@@ -176,7 +176,7 @@ IS_INITIALIZED_TO
 {% endif -%}
 {% endfor %}
 {{"\n"}}
-{% for item in model.buffers.iterator -%}
+{% for item in model.buffers -%}
 const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}WriteCfgConst __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {

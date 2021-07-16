@@ -61,10 +61,10 @@
   * @ingroup Global_sysDefsPrograms
   * @{
 ********************************************************************************/
-{% for item in model.cores.iterator -%}
+{% for item in model.cores -%}
 #define PROGRAM_CORE_{{item.coreId}}_NUM      (BitWidthType){{item.corePrograms|length}}    /* Number of configurated programs for core {{item.CoreName}} */
 {% endfor -%}
-{% for item in model.programs.iterator %}
+{% for item in model.programs %}
 #define PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_ID     (BitWidthType){{item.programId}}    /* Program {{item.name}} identificator */
 
 #define PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_SIZE    (BitWidthType){{item.size}}    /* Program {{item.name}} size */

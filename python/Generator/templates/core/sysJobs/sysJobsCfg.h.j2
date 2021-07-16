@@ -82,11 +82,11 @@
   * @ingroup Global_sysJobsCfg
   * @{
 ********************************************************************************/
-{% for sysJobGroup in model.sysJobs.iterator -%}
+{% for sysJobGroup in model.sysJobs -%}
 extern const CosmOS_GenericVoidType SysJobsHandlersGroup{{sysJobGroup.groupId}}Core{{sysJobGroup.core.coreId}}Const[SYSJOBS_HANDLERS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_NUM];
 {% endfor -%}
 
-{% for core in model.cores.iterator -%}
+{% for core in model.cores -%}
 extern const CosmOS_SysJobsGroupConfigurationType SysJobsGroupsCore{{core.coreId}}ConstCfg[SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM];
 {% endfor -%}
 

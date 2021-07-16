@@ -68,7 +68,7 @@
 #define BUFFER_PAIR_BUFFER_0_ID (BitWidthType)0     /* Identificator of the first buffer in bufferDouble pair */
 #define BUFFER_PAIR_BUFFER_1_ID (BitWidthType)1     /* Identificator of the second buffer in bufferDouble pair */
 
-{% for buffer in model.buffers.iterator -%}
+{% for buffer in model.buffers -%}
 {% if buffer.isDoubleBuffer -%}
 #define BUFFER_DOUBLE_{{buffer.doubleBufferId}}_ID      (BitWidthType){{buffer.doubleBufferId}}      /* BufferDouble {{buffer.name}} id */
 {% endif -%}

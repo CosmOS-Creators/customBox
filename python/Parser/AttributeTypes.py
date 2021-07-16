@@ -1,25 +1,10 @@
 import re
 import Parser.ConfigTypes 	as ConfigTypes
 import Parser.helpers		as helpers
+import Parser.constants		as const
 from typing 				import List, Union
 from Parser.helpers 		import overrides
 from Parser.LinkElement		import Link
-
-LABEL_KEY 					= "label"
-TYPE_KEY 					= "type"
-TOOLTIP_KEY					= "tooltip"
-INHERIT_KEY					= "inherit"
-PLACEHOLDER_KEY				= "placeholder"
-HIDDEN_KEY					= "hidden"
-PARENT_REFERENCE_TYPE_KEY	= "parentReference"
-# special keys
-VALIDATION_KEY				= "validation"
-ELEMENTS_KEY				= "elements"
-STEP_KEY					= "step"
-MIN_KEY						= "min"
-MAX_KEY						= "max"
-
-baseKeys = [LABEL_KEY, TOOLTIP_KEY, HIDDEN_KEY, PLACEHOLDER_KEY, TYPE_KEY]
 
 class AttributeType():
 	""" Base class attribute type. Specifics should be overwritten in inherited classes
@@ -42,24 +27,24 @@ class AttributeType():
 			raise KeyError(f"Error in attribute \"{globalID.getLink()}\" of type \"{self._comparison_type}\" : {str(e)}")
 
 		# special helpers
-		self._is_placeholder 		= self.checkForKey(PLACEHOLDER_KEY, False)
+		self._is_placeholder 		= self.checkForKey(const.PLACEHOLDER_KEY, False)
 		# required properties
 		self.globalID 				= globalID
 		self.id 					= globalID.attribute
 
 		error_message = "Attribute \"" + self.globalID.getLink() + "\" is missing the required \"{}\" key."
-		if(TYPE_KEY in attribute_definition):
-			self.type 				= attribute_definition[TYPE_KEY]
+		if(const.TYPE_KEY in attribute_definition):
+			self.type 				= attribute_definition[const.TYPE_KEY]
 		else:
-			raise AttributeError(error_message.format(TYPE_KEY))
+			raise AttributeError(error_message.format(const.TYPE_KEY))
 
 		# optional properties
-		self.tooltip 				= self.checkForKey(TOOLTIP_KEY, "")
-		self.hidden 				= self.checkForKey(HIDDEN_KEY, False)
-		if(LABEL_KEY in attribute_definition):
-			self.label 				= attribute_definition[LABEL_KEY]
-		elif(self.hidden == False and not self._is_placeholder and not self.type == PARENT_REFERENCE_TYPE_KEY):
-			raise AttributeError(error_message.format(LABEL_KEY))
+		self.tooltip 				= self.checkForKey(const.TOOLTIP_KEY, "")
+		self.hidden 				= self.checkForKey(const.HIDDEN_KEY, False)
+		if(const.LABEL_KEY in attribute_definition):
+			self.label 				= attribute_definition[const.LABEL_KEY]
+		elif(self.hidden == False and not self._is_placeholder and not self.type == const.PARENT_REFERENCE_TYPE_KEY):
+			raise AttributeError(error_message.format(const.LABEL_KEY))
 
 	def __new__(cls, *args, **kwargs):
 		""" Prevent the instantiation of the base class
@@ -79,7 +64,7 @@ class AttributeType():
 
 	def checkForForbiddenKeys(self, listOfAllowedKeys: List[str]):
 		global baseKeys
-		AllAllowedKeys = baseKeys + listOfAllowedKeys
+		AllAllowedKeys = const.baseKeys + listOfAllowedKeys
 		for key in self._attribute_definition:
 			if(not key in AllAllowedKeys):
 				raise KeyError(f"The key \"{key}\" is not valid for this attribute type")
@@ -111,7 +96,7 @@ class AttributeType():
 
 	def create_inheritor(self, inherit_properties: dict, globalID: str):
 		overwriteWith = inherit_properties.copy()
-		del overwriteWith[INHERIT_KEY]
+		del overwriteWith[const.INHERIT_KEY]
 		newAttributeDefinition = self._attribute_definition.copy()
 		newAttributeDefinition.update(overwriteWith)
 		newAttribute = parseAttribute(newAttributeDefinition, globalID)
@@ -120,12 +105,12 @@ class AttributeType():
 
 class StringType(AttributeType):
 	_comparison_type 	= "string"
-	_typeSpecificKeys	= [VALIDATION_KEY]
+	_typeSpecificKeys	= [const.VALIDATION_KEY]
 
 	@overrides(AttributeType)
 	def __init__(self, attribute_definition: dict, globalID: str):
 		super().__init__(attribute_definition, globalID)
-		self.validation = self.checkForKey(VALIDATION_KEY, "")
+		self.validation = self.checkForKey(const.VALIDATION_KEY, "")
 
 	@overrides(AttributeType)
 	def checkValue(self, valueInput: str):
@@ -157,13 +142,13 @@ class BoolType(AttributeType):
 
 class IntType(AttributeType):
 	_comparison_type 	= "int"
-	_typeSpecificKeys	= [MIN_KEY, MAX_KEY]
+	_typeSpecificKeys	= [const.MIN_KEY, const.MAX_KEY]
 
 	@overrides(AttributeType)
 	def __init__(self, attribute_definition: dict, globalID: str):
 		super().__init__(attribute_definition, globalID)
-		self.min 			= self.checkForKey(MIN_KEY, None)
-		self.max 			= self.checkForKey(MAX_KEY, None)
+		self.min 			= self.checkForKey(const.MIN_KEY, None)
+		self.max 			= self.checkForKey(const.MAX_KEY, None)
 
 	@overrides(AttributeType)
 	def checkValue(self, valueInput):
@@ -192,12 +177,12 @@ class FloatType(IntType):
 class ReferenceListType(AttributeType):
 	_comparison_type 	= "referenceList"
 	_needs_linking		= True
-	_typeSpecificKeys	= [ELEMENTS_KEY]
+	_typeSpecificKeys	= [const.ELEMENTS_LIST_KEY]
 
 	@overrides(AttributeType)
 	def __init__(self, attribute_definition: dict, globalID: str):
 		super().__init__(attribute_definition, globalID)
-		self.elements: List[Link] = self.checkForKey(ELEMENTS_KEY, None)
+		self.elements: List[Link] = self.checkForKey(const.ELEMENTS_LIST_KEY, None)
 		if(not self.elements is None):
 			if(not type(self.elements) is list):
 				raise TypeError(f'The elements property must always be a list for reference list attribute types but found type "{type(self.elements)}" instead for attribute "{self.globalID}"')
@@ -232,7 +217,7 @@ class ReferenceListType(AttributeType):
 	@overrides(AttributeType)
 	def link(self, objConfig: ConfigTypes.Configuration, attributeInstance: ConfigTypes.AttributeInstance):
 		if(not type(attributeInstance.value) is list):
-			raise TypeError(f"Values for elements of reference list attribute types must be of type list but found type \"{type(value)}\" instead")
+			raise TypeError(f"Values for elements of reference list attribute types must be of type list but found type \"{type(attributeInstance.value)}\" instead")
 		linkedTargets = []
 		if(not self.elements is None):
 			objConfig.require(self.elements)
@@ -274,22 +259,22 @@ class StringListType(AttributeType):
 class SelectionType(AttributeType):
 	_comparison_type 	= "selection"
 	_needs_linking		= True
-	_typeSpecificKeys	= [ELEMENTS_KEY]
+	_typeSpecificKeys	= [const.ELEMENTS_LIST_KEY]
 
 	@overrides(AttributeType)
 	def __init__(self, attribute_definition: dict, globalID: str):
 		super().__init__(attribute_definition, globalID)
-		if(ELEMENTS_KEY in attribute_definition):
-			self.elements 			= attribute_definition[ELEMENTS_KEY]
+		if(const.ELEMENTS_LIST_KEY in attribute_definition):
+			self.elements 			= attribute_definition[const.ELEMENTS_LIST_KEY]
 			self.resolvedElements	= None
 			if(type(self.elements) is list):
 				self._needs_linking		= False
 			elif(type(self.elements) is str):
 				self._needs_linking		= True
 			else:
-				raise TypeError(f"Attribute \"{self.globalID}\" only allows string and list types for \"{ELEMENTS_KEY}\" property but found type \"{type(self.elements)}\"")
+				raise TypeError(f"Attribute \"{self.globalID}\" only allows string and list types for \"{const.ELEMENTS_LIST_KEY}\" property but found type \"{type(self.elements)}\"")
 		else:
-			raise AttributeError(f"Property \"{ELEMENTS_KEY}\" is required for type \"{self._comparison_type}\" but was missing for attribute \"{self.globalID}\"")
+			raise AttributeError(f"Property \"{const.ELEMENTS_LIST_KEY}\" is required for type \"{self._comparison_type}\" but was missing for attribute \"{self.globalID}\"")
 
 	@overrides(AttributeType)
 	def checkValue(self, valueInput: str):
@@ -312,7 +297,7 @@ class SelectionType(AttributeType):
 				subconfig = link.resolveSubconfig(objConfig)
 			except AttributeError as e:
 				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}")
-			for element in subconfig.iterator:
+			for element in subconfig:
 				try:
 					targetValue = element.getAttribute(link.element)
 				except AttributeError:
@@ -320,7 +305,7 @@ class SelectionType(AttributeType):
 					continue
 				possibleValues.append(targetValue)
 				if(attributeInstance.value == targetValue.value):
-					attributeInstance.setValueDirect(attributeInstance)
+					attributeInstance.setValueDirect(targetValue.parent)
 					foundMatch = True
 			if(self.resolvedElements is None):
 				self.resolvedElements = possibleValues
@@ -330,7 +315,7 @@ class SelectionType(AttributeType):
 
 class HexType(IntType):
 	_comparison_type 	= "hex"
-	_typeSpecificKeys	= [MIN_KEY, MAX_KEY]
+	_typeSpecificKeys	= [const.MIN_KEY, const.MAX_KEY]
 
 	@overrides(AttributeType)
 	def checkValue(self, valueInput: str):
@@ -351,12 +336,12 @@ class HexType(IntType):
 
 class SliderType(IntType):
 	_comparison_type 	= "slider"
-	_typeSpecificKeys	= [MIN_KEY, MAX_KEY, STEP_KEY]
+	_typeSpecificKeys	= [const.MIN_KEY, const.MAX_KEY, const.STEP_KEY]
 
 	@overrides(AttributeType)
 	def __init__(self, attribute_definition: dict, globalID: str):
 		super().__init__(attribute_definition, globalID)
-		self.step 			= self.checkForKey(STEP_KEY, 1)
+		self.step 			= self.checkForKey(const.STEP_KEY, 1)
 
 	@overrides(AttributeType)
 	def checkValue(self, valueInput: int):
@@ -376,8 +361,8 @@ class ParentReferenceType(AttributeType):
 
 	@overrides(AttributeType)
 	def __init__(self, attribute_definition: dict, globalID: str):
-		if(HIDDEN_KEY in attribute_definition or PLACEHOLDER_KEY in attribute_definition):
-			raise KeyError(f"Attributes of type parent reference are not allowed to contain either the \"{HIDDEN_KEY}\" nor the \"{PLACEHOLDER_KEY}\" key.")
+		if(const.HIDDEN_KEY in attribute_definition or const.PLACEHOLDER_KEY in attribute_definition):
+			raise KeyError(f"Attributes of type parent reference are not allowed to contain either the \"{const.HIDDEN_KEY}\" nor the \"{const.PLACEHOLDER_KEY}\" key.")
 		super().__init__(attribute_definition, globalID)
 
 	@overrides(AttributeType)
@@ -408,9 +393,9 @@ def reportValidationError(errorMsg: str):
 	raise ValueError(errorMsg)
 
 def parseAttribute(attributeDefinition: dict, AttributeGlobalID: Link) -> AttributeType:
-	if(not TYPE_KEY in attributeDefinition):
+	if(not const.TYPE_KEY in attributeDefinition):
 		raise KeyError("Type key is required for every attribute but it is missing")
-	parseType = attributeDefinition[TYPE_KEY]
+	parseType = attributeDefinition[const.TYPE_KEY]
 	newAttribute = None
 	for attribType in attributeTypeList:
 		if(attribType.is_type(parseType)):

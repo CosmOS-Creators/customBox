@@ -1,0 +1,5 @@
+{
+    "config": [
+		"./tests/testConfigs/configs/BasicConfig"
+	]
+}

@@ -61,7 +61,7 @@
   * @ingroup Global_sysDefsScheduleTables
   * @{
 ********************************************************************************/
-{% for core in model.cores.iterator -%}
+{% for core in model.cores -%}
 {% for scheduler in core.coreScheduler -%}
 #define SCHEDULETABLE_SCHEDULER_{{core.coreId}}_ELEMENT_NUM   (BitWidthType){{scheduler.table|length}}             /* Number of elements in scheduletable for core {{core.CoreName}} */
 {{"\n"}}{% for entry in scheduler.table -%}

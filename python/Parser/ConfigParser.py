@@ -1,45 +1,27 @@
 import json
 import os
-import re
 import Parser.AttributeTypes 	as AttributeTypes
 import Parser.ConfigTypes 		as ConfigTypes
 import Parser.WorkspaceParser 	as WorkspaceParser
+import Parser.constants			as const
 from pathlib 					import Path
 from typing 					import Dict, List, Union, NewType
 from Parser.LinkElement 		import Link
-
-ELEMENTS_KEY				= "elements"
-ATTRIBUTES_KEY				= "attributes"
-VERSION_KEY					= "version"
-
-TARGET_KEY					= "target"
-VALUE_KEY					= "value"
-INHERIT_KEY					= "inherit"
-
-TARGET_NAME_OVERWRITE_KEY	= "targetNameOverwrite"
-
-configFileNameRegex			= re.compile(r"^[A-Za-z0-9]+$")
-
-required_json_config_keys	= [ELEMENTS_KEY, ATTRIBUTES_KEY, VERSION_KEY]
 
 # type definitions for better linting
 jsonConfigType 				= NewType('jsonConfigType', Dict[str, object])
 AttributeCollectionType 	= NewType('AttributeCollectionType', Dict[str, AttributeTypes.AttributeType])
 
-reservedConfigNames = ["require", "activateValueGuards"]
-reservedElementNames = ["iterator", "activateValueGuards"]
-reservedAttributeNames = ["id", "populate", "link", "activateValueGuards", "assignAttribute", "_setattr_direct"]
-
 def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 	attributeCollection: AttributeCollectionType = {}
 	AttributesToInherit: Dict[str, AttributeTypes.AttributeType] = {}
 	for configName in config:
-		for attribute in config[configName][ATTRIBUTES_KEY]:
-			currentAttribute = config[configName][ATTRIBUTES_KEY][attribute]
+		for attribute in config[configName][const.ATTRIBUTES_KEY]:
+			currentAttribute = config[configName][const.ATTRIBUTES_KEY][attribute]
 			globalIdentifier = Link.construct(config=configName, attribute=attribute)
-			if(INHERIT_KEY in currentAttribute):
-				if(not Link.isGlobal(currentAttribute[INHERIT_KEY])):
-					currentAttribute[INHERIT_KEY] = Link.construct(config=configName, attribute=currentAttribute[INHERIT_KEY]).getLink()
+			if(const.INHERIT_KEY in currentAttribute):
+				if(not Link.isGlobal(currentAttribute[const.INHERIT_KEY])):
+					currentAttribute[const.INHERIT_KEY] = Link.construct(config=configName, attribute=currentAttribute[const.INHERIT_KEY]).getLink()
 				AttributesToInherit[globalIdentifier.getLink()] = currentAttribute
 			else:
 				try:
@@ -50,28 +32,26 @@ def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 		attrib = AttributesToInherit[attribLink]
 		link = Link(attribLink)
 		try:
-			baseAttribute = attributeCollection[attrib[INHERIT_KEY]]
+			baseAttribute = attributeCollection[attrib[const.INHERIT_KEY]]
 		except KeyError:
-			raise KeyError(f"In config \"{link.config}\" the attribute inherit target \"{attrib[INHERIT_KEY]}\" does not match any known attributes")
+			raise KeyError(f"In config \"{link.config}\" the attribute inherit target \"{attrib[const.INHERIT_KEY]}\" does not match any known attributes")
 		if(baseAttribute.is_inherited):
-			raise Exception(f"In config \"{link.config}\" it was tried to inherit from \"{attrib[INHERIT_KEY]}\" but this attribute is already inherited and inheritance nesting is not supported at the moment.")
+			raise Exception(f"In config \"{link.config}\" it was tried to inherit from \"{attrib[const.INHERIT_KEY]}\" but this attribute is already inherited and inheritance nesting is not supported at the moment.")
 		attributeCollection[attribLink] = baseAttribute.create_inheritor(attrib, attribLink)
 
 	return attributeCollection
 
 def processConfig(config: dict, configName: str, completeConfig: ConfigTypes.Configuration, attributeCollection: AttributeCollectionType):
-	for element in config[ELEMENTS_KEY]:
-		currentElement = config[ELEMENTS_KEY][element]
+	for element in config[const.ELEMENTS_KEY]:
+		currentElement = config[const.ELEMENTS_KEY][element]
 		if(completeConfig.hasSubConfig(configName)):
 			subconfig = completeConfig.getSubconfig(configName)
 		else:
 			subconfig = completeConfig.createSubconfig(configName)
 		newElement = subconfig.createElement(element)
 		if(not type(currentElement) is list):
-			raise Exception(f"In config \"{configName}\" the \"{ELEMENTS_KEY}\" property is required to be a list but found {type(currentElement)}")
+			raise Exception(f"In config \"{configName}\" the \"{const.ELEMENTS_KEY}\" property is required to be a list but found {type(currentElement)}")
 		for attributeInstance in currentElement:
-			if(not TARGET_KEY in attributeInstance):
-				raise Exception(f"Invalid attribute instance formatting in \"{configName}\" config. The following property is invalid: {attributeInstance}")
 			newElement.createAttributeInstance(attributeInstance, attributeCollection)
 
 def linkParents(objConfigs: ConfigTypes.Configuration):
@@ -82,7 +62,7 @@ def linkParents(objConfigs: ConfigTypes.Configuration):
 					attribInst.ResolveValueLink()
 
 def config_file_sanity_check(config: dict):
-	for required_key in required_json_config_keys:
+	for required_key in const.required_json_config_keys:
 		if(not required_key in config):
 			raise KeyError(f"Every config file must have a key named \"{required_key}\"")
 
@@ -112,7 +92,7 @@ class ConfigParser():
 		for configFile in configFiles:
 			with open(configFile, "r") as currentFile:
 				configCleanName = Path(configFile).stem
-				if(not configFileNameRegex.match(configCleanName)):
+				if(not const.configFileNameRegex.match(configCleanName)):
 					raise Exception(f"Config file names are oly allowed to contain lower case alphanumeric characters but the file \"{configFile}\" would generate a config named \"{configCleanName}\" which would violate this restriction")
 				if(configCleanName in jsonConfigs):
 					raise Exception(f"Config file names have to be unique but the files \"{configFileNames[configCleanName]}\" and \"{configFile}\" have the same name({configCleanName}) thus are considered duplicated.")
@@ -144,6 +124,7 @@ if __name__ == "__main__":
 	fullConfig.require(['tasks/task_0:uniqueId'])
 	fullConfig.tasks.task_0.uniqueId = 5
 	fullConfig.cores.core_0.corePrograms = [fullConfig.programs.program_0]
-	# with open("ConfigDump", "w") as file:
-	# 	file.write(format(fullConfig))
-	# pprint(fullConfig)
+	configStr = ConfigTypes.formatConfig(fullConfig)
+	with open("ConfigDump", "w") as file:
+		file.write(configStr)
+	print(configStr)

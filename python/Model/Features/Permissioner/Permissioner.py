@@ -20,9 +20,9 @@ class PermissionerLogic(logicRunnerPlugin.logicRunner):
 		except Exception as e:
 			raise Exception(f"Permissioner is missing required attribute, more info : {str(e)}")
 
-		self.tasks = config.tasks.iterator
-		self.threads = config.threads.iterator
-		self.buffers = config.buffers.iterator
+		self.tasks = config.tasks
+		self.threads = config.threads
+		self.buffers = config.buffers
 		self.cpuBitWidth = config.mcu.MCU.cpuBitWidth
 		self.maxUniqueId = config.os.os.schedulableNum
 

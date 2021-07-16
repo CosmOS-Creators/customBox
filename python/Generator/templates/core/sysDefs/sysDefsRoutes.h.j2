@@ -62,17 +62,17 @@
   * @ingroup Global_sysDefsRoutes
   * @{
 ********************************************************************************/
-#define ROUTES_FUNC_NUM (BitWidthType){{ model.sysCallRoutes.iterator|length }}          /* Number of route RW */
+#define ROUTES_FUNC_NUM (BitWidthType){{ model.sysCallRoutes|length }}          /* Number of route RW */
 
 #define ROUTES_ID_TO_ENTITY_DUMMY (BitWidthType)0     /* Dummy it to entity */
 
-{% for item in model.sysCallRoutes.iterator -%}
+{% for item in model.sysCallRoutes -%}
 #define {{item.routedFuncName.upper()}} (BitWidthType){{loop.index-1}}            /* Identificator pointing on function pointer in array (Routes) */
 {% endfor -%}
 
 {% set ns = namespace(index=0) -%}
 
-{% for item in model.buffers.iterator -%}
+{% for item in model.buffers -%}
 #define SYSCALL_READ_BUFFER_{{item.bufferId}}_ID (BitWidthType){{ns.index}}   /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
 {% set ns.index = ns.index + 1 -%}
 #define SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID (BitWidthType){{ns.index}}  /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
@@ -84,7 +84,7 @@
 {% set ns.index = ns.index + 1 -%}
 {% endif -%}
 {% endfor -%}
-{% for item in model.sysCallRoutes.iterator -%}
+{% for item in model.sysCallRoutes -%}
 {% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" -%}
 #define SYSCALL_{{item.routedFuncName.upper()}} (BitWidthType){{ns.index}}            /* Identificator pointing on function pointer in array (Routes) */
 {% set ns.index = ns.index + 1 -%}

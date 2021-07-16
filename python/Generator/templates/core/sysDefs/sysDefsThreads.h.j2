@@ -61,10 +61,10 @@
   * @ingroup Global_sysDefsThreads
   * @{
 ********************************************************************************/
-{% for item in model.programs.iterator -%}
+{% for item in model.programs -%}
 #define THREAD_PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_NUM    (BitWidthType){{item.programThreads|length}}    /* Number of configurated threads for program {{item.name}} */
 {% endfor -%}
-{{"\n"}}{% for item in model.threads.iterator -%}
+{{"\n"}}{% for item in model.threads -%}
 #define THREAD_{{item.threadId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_ID   (BitWidthType){{item.threadId}}    /* Thread {{item.name}} identificator */
 {% endfor -%}
 /********************************************************************************

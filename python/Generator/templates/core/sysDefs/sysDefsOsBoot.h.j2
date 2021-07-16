@@ -62,8 +62,8 @@
   * @{
 ********************************************************************************/
 #define BOOT_ARGS_NUM    (BitWidthType)3
-#define SECTION_NUM_OS    (BitWidthType){{ model.osPartitions.iterator|length }}
-{% for core in model.cores.iterator -%}
+#define SECTION_NUM_OS    (BitWidthType){{ model.osPartitions|length }}
+{% for core in model.cores -%}
 #define SECTION_NUM_CORE_{{core.coreId}}    (BitWidthType){% if core.bootOs -%}{{(core.corePrograms|length) + 2}}{% else %}{{(core.corePrograms|length)}}{% endif %}
 {% endfor -%}
 /********************************************************************************

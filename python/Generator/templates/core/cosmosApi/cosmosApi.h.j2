@@ -183,14 +183,14 @@
   * @ingroup Apis_cosmosApi_h
   * @{
 ********************************************************************************/
-{% for item in model.sysCallRoutes.iterator -%}
+{% for item in model.sysCallRoutes -%}
 {% if item.userVisible and item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" -%}
 #define cosmosApi_{{item.routedFuncName}}({% for arg in item.args -%}{% if loop.index > 1 -%} ,{% endif -%}{{arg}}{% endfor -%}) ({{item.returnType}}){{item.sysCall}}(SYSCALL_{{item.routedFuncName.upper()}}{% for arg in item.args -%},{{arg}}{% endfor -%})
 {% endif -%}
 {% endfor -%}
 #define cosmosApi_boot() osBoot_boot()
 
-{% for item in model.buffers.iterator -%}
+{% for item in model.buffers -%}
 {% if item.isDoubleBuffer -%}
 #define cosmosApi_read_doubleBuffer_{{item.name}}_instance_0(array, size) (CosmOS_BufferStateType)sysCalls_readWrite(SYSCALL_READ_BUFFER_{{item.bufferId}}_ID, array, size)
 #define cosmosApi_write_doubleBuffer_{{item.name}}_instance_0(array, size) (CosmOS_BufferStateType)sysCalls_readWrite(SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID, array, size)

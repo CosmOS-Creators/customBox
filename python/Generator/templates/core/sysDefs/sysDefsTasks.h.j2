@@ -61,10 +61,10 @@
   * @ingroup Global_sysDefsTasks
   * @{
 ********************************************************************************/
-{% for item in model.programs.iterator -%}
+{% for item in model.programs -%}
 #define TASK_PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_NUM             (BitWidthType){{item.programTasks|length}}        /* Number of configurated tasks for the program {{item.name}}*/
 {% endfor -%}
-{% for item in model.tasks.iterator %}
+{% for item in model.tasks %}
 #define TASK_{{item.taskId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_ID            (BitWidthType){{item.taskId}}        /* Task {{item.name}} identificator */
 #define TASK_{{item.taskId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_WCET          (BitWidthType){{item.wcet}}        /* The Worst execution time in ticks */
 {% endfor -%}

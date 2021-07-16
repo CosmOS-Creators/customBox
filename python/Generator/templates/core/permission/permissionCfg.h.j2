@@ -84,7 +84,7 @@
 ********************************************************************************/
 extern const unsigned char SchedulableIdToBitLock[((SCHEDULABLE_NUM/(sizeof(BitWidthType)*8)) + 1)*(sizeof(BitWidthType)*8)];
 
-{% for item in model.buffers.iterator -%}
+{% for item in model.buffers -%}
 extern const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}ReadCfgConst;
 extern const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}WriteCfgConst;
 {% if item.isDoubleBuffer -%}

@@ -62,20 +62,20 @@
   * @{
 ********************************************************************************/
 #define SCHEDULABLE_NUM                 (BitWidthType){{model.os.os.schedulableNum}}        /* Maximal number of configurated schedulables on one core  */
-{{"\n"}}{% for item in model.cores.iterator -%}
+{{"\n"}}{% for item in model.cores -%}
 #define SCHEDULABLE_NUM_CORE_{{item.coreId}}                       (BitWidthType){{item.coreNumberOfTasks + item.coreNumberOfThreads}}        /* Number of configurated schedulables for the core {{item.CoreName}} */
 {% endfor -%}
-{{"\n"}}{% for item in model.tasks.iterator -%}
+{{"\n"}}{% for item in model.tasks -%}
 #define SCHEDULABLE_TASK_{{item.taskId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_ID              (BitWidthType){{ loop.index - 1 }}    /* Task {{item.name}} schedulable identificator */
 {% endfor -%}
-{{"\n"}}{% for item in model.threads.iterator -%}
+{{"\n"}}{% for item in model.threads -%}
 #define SCHEDULABLE_THREAD_{{item.threadId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_ID            (BitWidthType){{ loop.index - 1 }}   /* Thread {{item.name}} schedulable identificator */
 {% endfor -%}
 
-{{"\n"}}{% for item in model.tasks.iterator -%}
+{{"\n"}}{% for item in model.tasks -%}
 #define SCHEDULABLE_{{item.uniqueId}}_UNIQUE_ID            (BitWidthType){{item.uniqueId}}   /* Schedulable {{item.name}} unique identificator */
 {% endfor -%}
-{% for item in model.threads.iterator -%}
+{% for item in model.threads -%}
 #define SCHEDULABLE_{{item.uniqueId}}_UNIQUE_ID            (BitWidthType){{item.uniqueId}}   /* Schedulable {{item.name}} unique identificator */
 {% endfor -%}
 /********************************************************************************

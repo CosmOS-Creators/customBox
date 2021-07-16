@@ -61,9 +61,9 @@
   * @ingroup Global_sysDefsCores
   * @{
 ********************************************************************************/
-#define CORE_NUM                (BitWidthType){{model.cores.iterator|length}}    /* Number of cores */
+#define CORE_NUM                (BitWidthType){{model.cores|length}}    /* Number of cores */
 
-{% for item in model.cores.iterator -%}
+{% for item in model.cores -%}
 #define CORE_{{item.coreId}}_ID               (BitWidthType){{item.coreId}}    /* Core {{item.CoreName}}  identificator */
 {% endfor -%}
 /********************************************************************************

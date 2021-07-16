@@ -2,25 +2,22 @@ import os
 import json
 import argparse
 import re
-import Parser.helpers as helpers
-from pathlib import Path
-from typing import List, Union
-
-WORKSPACE_PLACEHOLDER 	= "workspace"
-
-reservedKeys = [WORKSPACE_PLACEHOLDER, "workspaceFilePath", "placeholders", "workspace", "resolvePath", "requireFolder", "requireFile", "getReqiredArgparse"]
+import Parser.helpers	as helpers
+import Parser.constants	as const
+from pathlib			import Path
+from typing				import List, Union
 
 class Workspace():
 	workspace = os.getcwd()
 	def __init__(self, WorkspaceFile: str):
 		self.workspaceFilePath = WorkspaceFile
-		self.placeholders = [WORKSPACE_PLACEHOLDER]
+		self.placeholders = [const.WORKSPACE_PLACEHOLDER]
 
 		with open(WorkspaceFile, "r") as file:
 			workspaceFile = json.load(file)
 		# first add all elements as they are
 		for key in workspaceFile:
-			if(key in reservedKeys):
+			if(key in self.__dict__ or key in self.placeholders):
 				raise KeyError(f"Workspace file contained the key \"{key}\" which is reserved and not permitted to be used")
 			if(type(workspaceFile[key]) is list):
 				resolvedPathsList = []

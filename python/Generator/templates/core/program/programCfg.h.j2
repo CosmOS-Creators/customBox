@@ -82,10 +82,10 @@
   * @ingroup Global_programCfg
   * @{
 ********************************************************************************/
-{% for item in model.cores.iterator -%}
+{% for item in model.cores -%}
 extern const CosmOS_ProgramConfigurationType ProgramsCore{{item.coreId}}CfgConst[PROGRAM_CORE_{{item.coreId}}_NUM];
 {% endfor -%}
-{% for item in model.cores.iterator -%}
+{% for item in model.cores -%}
 extern CosmOS_ProgramVariableType ProgramsCore{{item.coreId}}Var[PROGRAM_CORE_{{item.coreId}}_NUM];
 {% endfor -%}
 /********************************************************************************

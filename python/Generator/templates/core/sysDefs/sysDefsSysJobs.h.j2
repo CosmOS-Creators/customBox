@@ -61,9 +61,9 @@
   * @ingroup Global_sysDefsSysJobs
   * @{
 ********************************************************************************/
-{% for core in model.cores.iterator -%}
-#define SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM    (BitWidthType){{core.coreSysJobGroups | length}}        /* Number of configurated sysJob groups on the core {{core.name}}  */
-#define SYSJOBS_CORE_{{core.coreId}}_HYPERTICK    (BitWidthType){{core.coreSysJobHyperTick}}              /* HyperTick on the {{core.name}}  */
+{% for core in model.cores -%}
+#define SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM    (BitWidthType){{core.coreSysJobGroups | length}}        /* Number of configurated sysJob groups on the core {{core.CoreName}}  */
+#define SYSJOBS_CORE_{{core.coreId}}_HYPERTICK    (BitWidthType){{core.coreSysJobHyperTick}}              /* HyperTick on the {{core.CoreName}}  */
 {% for sysJobGroup in core.coreSysJobGroups -%}
 {{"\n"}}#define SYSJOBS_HANDLERS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_NUM    (BitWidthType){{sysJobGroup.handlers | length}}        /* Number of configurated handlers in group ID {{sysJobGroup.groupId}}  */
 #define SYSJOBS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_TICK_MULTIPLICATOR    (BitWidthType){{sysJobGroup.tickMultiplicator}}        /* Tick multiplicator in group ID {{sysJobGroup.groupId}}  */

@@ -61,7 +61,7 @@
   * @ingroup Global_sysDefsPermissions
   * @{
 ********************************************************************************/
-{% for item in model.buffers.iterator -%}
+{% for item in model.buffers -%}
 #define BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM      (BitWidthType){{item.compressedReadPermission|length}}    /* Number of bitlock read elements for buffer {{item.name}} */
 #define BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM      (BitWidthType){{item.compressedWritePermission|length}}    /* Number of bitlock write elements for buffer {{item.name}} */
 {% endfor -%}

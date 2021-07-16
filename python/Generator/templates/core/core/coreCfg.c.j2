@@ -64,7 +64,7 @@ __SEC_START(__OS_CONSTS_SECTION_START)
 const CosmOS_CoreConfigurationType CoresCfgConst[CORE_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
-{% for item in model.cores.iterator -%}
+{% for item in model.cores -%}
 {{"\t\t"}}{                                               /* CoresCfgConst[CORE_{{item.coreId}}_ID]                         */
         ProgramsCore{{item.coreId}}CfgConst,                      /* const CosmOS_ProgramConfigurationType * programs    */
         PROGRAM_CORE_{{item.coreId}}_NUM,                         /* const BitWidthType numberOfPrograms              */
@@ -82,7 +82,7 @@ __SEC_START(__OS_VARS_SECTION_START)
 CosmOS_CoreVariableType CoresVar[CORE_NUM] __OS_VARS_SECTION
 IS_INITIALIZED_TO
 {
-{% for item in model.cores.iterator -%}
+{% for item in model.cores -%}
 {{"\t\t"}}{                                               /* CoresVar[CORE_{{item.coreId}}_ID]                                  */
         &CoresCfgConst[CORE_{{item.coreId}}_ID],                  /* const CosmOS_CoreConfigurationType *cfg                 */
         NULL,                                       /* CosmOS_SchedulableVariableType * schedulableInExecution    */
