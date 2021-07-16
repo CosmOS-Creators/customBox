@@ -15,32 +15,18 @@ class PermissionerLogic(logicRunnerPlugin.logicRunner):
 							'buffers/:compressedReadPermissionInverted',
 							'buffers/:compressedWritePermissionInverted',
 							'mcu/:cpuBitWidth',
-							'tasks/:uniqueId',
-							'threads/:uniqueId',
+							'os/:schedulableNum',
 							])
 		except Exception as e:
 			raise Exception(f"Permissioner is missing required attribute, more info : {str(e)}")
-
-		self.maxUniqueId = None
 
 		self.tasks = config.tasks.iterator
 		self.threads = config.threads.iterator
 		self.buffers = config.buffers.iterator
 		self.cpuBitWidth = config.mcu.MCU.cpuBitWidth
-
-		self.assigneUniqueId()
+		self.maxUniqueId = config.os.os.schedulableNum
 
 		self.permissionCompression()
-
-	def assigneUniqueId(self):
-		uniqueId = 0
-		for task in self.tasks:
-			task.uniqueId = uniqueId
-			uniqueId += 1
-		for thread in self.threads:
-			thread.uniqueId = uniqueId
-			uniqueId += 1
-		self.maxUniqueId = uniqueId
 
 	def permissionCompression(self):
 		for buffer in self.buffers:
