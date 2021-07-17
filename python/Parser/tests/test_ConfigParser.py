@@ -1,5 +1,4 @@
 import pytest
-import os
 from Parser import Workspace, ConfigParser, ConfigTypes
 
 class TestClassBasicFunctions:

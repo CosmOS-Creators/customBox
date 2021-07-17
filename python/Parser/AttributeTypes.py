@@ -305,9 +305,12 @@ class SelectionType(AttributeType):
 			except AttributeError as e:
 				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}")
 			for name, element in subconfig.elements.items():
-				try:
+				element: ConfigTypes.ConfigElement = element
+				if(not link.hasAttribute()):
+					raise ValueError(f'The link "{link}" for the allowed elements of the attribute {self.globalID} seems to be invalid. Make sure the link is in the format of "config/:attribute"')
+				if(element.hasAttributeInstance(link.attribute)):
 					targetValue = element.getAttribute(link.attribute)
-				except AttributeError:
+				else:
 					print(f"WARNING: Attribute definition \"{self.globalID}\" requested an attribute instance named \"{link.element}\" from the config \"{link.config}\" but the element \"{name}\" does not have an instance of that attribute. Skipping this element.")
 					continue
 				possibleValues.append(targetValue)
@@ -379,7 +382,7 @@ class ParentReferenceType(AttributeType):
 			link = Link.parse(valueInput)
 		except Exception as e:
 			reportValidationError(f"Values of type parent reference must have a link valid link. But parsing the link \"{valueInput}\" threw errors: {str(e)}")
-		if(not link.config or not link.element or link.attribute):
+		if(not link.hasConfig() or not link.hasElement() or link.hasAttribute()):
 			reportValidationError(f"Values of type parent reference must have a link which points to another config element but \"{valueInput}\" does not.")
 		return valueInput
 

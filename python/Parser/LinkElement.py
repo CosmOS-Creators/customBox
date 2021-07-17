@@ -13,11 +13,11 @@ class Link():
 	def __init__(self, link: str = None, emphasize: int = EMPHASIZE_ELEMENT):
 		self.isGlobal 			= self.__isGlobal
 		if(link):
-			self.config, self.element, self.attribute = self.split(link, emphasize)
+			self.__config, self.__element, self.__attribute = self.split(link, emphasize)
 		else:
-			self.config 		= None
-			self.element		= None
-			self.attribute		= None
+			self.__config 		= None
+			self.__element		= None
+			self.__attribute		= None
 
 	def __repr__(self):
 		return "Link(" + self.getLink() + ")"
@@ -26,10 +26,10 @@ class Link():
 		return self.getLink()
 
 	def __eq__(self, o: Link) -> bool:
-		return o.config == self.config and o.element == self.element and o.attribute == self.attribute
+		return o.config == self.__config and o.element == self.__element and o.attribute == self.__attribute
 
 	def __hash__(self) -> int:
-		return hash((self.config, self.element, self.attribute))
+		return hash((self.__config, self.__element, self.__attribute))
 
 	@staticmethod
 	def split(link: str, emphasize: int):
@@ -101,38 +101,38 @@ class Link():
 			raise TypeError(f'Inputs of type "{type(input)}" cannot be converted to a Link object')
 
 	def __isGlobal(self):
-		if(self.config):
+		if(self.__config):
 			return True
 		else:
 			return False
 
 	def isValidElementLink(self):
-		return (not self.config is None) and (not self.element is None)
+		return (not self.__config is None) and (not self.__element is None)
 
 	def set(self, config: str = None, element: str = None, attribute: str = None):
-		self.config: str	= config
-		self.element: str	= element
-		self.attribute:str	= attribute
+		self.__config: str	= config
+		self.__element: str	= element
+		self.__attribute:str	= attribute
 
 	def getLink(self, Config: bool = True, Element: bool = True, Attribute: bool = True) -> str:
-		config 			= self.config if not self.config is None else ""
-		element 		= self.element if not self.element is None else ""
-		attribute 		= self.attribute if not self.attribute is None else ""
+		config 			= self.__config if not self.__config is None else ""
+		element 		= self.__element if not self.__element is None else ""
+		attribute 		= self.__attribute if not self.__attribute is None else ""
 		if(Config == False):
 			config 		= ""
 		if(Element == False):
 			element 	= ""
 		if(Attribute == False):
 			attribute 	= ""
-		if(self.attribute):
+		if(self.__attribute):
 			return f"{config}/{element}:{attribute}"
-		elif(self.element):
+		elif(self.__element):
 			return f"{config}/{element}"
 		else:
 			return config
 
 	def resolveElement(self, config: ConfigTypes.Configuration) -> ConfigTypes.ConfigElement:
-		if(self.config and self.element):
+		if(self.__config and self.__element):
 			subconfig = config.getSubconfig(self)
 			return subconfig.getElement(self)
 		else:
@@ -140,7 +140,7 @@ class Link():
 
 	def resolveAttributeList(self, config: ConfigTypes.Configuration) -> List[AttributeTypes.AttributeType]:
 		subconfig = config.getSubconfig(self)
-		if(self.config and self.attribute):
+		if(self.__config and self.__attribute):
 			attributeCollection = []
 			for element in subconfig:
 				targetAttribute = element.getAttributeInstance(self)
@@ -150,7 +150,7 @@ class Link():
 			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved. Either the config or the attribute part of the link are missing but they are mandatory for resolving an attribute list.")
 
 	def resolveAttribute(self, config: ConfigTypes.Configuration) -> AttributeTypes.AttributeType:
-		if(self.config and self.attribute and self.element):
+		if(self.__config and self.__attribute and self.__element):
 			subconfig = config.getSubconfig(self)
 			element = subconfig.getElement(self)
 			return element.getAttributeInstance(self)
@@ -158,46 +158,82 @@ class Link():
 			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved as it is missing at least one part. All three parts of the link are mandatory for resolving an attribute value.")
 
 	def resolveSubconfig(self, config: ConfigTypes.Configuration) -> ConfigTypes.Subconfig:
-		if(self.config):
+		if(self.__config):
 			return config.getSubconfig(self)
 		else:
 			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved. The link is missing the config part which is mandatory for resolving subconfigs.")
 
 	def resolve(self, config: ConfigTypes.Configuration) -> Union[ConfigTypes.ConfigElement, List[AttributeTypes.AttributeType], AttributeTypes.AttributeType, ConfigTypes.Subconfig]:
-		if(self.config is None):
+		if(self.__config is None):
 			raise AttributeError(f"For resolving a link at least the config must be set.")
-		if(self.config and self.element and not self.attribute): # link to an element
+		if(self.__config and self.__element and not self.__attribute): # link to an element
 			return self.resolveElement(config)
-		elif(self.config and not self.element and self.attribute): # link to list of attributes of all elements in config
+		elif(self.__config and not self.__element and self.__attribute): # link to list of attributes of all elements in config
 			return self.resolveAttributeList(config)
-		elif(self.config and self.attribute and self.element): # link to the value of an attribute inside an element
+		elif(self.__config and self.__attribute and self.__element): # link to the value of an attribute inside an element
 			return self.resolveAttribute(config)
-		elif(self.config and not self.element and not self.attribute): # link to a subconfig
+		elif(self.__config and not self.__element and not self.__attribute): # link to a subconfig
 			return self.resolveSubconfig(config)
 		else:
 			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved as it is missing at least one part of the link.")
 
 	def copy(self):
-		return Link.construct(config=self.config, element=self.element, attribute=self.attribute)
+		return Link.construct(config=self.__config, element=self.__element, attribute=self.__attribute)
 
 	def merge(self, override: Union[str, Link], emphasize: int = EMPHASIZE_ELEMENT):
 		overrideLink = Link.force(override, emphasize)
 		mergedLink = self.copy()
-		if(overrideLink.config):
+		config, element, attribute = overrideLink.parts
+		if(config):
 			mergedLink.config = overrideLink.config
-		if(overrideLink.element):
+		if(element):
 			mergedLink.element = overrideLink.element
-		if(overrideLink.attribute):
+		if(attribute):
 			mergedLink.attribute = overrideLink.attribute
 		return mergedLink
 
+	def hasAnyParts(self, config = False, element = False, attribute = False):
+		""" Retruns True if the link element has all parts that are specified in the parameters
+			True means this part of the link has to be set
+			False means this part of the link may be set or empty
+		"""
+		result = True
+		if(config and not self.__config):
+			result = False
+		if(element and not self.__element):
+			result = False
+		if(attribute and not self.__attribute):
+			result = False
+		return result
+
+	def hasConfig(self):
+		if(self.__config):
+			return True
+		else:
+			return False
+
+	def hasElement(self):
+		if(self.__element):
+			return True
+		else:
+			return False
+
+	def hasAttribute(self):
+		if(self.__attribute):
+			return True
+		else:
+			return False
+
 	@property
 	def parts(self):
-		return self.config, self.element, self.attribute
+		return self.__config, self.__element, self.__attribute
 
 	@property
 	def config(self):
-		return self.__config
+		if(self.__config):
+			return self.__config
+		else:
+			raise ValueError(f"The config part of the link {self} was requested but that part is empty. Make sure that the link is in the correct format.")
 
 	@config.setter
 	def config(self, value):
@@ -208,7 +244,10 @@ class Link():
 
 	@property
 	def element(self):
-		return self.__element
+		if(self.__element):
+			return self.__element
+		else:
+			raise ValueError(f"The element part of the link {self} was requested but that part is empty. Make sure that the link is in the correct format.")
 
 	@element.setter
 	def element(self, value):
@@ -219,7 +258,10 @@ class Link():
 
 	@property
 	def attribute(self):
-		return self.__attribute
+		if(self.__attribute):
+			return self.__attribute
+		else:
+			raise ValueError(f"The attribute part of the link {self} was requested but that part is empty. Make sure that the link is in the correct format.")
 
 	@attribute.setter
 	def attribute(self, value):

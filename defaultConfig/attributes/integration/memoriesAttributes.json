@@ -5,7 +5,7 @@
 		"memory": {
 			"label": "Memory location",
 			"type": "selection",
-			"elements": "memories/name"
+			"elements": "memories/:name"
 		},
 		"name": {
 			"label": "Memory name",
