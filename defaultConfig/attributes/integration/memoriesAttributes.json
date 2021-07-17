@@ -1,0 +1,37 @@
+{
+	"version": "1.0.0",
+
+	"attributes": {
+		"memory": {
+			"label": "Memory location",
+			"type": "selection",
+			"elements": "memories/:name"
+		},
+		"name": {
+			"label": "Memory name",
+			"type": "string",
+			"tooltip": "Name of the current memory consistent with the current MCU datasheet"
+		},
+		"size": {
+			"label": "Size of the memory",
+			"type": "hex",
+			"tooltip": "Size of the current memory consistent with the current MCU datasheet"
+		},
+		"lowAddress": {
+			"label": "Starting address of this memory",
+			"type": "hex",
+			"tooltip": "Low address of the current memory consistent with the current MCU datasheet"
+		},
+		"cores": {
+			"label": "CPU access",
+			"type": "referenceList",
+			"tooltip": "CPU access of the current memory consistent with the current MCU datasheet"
+		},
+		"freeChunks": {
+			"placeholder": true,
+			"type": "referenceList"
+		}
+	},
+
+	"elements": {}
+}

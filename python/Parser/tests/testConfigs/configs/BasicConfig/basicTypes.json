@@ -1,0 +1,120 @@
+{
+	"version": "1.0.0",
+	"attributes": {
+		"stringType": {
+			"label": "String Tpye",
+			"type": "string"
+		},
+		"boolType": {
+			"label": "Bool type",
+			"type": "bool"
+		},
+		"intType": {
+			"label": "Int Type",
+			"type": "int"
+		},
+		"floatType": {
+			"label": "Int Type",
+			"type": "float"
+		},
+		"stringListType": {
+			"label": "String List Type",
+			"type": "stringList"
+		},
+		"hexType": {
+			"label": "Hex Type",
+			"type": "hex"
+		},
+		"sliderType": {
+			"label": "Slider Type",
+			"type": "slider"
+		},
+		"selectionType": {
+			"label": "Selection Type",
+			"type": "selection",
+			"elements": [
+				"selection_1",
+				"selection_2",
+				"selection_3"
+			]
+		}
+	},
+	"elements": {
+		"element_1":
+		[
+			{
+				"target": "stringType",
+				"value": "testString"
+			},
+			{
+				"target": "boolType",
+				"value": true
+			},
+			{
+				"target": "intType",
+				"value": 5
+			},
+			{
+				"target": "floatType",
+				"value": 1.2
+			},
+			{
+				"target": "stringListType",
+				"value": [
+					"value_1",
+					"value_2",
+					"value_3"
+				]
+			},
+			{
+				"target": "hexType",
+				"value": "0x0F"
+			},
+			{
+				"target": "sliderType",
+				"value": 6
+			},
+			{
+				"target": "selectionType",
+				"value": "selection_1"
+			}
+		],
+		"element_2":
+		[
+			{
+				"target": "stringType",
+				"value": "StringTest"
+			},
+			{
+				"target": "boolType",
+				"value": false
+			},
+			{
+				"target": "intType",
+				"value": 200
+			},
+			{
+				"target": "floatType",
+				"value": 5.5
+			},
+			{
+				"target": "stringListType",
+				"value": [
+					"value_0"
+				]
+			},
+			{
+				"target": "hexType",
+				"value": "0xF0"
+			},
+			{
+				"target": "sliderType",
+				"value": 10
+			},
+			{
+				"target": "selectionType",
+				"value": "selection_2"
+			}
+		]
+	}
+}

@@ -1,0 +1,5 @@
+{
+    "config": [
+		"./Cosmos/customBox/python/Parser/tests/testConfigs/configs/BasicConfig"
+	]
+}

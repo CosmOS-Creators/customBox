@@ -1,0 +1,33 @@
+{
+	"version": "1.0.0",
+
+	"attributes": {
+		"stackMemory": {
+			"inherit": "memoriesAttributes/:memory",
+			"label": "Memory location of the kernel/task/thread stacks"
+		},
+		"flashMemory": {
+			"inherit": "memoriesAttributes/:memory",
+			"label": "Memory location of the local code"
+		},
+		"systemTimerWidth": {
+			"label": "System Timer bit width",
+			"type": "int"
+		},
+		"systemTimerFrequency": {
+			"label": "System timer frequency in Hz",
+			"type": "int"
+		},
+		"systemTimerTickCount": {
+			"label": "System timer one tick count",
+			"type": "int"
+		},
+		"memoryProtection": {
+			"label": "MPU engine available",
+			"type": "bool",
+			"tooltip": "Presence of the MPU in current CPU"
+		}
+	},
+
+	"elements": {}
+}

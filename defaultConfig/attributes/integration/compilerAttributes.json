@@ -1,0 +1,26 @@
+{
+	"version": "1.0.0",
+
+	"attributes": {
+		"buildName": {
+			"label": "Name of the build",
+			"type": "string",
+			"tooltip": "Binary file name for the current CPU"
+		},
+		"flags": {
+			"label": "List of compiler flags",
+			"type": "stringList",
+			"tooltip": "List of compiler flags for the current CPU"
+		},
+		"defines": {
+			"label": "List of defines",
+			"type": "stringList",
+			"tooltip": "List of compiler defines for the current CPU"
+		},
+		"core": {
+			"type": "parentReference"
+		}
+	},
+
+	"elements": {}
+}

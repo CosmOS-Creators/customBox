@@ -1,0 +1,20 @@
+{
+	"version": "1.0.0",
+
+	"attributes": {
+		"schedulableNum": {
+			"placeholder": true,
+			"type": "int"
+		},
+		"buffersNum": {
+			"placeholder": true,
+			"type": "int"
+		},
+		"doubleBuffersNum": {
+			"placeholder": true,
+			"type": "int"
+		}
+	},
+
+	"elements": {}
+}

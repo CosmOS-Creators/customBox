@@ -1,8 +1,0 @@
-{
-    "configured_microcontrollers": {
-        "element_0":{
-            "microcontroller" : "stm32h755",
-            "repo_https" : "https://github.com/PavolKostolansky/cosmos_IL_STM32H7xx.git"
-        }
-    }
-}
