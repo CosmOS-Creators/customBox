@@ -1,0 +1,5 @@
+jinja2>=2.11.3
+tqdm>=4.61.2
+pytest>=6.2.4
+pytest-cov>=2.12.1
+pytest-xdist>=2.3.0
