@@ -379,7 +379,7 @@ class ParentReferenceType(AttributeType):
 	def checkValue(self, valueInput: Link):
 		# just check if it is a valid link syntax
 		try:
-			link = Link.parse(valueInput)
+			link = Link(valueInput)
 		except Exception as e:
 			reportValidationError(f"Values of type parent reference must have a link valid link. But parsing the link \"{valueInput}\" threw errors: {str(e)}")
 		if(not link.hasConfig() or not link.hasElement() or link.hasAttribute()):
