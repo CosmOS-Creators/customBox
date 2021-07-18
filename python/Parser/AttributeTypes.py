@@ -392,10 +392,10 @@ class ParentReferenceType(AttributeType):
 
 	@overrides(AttributeType)
 	def link(self, objConfig: ConfigTypes.Configuration, attributeInstance: ConfigTypes.AttributeInstance):
-		#TODO: wrong element is linked to the parent
 		linkTarget 		= Link.force(attributeInstance.value, Link.EMPHASIZE_ELEMENT)
+		selfElement 	= attributeInstance.link.resolveElement(objConfig)
 		targetedElement = linkTarget.resolveElement(objConfig)
-		targetedElement.addReferenceObject(attributeInstance.link.config, attributeInstance.link.element, attributeInstance)
+		targetedElement.addReferenceObject(attributeInstance.link.config, attributeInstance.link.element, selfElement)
 		attributeInstance.setValueDirect(targetedElement)
 
 attributeTypeList = [StringType, BoolType, IntType, FloatType, ReferenceListType, StringListType, SelectionType, SelectionType, HexType, SliderType, ParentReferenceType]
