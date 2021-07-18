@@ -11,7 +11,7 @@ def toInt(hexValue: str):
 	return int(hexValue, 16)
 
 def toHex(intValue: int):
-	return hex(intValue)
+	return hex(intValue).upper().replace("X", "x")
 
 def forceStrList(input: Union[List[str], str]):
 	out = input
