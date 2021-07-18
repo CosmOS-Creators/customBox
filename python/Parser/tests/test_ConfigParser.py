@@ -31,9 +31,7 @@ class TestClassBasicFunctions:
 			if(type(attribute) is ConfigTypes.AttributeInstance):
 				assert element_1_attribute_values[name] == attribute.value
 			elif(type(attribute) is ConfigTypes.ReferenceCollection):
-				#TODO: wrong element is linked to the parent. Has to be fixed first
-				# assert element_1_attribute_values[name] == list(attribute.references.values())
-				pass
+				assert element_1_attribute_values[name] == list(attribute.references.values())
 
 	def test_basicTypes_element_2_values(self, parsed_config: ConfigTypes.Configuration):
 		subconfig = parsed_config.getSubconfig("basicTypes")
