@@ -37,6 +37,16 @@ class TestClassLinkFunctions:
 			with pytest.raises(ValueError):
 				mockedLink.attribute
 		mocked_split_method.assert_called_once_with("config", Link.EMPHASIZE_CONFIG)
+		link.attribute = "test"
+		link.element = "testElement"
+		link1 = Link(link)
+		link.attribute = "test1"
+		link.element = "testElement1"
+		assert link1.attribute == "test"
+		assert link1.element == "testElement"
+		assert link1.hasConfig() == False
+		with pytest.raises(TypeError):
+			test = Link(1)
 
 	def test_split_method(self):
 		config, element, attribute = Link.split(None)
@@ -110,6 +120,7 @@ class TestClassLinkFunctions:
 		link4 = Link("config/element")
 		assert repr(link1) == "Link(config/element:attribute)"
 		assert str(link2) == "config/element1:attribute"
+		assert link1 == "config/element:attribute"
 		assert link1 != link2
 		assert link1 != link3
 		assert link2 == link3
