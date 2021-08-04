@@ -184,7 +184,7 @@
   * @{
 ********************************************************************************/
 {% for item in model.sysCallRoutes -%}
-{% if item.userVisible and item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" -%}
+{% if item.userVisible and item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" and item.routedFuncName != "spinlock_getSpinlock" and item.routedFuncName != "spinlock_trySpinlock" and item.routedFuncName != "spinlock_releaseSpinlock"  -%}
 #define cosmosApi_{{item.routedFuncName}}({% for arg in item.args -%}{% if loop.index > 1 -%} ,{% endif -%}{{arg}}{% endfor -%}) ({{item.returnType}}){{item.sysCall}}(SYSCALL_{{item.routedFuncName.upper()}}{% for arg in item.args -%},{{arg}}{% endfor -%})
 {% endif -%}
 {% endfor -%}
@@ -201,6 +201,11 @@
 #define cosmosApi_read_buffer_{{item.name}}(array, size) (CosmOS_BufferStateType)sysCalls_readWrite(SYSCALL_READ_BUFFER_{{item.bufferId}}_ID, array, size)
 #define cosmosApi_write_buffer_{{item.name}}(array, size) (CosmOS_BufferStateType)sysCalls_readWrite(SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID, array, size)
 {% endif -%}
+{% endfor -%}
+{% for item in model.spinlocks -%}
+#define cosmosApi_get_spinlock_{{item.name}}() (CosmOS_SpinlockStateType)sysCalls_readWrite(SYSCALL_GET_SPINLOCK_{{item.spinlockId}}_ID, OFF, OFF)
+#define cosmosApi_try_spinlock_{{item.name}}() (CosmOS_SpinlockStateType)sysCalls_readWrite(SYSCALL_TRY_SPINLOCK_{{item.spinlockId}}_ID, OFF, OFF)
+#define cosmosApi_release_spinlock_{{item.name}}() (CosmOS_SpinlockStateType)sysCalls_readWrite(SYSCALL_RELEASE_SPINLOCK_{{item.spinlockId}}_ID, OFF, OFF)
 {% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **

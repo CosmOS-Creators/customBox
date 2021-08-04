@@ -72,6 +72,11 @@ IS_INITIALIZED_TO
 const BitWidthType RoutesIdToFuncConst[ROUTES_ID_TO_FUNC_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
+{% for item in model.spinlocks -%}
+{{"\t\t"}}SPINLOCK_GETSPINLOCK,
+{{"\t\t"}}SPINLOCK_TRYSPINLOCK,
+{{"\t\t"}}SPINLOCK_RELEASESPINLOCK,
+{% endfor -%}
 {% for item in model.buffers -%}
 {{"\t\t"}}BUFFER_READARRAY,
 {{"\t\t"}}BUFFER_WRITEARRAY,
@@ -81,7 +86,7 @@ IS_INITIALIZED_TO
 {% endif -%}
 {% endfor -%}
 {% for item in model.sysCallRoutes -%}
-{% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" -%}
+{% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" and item.routedFuncName != "spinlock_getSpinlock" and item.routedFuncName != "spinlock_trySpinlock" and item.routedFuncName != "spinlock_releaseSpinlock" -%}
 {{"\t\t"}}{{item.routedFuncName.upper()}},
 {% endif -%}
 {% endfor -%}
@@ -90,6 +95,11 @@ IS_INITIALIZED_TO
 const BitWidthType RoutesIdToEntityConst[ROUTES_ID_TO_ENTITY_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
+{% for item in model.spinlocks -%}
+{{"\t\t"}}SPINLOCK_{{item.spinlockId}}_ID,
+{{"\t\t"}}SPINLOCK_{{item.spinlockId}}_ID,
+{{"\t\t"}}SPINLOCK_{{item.spinlockId}}_ID,
+{% endfor -%}
 {% for item in model.buffers -%}
 {{"\t\t"}}BUFFER_{{item.bufferId}}_ID,
 {{"\t\t"}}BUFFER_{{item.bufferId}}_ID,
@@ -99,7 +109,7 @@ IS_INITIALIZED_TO
 {% endif -%}
 {% endfor -%}
 {% for item in model.sysCallRoutes -%}
-{% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" -%}
+{% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" and item.routedFuncName != "spinlock_getSpinlock" and item.routedFuncName != "spinlock_trySpinlock" and item.routedFuncName != "spinlock_releaseSpinlock" -%}
 {{"\t\t"}}ROUTES_ID_TO_ENTITY_DUMMY,
 {% endif -%}
 {% endfor -%}

@@ -1,0 +1,18 @@
+{
+	"version": "1.0.0",
+
+	"attributes": {
+		"name": {
+			"label": "Name of the buffer",
+			"type": "string",
+			"validation": "^[A-Za-z][A-Za-z0-9_]+$",
+			"tooltip": "Name of the current buffer"
+		},
+		"spinlockId": {
+			"placeholder": true,
+			"type": "int"
+		}
+	},
+
+	"elements": {}
+}

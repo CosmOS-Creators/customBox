@@ -44,6 +44,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 							'scheduleTableEntries/:entryId',
 							'scheduleTableEntries/:executionTick',
 							'schedulers/:table',
+							'spinlocks/:spinlockId',
 							])
 		except Exception as e:
 			raise Exception(f"Initializer is missing required attribute, more info : {str(e)}")
@@ -59,6 +60,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 		self.sysJobs = config.sysJobs								#type: List[ConfigElement]
 		self.schedulers = config.schedulers							#type: List[ConfigElement]
 		self.scheduleTableEntries = config.scheduleTableEntries		#type: List[ConfigElement]
+		self.spinlocks = config.spinlocks							#type: List[ConfigElement]
 		self.cpuBitWidth = config.mcu.MCU.cpuBitWidth
 		self.os = config.os.os
 
@@ -124,6 +126,10 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 				bufferIterativeId += 1
 				buffer.doubleBufferId = doubleBufferIterativeId
 				doubleBufferIterativeId += 1
+		spinlockIterativeId = 0
+		for spinlock in self.spinlocks:
+			spinlock.spinlockId = spinlockIterativeId
+			spinlockIterativeId += 1
 		self.os.buffersNum = bufferIterativeId
 		self.os.doubleBuffersNum = doubleBufferIterativeId
 
