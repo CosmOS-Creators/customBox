@@ -69,6 +69,7 @@ IS_INITIALIZED_TO
         ProgramsCore{{item.coreId}}CfgConst,                      /* const CosmOS_ProgramConfigurationType * programs    */
         PROGRAM_CORE_{{item.coreId}}_NUM,                         /* const BitWidthType numberOfPrograms              */
         &SchedulersCfgConst[SCHEDULER_CORE_{{item.coreId}}_ID],   /* CosmOS_SchedulerConfigurationType * scheduler       */
+		CORE_{{item.coreId}}_ID,		 /* const BitWidthType coreId       */
     },
 {% endfor -%}
 };
