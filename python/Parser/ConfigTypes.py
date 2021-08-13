@@ -1,6 +1,6 @@
 from __future__ 				import annotations
 from types 						import SimpleNamespace
-from typing 					import List, Union
+from typing 					import Dict, List, Union
 from Parser.LinkElement 		import Link
 from Parser.helpers 			import overrides
 import Parser.AttributeTypes 	as AttributeTypes
@@ -136,7 +136,7 @@ class Subconfig(dynamicObject):
 		return self._get(elementLink.element)
 
 	@property
-	def elements(self):
+	def elements(self) -> List[ConfigElement]:
 		return self._getItems()
 
 	@property
@@ -171,11 +171,11 @@ class ConfigElement(dynamicObject):
 		return self.__parent
 
 	@property
-	def attributes(self):
+	def attributes(self) -> Dict[str, Union[ReferenceCollection, AttributeInstance]]:
 		return self._getItems()
 
 	@property
-	def attributeInstances(self):
+	def attributeInstances(self) -> Dict[str, AttributeInstance]:
 		AttributeInstances = dict()
 		items = self._getItems()
 		for name, item in items.items():
@@ -185,7 +185,7 @@ class ConfigElement(dynamicObject):
 		return AttributeInstances
 
 	@property
-	def references(self):
+	def references(self) -> Dict[str, ReferenceCollection]:
 		References = dict()
 		items = self._getItems()
 		for name, item in items.items():
@@ -306,6 +306,10 @@ class AttributeInstance(SimpleNamespace):
 	@property
 	def datatype(self):
 		return self.__attribute.type
+
+	@property
+	def attributeDefinition(self):
+		return self.__attribute
 
 	@property
 	def link(self):
