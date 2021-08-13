@@ -228,25 +228,7 @@ class Configurator():
 			style = stylesheet + file.read().format(**styleExtensions.get_Parameters())
 		self.app.setStyleSheet(style)
 
-		page1 = QWidget()
-		page1.setObjectName("Cores")
-		page1Layout = QFormLayout()
-		page1Layout.addRow("Core Name:", QLineEdit(page1))
-		page1Layout.addRow("Boot OS:", QCheckBox(page1))
-		page1Layout.addRow("Is ComOS core:", QCheckBox(page1))
-		page1Layout.addRow("Memory location:", QComboBox(page1))
-		page1.setLayout(page1Layout)
-
-		page2 = QWidget()
-		page2.setObjectName("Scheduler")
-		page2Layout = QFormLayout()
-		page2Layout.addRow("Hyper tick of this scheduler:", QLineEdit())
-		page2Layout.addRow("Synchronization period:", QLineEdit())
-		page2Layout.addRow("Synchronization:", QCheckBox())
-		page2.setLayout(page2Layout)
-
-		Pages = [(page1, "memory"), (page2, "calendar_today")]
-
+	def buildMainWindow(self, Pages):
 		w = MainWindow(Pages)
 		w.resize(800, 600)
 		w.show()
@@ -256,4 +238,5 @@ class Configurator():
 
 if __name__ == "__main__":
 	Interface = Configurator()
+	Interface.buildMainWindow([])
 	sys.exit(Interface.run())
