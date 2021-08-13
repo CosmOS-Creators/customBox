@@ -304,6 +304,10 @@ class AttributeInstance(SimpleNamespace):
 		return self.__value
 
 	@property
+	def datatype(self):
+		return self.__attribute.type
+
+	@property
 	def link(self):
 		return self.__link
 
