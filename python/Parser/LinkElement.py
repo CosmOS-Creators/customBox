@@ -10,14 +10,19 @@ class Link():
 	EMPHASIZE_ELEMENT	= 1
 	EMPHASIZE_ATTRIBUTE	= 2
 
-	def __init__(self, link: str = None, emphasize: int = EMPHASIZE_ELEMENT):
+	def __init__(self, link: Union[str, Link] = None, emphasize: int = EMPHASIZE_ELEMENT):
 		self.isGlobal 			= self.__isGlobal
 		if(link):
-			self.__config, self.__element, self.__attribute = self.split(link, emphasize)
+			if(type(link) is str):
+				self.__config, self.__element, self.__attribute = self.split(link, emphasize)
+			elif(type(link) is Link):
+				self.__config, self.__element, self.__attribute = link.parts
+			else:
+				raise TypeError(f'Link elements can only be constructed from Link or string objects but the passed object was of type "{type(link).__name__}"')
 		else:
 			self.__config 		= None
 			self.__element		= None
-			self.__attribute		= None
+			self.__attribute	= None
 
 	def __repr__(self):
 		return "Link(" + self.getLink() + ")"
@@ -25,7 +30,9 @@ class Link():
 	def __str__(self) -> str:
 		return self.getLink()
 
-	def __eq__(self, o: Link) -> bool:
+	def __eq__(self, o: Union[Link, str]) -> bool:
+		if(not type(o) is Link):
+			o = Link.force(o)
 		return o.__config == self.__config and o.__element == self.__element and o.__attribute == self.__attribute
 
 	def __hash__(self) -> int:

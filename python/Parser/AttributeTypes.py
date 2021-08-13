@@ -16,6 +16,11 @@ class AttributeType():
 
 	def __init__(self, attribute_definition: dict, globalID: Union[Link, str]):
 		globalID = Link.force(globalID, Link.EMPHASIZE_ATTRIBUTE)
+		if(globalID.isGlobal()):
+			if(not globalID.hasAttribute()):
+				raise ValueError(f'An attribute link must have a attribute name specified but "{globalID}" did not')
+		else:
+			raise ValueError(f'An attribute link must be global but "{globalID}" was not.')
 		# internal helpers
 		self._is_inherited 			= False
 		self._attribute_definition 	= attribute_definition.copy()
@@ -24,7 +29,7 @@ class AttributeType():
 		try:
 			self.checkForForbiddenKeys(self._typeSpecificKeys)
 		except KeyError as e:
-			raise KeyError(f"Error in attribute \"{globalID.getLink()}\" of type \"{self._comparison_type}\" : {str(e)}")
+			raise KeyError(f'Error in attribute "{globalID}" of type "{self._comparison_type}" : {str(e)}')
 
 		# special helpers
 		self._is_placeholder 		= self.checkForKey(const.PLACEHOLDER_KEY, False)
@@ -32,19 +37,16 @@ class AttributeType():
 		self.globalID 				= globalID
 		self.id 					= globalID.attribute
 
-		error_message = "Attribute \"" + self.globalID.getLink() + "\" is missing the required \"{}\" key."
 		if(const.TYPE_KEY in attribute_definition):
 			self.type 				= attribute_definition[const.TYPE_KEY]
 		else:
-			raise AttributeError(error_message.format(const.TYPE_KEY))
+			raise AttributeError(f'Attribute "{self.globalID}" is missing the required "{const.TYPE_KEY}" key.')
 
 		# optional properties
 		self.tooltip 				= self.checkForKey(const.TOOLTIP_KEY, "")
 		self.hidden 				= self.checkForKey(const.HIDDEN_KEY, False)
 		if(const.LABEL_KEY in attribute_definition):
 			self.label 				= attribute_definition[const.LABEL_KEY]
-		elif(self.hidden == False and not self._is_placeholder and not self.type == const.PARENT_REFERENCE_TYPE_KEY):
-			raise AttributeError(error_message.format(const.LABEL_KEY))
 
 	def __new__(cls, *args, **kwargs):
 		""" Prevent the instantiation of the base class
@@ -363,7 +365,7 @@ class SliderType(IntType):
 
 	@overrides(AttributeType)
 	def getDefault(self) -> float:
-		return int(0)
+		return float(0)
 
 class ParentReferenceType(AttributeType):
 	_comparison_type 	= "parentReference"
@@ -376,10 +378,10 @@ class ParentReferenceType(AttributeType):
 		super().__init__(attribute_definition, globalID)
 
 	@overrides(AttributeType)
-	def checkValue(self, valueInput: Link):
+	def checkValue(self, valueInput: Union[Link, str]):
 		# just check if it is a valid link syntax
 		try:
-			link = Link(valueInput)
+			link = Link.force(valueInput)
 		except Exception as e:
 			reportValidationError(f"Values of type parent reference must have a link valid link. But parsing the link \"{valueInput}\" threw errors: {str(e)}")
 		if(not link.hasConfig() or not link.hasElement() or link.hasAttribute()):
@@ -403,7 +405,7 @@ attributeTypeList = [StringType, BoolType, IntType, FloatType, ReferenceListType
 def reportValidationError(errorMsg: str):
 	raise ValueError(errorMsg)
 
-def parseAttribute(attributeDefinition: dict, AttributeGlobalID: Link) -> AttributeType:
+def parseAttribute(attributeDefinition: dict, AttributeGlobalID: Union[Link, str]) -> AttributeType:
 	if(not const.TYPE_KEY in attributeDefinition):
 		raise KeyError("Type key is required for every attribute but it is missing")
 	parseType = attributeDefinition[const.TYPE_KEY]
