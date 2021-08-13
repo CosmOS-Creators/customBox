@@ -1,0 +1,70 @@
+#sideMenu .QPushButton:hover {{
+    background-color : {QTMATERIAL_SECONDARYLIGHTCOLOR};
+}}
+
+#sideMenu .QPushButton:pressed {{
+    background-color : {QTMATERIAL_PRIMARYCOLOR};
+}}
+
+#sideMenu .QPushButton[Selected="true"] {{
+    border-left: 3px solid {QTMATERIAL_PRIMARYCOLOR};
+    background-color : {QTMATERIAL_SECONDARYDARKCOLOR};
+}}
+
+#sideMenu .QPushButton[Selected="true"]:hover {{
+    background-color : {QTMATERIAL_SECONDARYLIGHTCOLOR};
+}}
+
+#sideMenu .QPushButton[Selected="true"]:pressed {{
+    background-color : {QTMATERIAL_PRIMARYCOLOR};
+}}
+
+#sideMenu .QPushButton {{
+    border: none;
+    border-left: 3px solid transparent;
+    border-radius: 0px;
+    background-color: transparent;
+    padding-left: {SIDEBAR_ICON_PADDING_LEFT}px;
+    padding-right: {SIDEBAR_ICON_PADDING_RIGHT}px;
+    text-align: left;
+    color: {QTMATERIAL_SECONDARYTEXTCOLOR};
+}}
+
+QWidget[objectName^="sideMenu"] {{
+    background-color: {QTMATERIAL_SECONDARYCOLOR};
+}}
+
+QWidget[objectName^="TitleBar"] {{
+    background-color: {QTMATERIAL_SECONDARYCOLOR};
+}}
+
+#TitleBar .QPushButton {{
+    background-color : transparent;
+    border: none;
+    padding: 0px;
+    margin: 8px;
+    height: {TITLEBAR_ICON_SIZE_HEIGHT}px;
+    min-height: {TITLEBAR_ICON_SIZE_HEIGHT}px;
+    max-height: {TITLEBAR_ICON_SIZE_HEIGHT}px;
+    width: {TITLEBAR_ICON_SIZE_WIDTH}px;
+}}
+
+#TitleBar .QPushButton[objectName^="CloseButton"] {{
+    background-color : transparent;
+    border: none;
+    padding: 0px;
+    margin: 8px;
+    height: {TITLEBAR_ICON_SIZE_HEIGHT}px;
+    min-height: {TITLEBAR_ICON_SIZE_HEIGHT}px;
+    max-height: {TITLEBAR_ICON_SIZE_HEIGHT}px;
+    width: {TITLEBAR_ICON_SIZE_WIDTH}px;
+}}
+
+#TitleBar .QPushButton:hover {{
+    background-color : {QTMATERIAL_SECONDARYLIGHTCOLOR};
+}}
+
+#TitleBar .QPushButton[objectName^="CloseButton"]:hover {{
+    background-color : #{CLOSE_BUTTON_HOVER_COLOR};
+}}
+
