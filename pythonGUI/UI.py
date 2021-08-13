@@ -50,18 +50,19 @@ class sidebar(QWidget):
         self.anim_group.addAnimation(self.toggle_animation_2)
         self.anim_group.finished.connect(self.setSidebarButtonText)
 
-
         self.setMaximumWidth(self.collapsedWidth)
         self.setMinimumWidth(self.collapsedWidth)
 
     def switchSelection(self, new_selection):
         old_selection   = self.page_layout.currentIndex()
-        old_button      = self.pageButtons[old_selection][0]
-        new_button      = self.pageButtons[new_selection][0]
+        old_button      = self.pageButtons[2:][old_selection][0]
+        new_button      = self.pageButtons[2:][new_selection][0]
         old_button.setProperty("Selected", "false")
         new_button.setProperty("Selected", "true")
         self.refreshStyle(old_button)
         self.refreshStyle(new_button)
+        old_button.setStyleSheet("text-align: left") # This is needed for some reason to have the button update when it is switched
+        new_button.setStyleSheet("text-align: left")
         self.page_layout.setCurrentIndex(new_selection)
 
     def refreshStyle(self, widget: QWidget):
@@ -80,7 +81,6 @@ class sidebar(QWidget):
         button.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
         button.clicked.connect(lambda: self.switchSelection(layout_index))
         button.setAttribute(Qt.WA_StyledBackground, True)
-        button.setStyleSheet("text-align: left") # This is needed for some reason to have the button update when it is switched
 
         if(self.numPages == 0):
             button.setProperty("Selected", "true")
@@ -121,7 +121,6 @@ class sidebar(QWidget):
                     button.setText("")
                 else:
                     button.setText(buttonText[0:2])
-
 
 class TitleBar(QWidget):
     def __init__(self, main_window: MainWindow):
