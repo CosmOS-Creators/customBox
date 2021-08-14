@@ -276,6 +276,7 @@ class SelectionType(AttributeType):
 		if(const.ELEMENTS_LIST_KEY in attribute_definition):
 			self.elements 			= attribute_definition[const.ELEMENTS_LIST_KEY]
 			self.resolvedElements	= None
+			self.targetedAttribute	= None
 			if(type(self.elements) is list):
 				self._needs_linking		= False
 			elif(type(self.elements) is str):
@@ -321,6 +322,7 @@ class SelectionType(AttributeType):
 					foundMatch = True
 			if(self.resolvedElements is None):
 				self.resolvedElements = possibleValues
+				self.targetedAttribute = link.attribute
 			if(foundMatch == False):
 				raise NameError(f'"{attributeInstance.value}" is not a valid choice for Attribute instances of "{self.globalID}". Valid choices are: {possibleValues}')
 

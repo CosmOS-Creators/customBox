@@ -26,17 +26,32 @@ class sidebar(QWidget):
 		menuButton = QPushButton("Hide", self, clicked=self.toggleSidebar)
 		menuButton.setIcon(icons.Icon("menu"))
 		menuButton.setIconSize(styleExtensions.SIDEBAR_ICON_SIZE)
+		saveButton = QPushButton("Save", self)
+		saveButton.setIcon(icons.Icon("save"))
+		saveButton.setIconSize(styleExtensions.SIDEBAR_ICON_SIZE)
+		newButton = QPushButton("New", self)
+		newButton.setIcon(icons.Icon("create"))
+		newButton.setIconSize(styleExtensions.SIDEBAR_ICON_SIZE)
 		settingsButton = QPushButton("Settings", self)
 		settingsButton.setIcon(icons.Icon("settings"))
 		settingsButton.setIconSize(styleExtensions.SIDEBAR_ICON_SIZE)
+
 		self.getMaxButtonSize(menuButton)
+		self.getMaxButtonSize(saveButton)
+		self.getMaxButtonSize(newButton)
 		self.getMaxButtonSize(settingsButton)
 		self.pageButtons.append((menuButton, menuButton.text(), True))
+		self.pageButtons.append((saveButton, saveButton.text(), True))
+		self.pageButtons.append((newButton, newButton.text(), True))
 		self.pageButtons.append((settingsButton, settingsButton.text(), True))
 		self.sidebar_layout.addWidget(menuButton)
 		self.sidebar_layout.addStretch()
+		self.sidebar_layout.addWidget(newButton)
+		self.sidebar_layout.addWidget(saveButton)
 		self.sidebar_layout.addWidget(settingsButton)
-		self.current_index      = self.sidebar_layout.count() - 2
+
+		self.numStaticButtons 	= self.sidebar_layout.count() - 1
+		self.current_index      = 1
 		self.isCollapsed        = True
 
 		self.toggle_animation_1 = QPropertyAnimation(self, b"minimumWidth")
@@ -55,8 +70,8 @@ class sidebar(QWidget):
 
 	def switchSelection(self, new_selection):
 		old_selection   = self.page_layout.currentIndex()
-		old_button      = self.pageButtons[2:][old_selection][0]
-		new_button      = self.pageButtons[2:][new_selection][0]
+		old_button      = self.pageButtons[self.numStaticButtons:][old_selection][0]
+		new_button      = self.pageButtons[self.numStaticButtons:][new_selection][0]
 		old_button.setProperty("Selected", "false")
 		new_button.setProperty("Selected", "true")
 		self.refreshStyle(old_button)
@@ -168,6 +183,7 @@ class TitleBar(QWidget):
 				# self.window_offset.setX(self.window_offset.x() - correction)
 			else:
 				self.main_window.move(self.main_window.pos() + event.position().toPoint() - self.window_offset)
+				pass
 		else:
 			super().mouseMoveEvent(event)
 
