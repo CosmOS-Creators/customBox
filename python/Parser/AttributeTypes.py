@@ -116,13 +116,13 @@ class StringType(AttributeType):
 
 	@overrides(AttributeType)
 	def checkValue(self, valueInput: str):
+		if(not type(valueInput) is str):
+			reportValidationError(f"Input value \"{valueInput}\" is not of type str but the attribute definition was expecting a string")
 		if(self.validation != ""):
 			try:
 				regex = re.compile(self.validation)
 			except Exception as e:
 				raise ValueError(f"The regex \"{self.validation}\" is not valid: \"{str(e)}\"")
-			if(not type(valueInput) is str):
-				reportValidationError(f"Input value \"{valueInput}\" is not of type str but the attribute definition was expecting a string")
 			if(not regex.match(valueInput)):
 				reportValidationError(f"\"{valueInput}\" does not match the validation regex \"{self.validation}\"")
 		return valueInput
