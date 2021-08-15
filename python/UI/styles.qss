@@ -67,4 +67,3 @@ QWidget[objectName^="TitleBar"] {{
 #TitleBar .QPushButton[objectName^="CloseButton"]:hover {{
     background-color : #{CLOSE_BUTTON_HOVER_COLOR};
 }}
-

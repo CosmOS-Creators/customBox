@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QGridLayout, QLabel, QTabWidget, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QTabWidget, QVBoxLayout, QWidget
 from Parser.ConfigTypes import Subconfig
 from UI.InterfaceElements import create_interface_element
 

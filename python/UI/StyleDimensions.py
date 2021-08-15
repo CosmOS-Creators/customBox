@@ -25,7 +25,8 @@ class styleExtensions(object, metaclass=MetaStyleExtensionClass):
         "SIDEBAR_ICON_PADDING_RIGHT": 15,
         "CLOSE_BUTTON_HOVER_COLOR": "c62828",
         "SIDEBAR_ICON_SIZE" : QSize(24, 24),
-        "TITLEBAR_ICON_SIZE" : QSize(25, 25)
+        "TITLEBAR_ICON_SIZE" : QSize(25, 25),
+		"SIDEBAR_SHORT_TEXT_LENGTH" : 2
     }
 
     def get_Parameters():

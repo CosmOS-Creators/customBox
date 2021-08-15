@@ -2,7 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import List, Tuple
 from PySide6.QtCore import QEasingCurve, QParallelAnimationGroup, QPoint, QPropertyAnimation, Qt
-from PySide6.QtWidgets import QApplication, QCheckBox, QComboBox, QFormLayout, QGraphicsDropShadowEffect, QLineEdit, QPushButton, QSizeGrip, QSizePolicy, QStackedLayout, QVBoxLayout, QWidget, QHBoxLayout
+from PySide6.QtWidgets import QApplication, QCheckBox, QComboBox, QFormLayout, QGraphicsDropShadowEffect, QLineEdit, QPushButton, QScrollArea, QSizeGrip, QSizePolicy, QStackedLayout, QVBoxLayout, QWidget, QHBoxLayout
 from qt_material import apply_stylesheet
 import sys
 from UI.support import Icons
@@ -36,6 +36,19 @@ class sidebar(QWidget):
 		settingsButton.setIcon(icons.Icon("settings"))
 		settingsButton.setIconSize(styleExtensions.SIDEBAR_ICON_SIZE)
 
+		configPagesScrollArea 	= QScrollArea()
+		configPages 			= QWidget()
+		configPages.setObjectName("sideMenuScrollArea")
+		self.configPagesLayout 	= QVBoxLayout(configPages)
+		self.configPagesLayout.setAlignment(Qt.AlignTop)
+		configPages.setLayout(self.configPagesLayout)
+		self.configPagesLayout.setContentsMargins(0, 0, 0, 0)
+		self.configPagesLayout.setSpacing(0)
+		configPagesScrollArea.setWidget(configPages)
+		configPagesScrollArea.setWidgetResizable(True)
+		configPagesScrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		configPagesScrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
 		self.getMaxButtonSize(menuButton)
 		self.getMaxButtonSize(saveButton)
 		self.getMaxButtonSize(newButton)
@@ -45,13 +58,13 @@ class sidebar(QWidget):
 		self.pageButtons.append((newButton, newButton.text(), True))
 		self.pageButtons.append((settingsButton, settingsButton.text(), True))
 		self.sidebar_layout.addWidget(menuButton)
-		self.sidebar_layout.addStretch()
+		self.sidebar_layout.addWidget(configPagesScrollArea)
 		self.sidebar_layout.addWidget(newButton)
 		self.sidebar_layout.addWidget(saveButton)
 		self.sidebar_layout.addWidget(settingsButton)
 
 		self.numStaticButtons 	= self.sidebar_layout.count() - 1
-		self.current_index      = 1
+		self.current_index      = 0
 		self.isCollapsed        = True
 
 		self.toggle_animation_1 = QPropertyAnimation(self, b"minimumWidth")
@@ -100,7 +113,7 @@ class sidebar(QWidget):
 		if(self.numPages == 0):
 			button.setProperty("Selected", "true")
 		self.pageButtons.append((button, buttonText, hasIcon))
-		self.sidebar_layout.insertWidget(self.current_index, button)
+		self.configPagesLayout.insertWidget(self.current_index, button)
 		self.current_index += 1
 		self.numPages += 1
 		self.getMaxButtonSize(button)
@@ -113,21 +126,20 @@ class sidebar(QWidget):
 
 	def toggleSidebar(self):
 		if(self.isCollapsed):
-			for button, buttonText, _ in self.pageButtons:
-				button.setText(buttonText)
+			self.isCollapsed = False
+			self.setSidebarButtonText()
 			self.toggle_animation_1.setStartValue(self.width())
 			self.toggle_animation_2.setStartValue(self.width())
 			self.toggle_animation_1.setEndValue(self.expandedWidth)
 			self.toggle_animation_2.setEndValue(self.expandedWidth)
 			self.anim_group.start()
-			self.isCollapsed = False
 		else:
+			self.isCollapsed = True
 			self.toggle_animation_1.setStartValue(self.width())
 			self.toggle_animation_2.setStartValue(self.width())
 			self.toggle_animation_1.setEndValue(self.collapsedWidth)
 			self.toggle_animation_2.setEndValue(self.collapsedWidth)
 			self.anim_group.start()
-			self.isCollapsed = True
 
 	def setSidebarButtonText(self):
 		if(self.isCollapsed):
@@ -135,7 +147,10 @@ class sidebar(QWidget):
 				if(hasIcon):
 					button.setText("")
 				else:
-					button.setText(buttonText[0:2])
+					button.setText(buttonText[:styleExtensions.SIDEBAR_SHORT_TEXT_LENGTH])
+		else:
+			for button, buttonText, _ in self.pageButtons:
+				button.setText(buttonText)
 
 class TitleBar(QWidget):
 	def __init__(self, main_window: MainWindow):
