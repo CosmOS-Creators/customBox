@@ -11,12 +11,12 @@
 		},
 		"handlers": {
 			"label": "",
-			"type": "string",
+			"type": "stringList",
 			"tooltip": "API names, be aware that the name must be the same as defined in header file"
 		},
 		"apiHeaders": {
 			"label": "API header files",
-			"type": "string",
+			"type": "stringList",
 			"tooltip": "API headers providing definitions of sysJobs used in the current group"
 		},
 		"core": {
