@@ -9,12 +9,11 @@ from typing 					import Dict, List, Union, NewType
 from Parser.LinkElement 		import Link
 
 # type definitions for better linting
-jsonConfigType 				= NewType('jsonConfigType', Dict[str, object])
 AttributeCollectionType 	= NewType('AttributeCollectionType', Dict[str, AttributeTypes.AttributeType])
 
-def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
+def processAttributes(config: Dict[str, object]) -> AttributeCollectionType:
 	attributeCollection: AttributeCollectionType = {}
-	AttributesToInherit: Dict[str, AttributeTypes.AttributeType] = {}
+	AttributesToInherit: AttributeCollectionType = {}
 	for configName in config:
 		for attribute in config[configName][const.ATTRIBUTES_KEY]:
 			currentAttribute = config[configName][const.ATTRIBUTES_KEY][attribute]
@@ -53,13 +52,21 @@ def processConfig(config: dict, configName: str, completeConfig: ConfigTypes.Con
 			raise Exception(f"In config \"{configName}\" the \"{const.ELEMENTS_KEY}\" property is required to be a list but found {type(currentElement)}")
 		for attributeInstance in currentElement:
 			newElement.createAttributeInstance(attributeInstance, attributeCollection)
+	if(const.UI_PAGE_KEY in config):
+		for pageName, uiPage in config[const.UI_PAGE_KEY].items():
+			completeConfig.UiConfig.createpage(pageName, uiPage)
+	if(const.UI_KEY in config):
+		if(const.UI_USE_PAGE_KEY in config[const.UI_KEY]):
+			subconfig = completeConfig.getSubconfig(configName)
+			subconfig.assignToUiPage(config[const.UI_KEY][const.UI_USE_PAGE_KEY])
 
 def linkParents(objConfigs: ConfigTypes.Configuration):
-	for subConfig in objConfigs:
+	for subConfig in objConfigs.configs.values():
 		for element in subConfig:
 			for attribInst in element:
 				if(type(attribInst) is ConfigTypes.AttributeInstance):
 					attribInst.ResolveValueLink()
+		subConfig.resolveUiAssignment()
 
 def config_file_sanity_check(config: dict):
 	for required_key in const.required_json_config_keys:

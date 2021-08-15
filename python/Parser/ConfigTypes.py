@@ -79,11 +79,66 @@ class dynamicObject:
 		except AttributeError:
 			return self._get(name)
 
+class UiViewType():
+	def __init__(self, key):
+		self.key = key
+
+class UiViewTypes():
+	tabbed 		= UiViewType(const.UI_VIEW_TYPE_TABBED_KEY)
+	carded 		= UiViewType(const.UI_VIEW_TYPE_CARDED_KEY)
+	__allTypes 	= [tabbed, carded]
+
+	@staticmethod
+	def getViewType(type: str):
+		for t in UiViewTypes.__allTypes:
+			if(t.key == type):
+				return t
+		return None
+
+class UiPage():
+	def __init__(self, label: str, viewType: UiViewType, icon: str = None):
+		self.label 		= label
+		self.icon 		= icon
+		self.viewType 	= viewType
+		self.assignedSubconfigs: Dict[str, Subconfig] = dict()
+
+	def assignSubconfig(self, name: str, config: Subconfig):
+		self.assignedSubconfigs[name] = config
+
+class UiConfiguration(dynamicObject):
+	def __init__(self):
+		forbidden 		= 'Creating a user interface page with the name "{0}" is not permitted as "{0}" is a reserved keyword'
+		duplicated 		= 'It was requested to create a user interface page named "{0}" but a page with that name already exists'
+		doesNotExist 	= 'Config has no UI page named "{0}"'
+		super().__init__("UiConfiguration", forbidden, duplicated, doesNotExist)
+
+	@property
+	def pages(self) -> Dict[str, UiPage]:
+		return self._getItems()
+
+	def createpage(self, id: str, pageDefinition: dict[str,str]) -> UiPage:
+		for requiredKey in const.ui_page_required_json_keys:
+			if(requiredKey not in pageDefinition):
+				raise KeyError(f'A UI page with the name "{id}" could not be created because it\'s definition is missing the reqired "{requiredKey}" key.')
+			if(const.UI_TAB_ICON_KEY in pageDefinition):
+				icon = pageDefinition[const.UI_TAB_ICON_KEY]
+			else:
+				icon = None
+			viewType = UiViewTypes.getViewType(pageDefinition[const.UI_VIEW_TYPE_KEY])
+		return self._create(id, UiPage(pageDefinition[const.UI_TAB_LABEL_KEY], viewType, icon))
+
+	def haspage(self, id: str):
+		return self._has(id)
+
+	def getpage(self, id: str) -> UiPage:
+		return self._get(id)
+
 class Configuration(dynamicObject):
 	def __init__(self):
-		forbidden = 'Creating a subconfig with the name "{0}" is not permitted as "{0}" is a reserved keyword'
-		duplicated = 'It was requested to create a subconfig named "{0}" but a subconfig with that name already exists'
-		doesNotExist = 'Config has no subconfig named "{0}"'
+		self.UiConfig 	= UiConfiguration()
+		forbidden 		= 'Creating a subconfig with the name "{0}" is not permitted as "{0}" is a reserved keyword'
+		duplicated 		= 'It was requested to create a subconfig named "{0}" but a subconfig with that name already exists'
+		doesNotExist 	= 'Config has no subconfig named "{0}"'
 		super().__init__("Configuration", forbidden, duplicated, doesNotExist)
 
 	def require(self, requiredProperties : Union[List[Union[str, Link]], Union[str, Link]]):
@@ -97,7 +152,7 @@ class Configuration(dynamicObject):
 				raise AttributeError(f'The link "{link}" was listed as required but it could not be resolved: {str(e)}')
 
 	@property
-	def configs(self):
+	def configs(self) -> Dict[str, Subconfig]:
 		return self._getItems()
 
 	def createSubconfig(self, name: Union[str,Link], source_file: Path) -> Subconfig:
@@ -118,6 +173,7 @@ class Subconfig(dynamicObject):
 		self.__link								= Link.construct(config=name)  # example: cores/
 		self.__parent: Configuration			= parent
 		self.__source_config_file: Path			= source_file
+		self.__ui_page_assignment				= None
 		forbidden = f'Creating an element with the name "{{0}}" in the subconfig "{self.link.config}" is not permitted as "{{0}}" is a reserved keyword'
 		duplicated = f'The creation of a new element named "{{0}}" was requested for subconfig "{self.link.config}" but an element with that name already exists for this subconfig'
 		doesNotExist = f'Tried to get element "{{0}}" from subconfig "{self.link.config}" but this subconfig has no element with that name'
@@ -135,6 +191,18 @@ class Subconfig(dynamicObject):
 	def getElement(self, name: Union[str, Link]) -> ConfigElement:
 		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
 		return self._get(elementLink.element)
+
+	def assignToUiPage(self, page_id: str):
+		self.__ui_page_assignment = page_id
+
+	def resolveUiAssignment(self):
+		if(self.__ui_page_assignment):
+			if(type(self.__ui_page_assignment) is str):
+				if(self.parent.UiConfig.haspage(self.__ui_page_assignment)):
+					self.__ui_page_assignment = self.parent.UiConfig.getpage(self.__ui_page_assignment)
+					self.__ui_page_assignment.assignSubconfig(self.__link.config, self)
+				else:
+					raise ValueError(f'The subconfig "{self.__link}" was assigned to a UI page named "{self.__ui_page_assignment}" but a page with that name does not exist')
 
 	@property
 	def elements(self) -> Dict[str, ConfigElement]:

@@ -1,6 +1,14 @@
 {
 	"version": "1.0.0",
 
+	"ui_page": {
+		"mcu":{
+			"tab_label": "MCU settings",
+			"view_type": "tabbed",
+			"tab_icon": "developer_board"
+		}
+	},
+
 	"attributes": {
 		"mcuName": {
 			"label": "Name of the MCU",

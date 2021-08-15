@@ -1,6 +1,14 @@
 {
 	"version": "1.0.0",
 
+	"ui_page": {
+		"buffers":{
+			"tab_label": "Buffers",
+			"view_type": "tabbed",
+			"tab_icon": "inventory_2"
+		}
+	},
+
 	"attributes": {
 		"name": {
 			"label": "Name of the buffer",

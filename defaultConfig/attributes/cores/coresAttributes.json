@@ -1,5 +1,14 @@
 {
     "version": "1.0.0",
+
+	"ui_page": {
+		"cores":{
+			"tab_label": "Cores",
+			"tab_icon": "memory",
+			"view_type": "tabbed"
+		}
+	},
+
     "attributes": {
         "CoreName": {
             "label": "Core Name",

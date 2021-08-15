@@ -2,19 +2,29 @@ from __future__ import annotations
 from pathlib import Path
 from typing import List, Tuple
 from PySide6.QtCore import QEasingCurve, QParallelAnimationGroup, QPoint, QPropertyAnimation, Qt
-from PySide6.QtWidgets import QApplication, QCheckBox, QComboBox, QFormLayout, QGraphicsDropShadowEffect, QLineEdit, QPushButton, QScrollArea, QSizeGrip, QSizePolicy, QStackedLayout, QVBoxLayout, QWidget, QHBoxLayout
+from PySide6.QtWidgets import QApplication, QCheckBox, QComboBox, QFormLayout, QFrame, QGraphicsDropShadowEffect, QLineEdit, QPushButton, QScrollArea, QSizeGrip, QSizePolicy, QStackedLayout, QVBoxLayout, QWidget, QHBoxLayout
 from qt_material import apply_stylesheet
 import sys
 from UI.support import Icons
 from UI.StyleDimensions import styleExtensions
 
+class SeperatorLine(QFrame):
+	def __init__(self, parent):
+		super().__init__(parent)
+		self.setObjectName("seperatorLine")
+		self.setFrameShape(QFrame.HLine)
+		self.setFrameShadow(QFrame.Sunken)
+
 class sidebar(QWidget):
 	def __init__(self, page_layout: QStackedLayout):
 		super().__init__()
 		self.pageButtons: List[Tuple[QPushButton, str, bool]] = list()
+		self.tabButtons: List[QPushButton] = list()
 		self.numPages       = 0
 		self.expandedWidth  = 0
 		self.collapsedWidth = styleExtensions.SIDEBAR_ICON_SIZE.width() + styleExtensions.SIDEBAR_ICON_PADDING_LEFT + styleExtensions.SIDEBAR_ICON_PADDING_RIGHT
+
+
 
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setObjectName("sideMenu")
@@ -58,7 +68,9 @@ class sidebar(QWidget):
 		self.pageButtons.append((newButton, newButton.text(), True))
 		self.pageButtons.append((settingsButton, settingsButton.text(), True))
 		self.sidebar_layout.addWidget(menuButton)
+		self.sidebar_layout.addWidget(SeperatorLine(self))
 		self.sidebar_layout.addWidget(configPagesScrollArea)
+		self.sidebar_layout.addWidget(SeperatorLine(self))
 		self.sidebar_layout.addWidget(newButton)
 		self.sidebar_layout.addWidget(saveButton)
 		self.sidebar_layout.addWidget(settingsButton)
@@ -83,8 +95,8 @@ class sidebar(QWidget):
 
 	def switchSelection(self, new_selection):
 		old_selection   = self.page_layout.currentIndex()
-		old_button      = self.pageButtons[self.numStaticButtons:][old_selection][0]
-		new_button      = self.pageButtons[self.numStaticButtons:][new_selection][0]
+		old_button      = self.tabButtons[old_selection]
+		new_button      = self.tabButtons[new_selection]
 		old_button.setProperty("Selected", "false")
 		new_button.setProperty("Selected", "true")
 		self.refreshStyle(old_button)
@@ -113,6 +125,7 @@ class sidebar(QWidget):
 		if(self.numPages == 0):
 			button.setProperty("Selected", "true")
 		self.pageButtons.append((button, buttonText, hasIcon))
+		self.tabButtons.append(button)
 		self.configPagesLayout.insertWidget(self.current_index, button)
 		self.current_index += 1
 		self.numPages += 1
@@ -158,9 +171,14 @@ class TitleBar(QWidget):
 		self.main_window = main_window
 		self.setObjectName("TitleBar")
 		self.setAttribute(Qt.WA_StyledBackground, True)
+		self.title_area_layout = QVBoxLayout()
+		self.title_area_layout.setContentsMargins(0, 0, 0, 0)
+		self.title_area_layout.setSpacing(0)
 		self.title_bar_layout = QHBoxLayout()
 		self.title_bar_layout.setContentsMargins(0, 0, 0, 0)
-		self.setLayout(self.title_bar_layout)
+		self.title_area_layout.addLayout(self.title_bar_layout)
+		self.title_area_layout.addWidget(SeperatorLine(self))
+		self.setLayout(self.title_area_layout)
 
 		self.title_bar_layout.setSpacing(0)
 		self.title_bar_layout.addStretch()

@@ -1,6 +1,14 @@
 {
 	"version": "1.0.0",
 
+	"ui_page": {
+		"threads":{
+			"tab_label": "Threads",
+			"view_type": "tabbed",
+			"tab_icon": "date_range"
+		}
+	},
+
 	"attributes": {
 		"name": {
 			"label": "Name of the thread",

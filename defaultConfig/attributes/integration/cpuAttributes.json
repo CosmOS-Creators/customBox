@@ -1,6 +1,14 @@
 {
 	"version": "1.0.0",
 
+	"ui_page": {
+		"cpus":{
+			"tab_label": "CPUs",
+			"view_type": "tabbed",
+			"tab_icon": "memory"
+		}
+	},
+
 	"attributes": {
 		"stackMemory": {
 			"inherit": "memoriesAttributes/:memory",

@@ -1,6 +1,14 @@
 {
 	"version": "1.0.0",
 
+	"ui_page": {
+		"tasks":{
+			"tab_label": "Tasks",
+			"view_type": "tabbed",
+			"tab_icon": "task_alt"
+		}
+	},
+
 	"attributes": {
 		"name": {
 			"label": "Name of the task",

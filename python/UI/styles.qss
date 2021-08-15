@@ -24,6 +24,7 @@
     border-left: 3px solid transparent;
     border-radius: 0px;
     background-color: transparent;
+	text-transform: none;
     padding-left: {SIDEBAR_ICON_PADDING_LEFT}px;
     padding-right: {SIDEBAR_ICON_PADDING_RIGHT}px;
     text-align: left;
@@ -36,6 +37,11 @@ QWidget[objectName^="sideMenu"] {{
 
 QWidget[objectName^="TitleBar"] {{
     background-color: {QTMATERIAL_SECONDARYCOLOR};
+}}
+
+QFrame[objectName^="seperatorLine"] {{
+    background-color: {QTMATERIAL_SECONDARYLIGHTCOLOR};
+	min-height: 2px;
 }}
 
 #TitleBar .QPushButton {{

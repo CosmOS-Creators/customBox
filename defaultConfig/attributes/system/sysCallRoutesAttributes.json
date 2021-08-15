@@ -1,6 +1,14 @@
 {
 	"version": "1.0.0",
 
+	"ui_page": {
+		"sys_call_routes":{
+			"tab_label": "Sys Call Routes",
+			"view_type": "tabbed",
+			"tab_icon": "alt_route"
+		}
+	},
+
 	"attributes": {
 		"routedFuncName": {
 			"label": "Name of the routed function",

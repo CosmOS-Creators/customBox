@@ -1,6 +1,14 @@
 {
 	"version": "1.0.0",
 
+	"ui_page": {
+		"switches":{
+			"tab_label": "Switches",
+			"view_type": "tabbed",
+			"tab_icon": "toggle_on"
+		}
+	},
+
 	"attributes": {
 		"state": {
 			"label": "State of the switch",

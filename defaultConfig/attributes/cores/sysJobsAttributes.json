@@ -1,6 +1,14 @@
 {
 	"version": "1.0.0",
 
+	"ui_page": {
+		"sys_jobs":{
+			"tab_label": "Sys Jobs",
+			"view_type": "tabbed",
+			"tab_icon": "work_outline"
+		}
+	},
+
 	"attributes": {
 		"tickMultiplicator": {
 			"label": "",

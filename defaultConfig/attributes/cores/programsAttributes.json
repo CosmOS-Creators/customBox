@@ -1,6 +1,14 @@
 {
 	"version": "1.0.0",
 
+	"ui_page": {
+		"programs":{
+			"tab_label": "Programs",
+			"view_type": "tabbed",
+			"tab_icon": "book"
+		}
+	},
+
 	"attributes": {
 		"name": {
 			"label": "Name of the program",
