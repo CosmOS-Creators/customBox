@@ -6,12 +6,13 @@ class TestClassLinkFunctions:
 
 	@pytest.fixture
 	def mocked_basic_cores_config_structure(self):
+		from pathlib import Path
 		attribLookup = {
 				"cores/:bootOs": 	AttributeTypes.BoolType({"label": "Bool type", "type": "bool"}, "cores/:bootOs"),
 				"cores/:coreName":	AttributeTypes.StringType({"label": "Core Name", "type": "string"}, "cores/:coreName")
 		}
 		configuration = ConfigTypes.Configuration()
-		subconfig = configuration.createSubconfig("cores")
+		subconfig = configuration.createSubconfig("cores", Path("test.json"))
 		configElement = subconfig.createElement("core_0")
 		configElement.createAttributeInstance({"target": "bootOs", "value": True}, attribLookup)
 		configElement.createAttributeInstance({"target": "coreName", "value": "CM4"}, attribLookup)
@@ -19,11 +20,12 @@ class TestClassLinkFunctions:
 
 	@pytest.fixture
 	def mocked_cores_program_config_structure(self, mocked_basic_cores_config_structure: ConfigTypes.Configuration):
+		from pathlib import Path
 		attribLookup = {
 				"programs/:core": AttributeTypes.ParentReferenceType({"type": "parentReference"}, "programs/:core"),
 				"programs/:name":	AttributeTypes.StringType({"label": "Program Name", "type": "string"}, "programs/:name")
 		}
-		subconfig = mocked_basic_cores_config_structure.createSubconfig("programs")
+		subconfig = mocked_basic_cores_config_structure.createSubconfig("programs", Path("test.json"))
 		configElement = subconfig.createElement("program_0")
 		configElement.createAttributeInstance({"target": "name", "value": "default_CM4"},attribLookup)
 		configElement.createAttributeInstance({"target": "core", "value": "cores/core_0"},attribLookup)
