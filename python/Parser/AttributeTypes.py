@@ -274,8 +274,8 @@ class SelectionType(AttributeType):
 	def __init__(self, attribute_definition: dict, globalID: str):
 		super().__init__(attribute_definition, globalID)
 		if(const.ELEMENTS_LIST_KEY in attribute_definition):
-			self.elements 			= attribute_definition[const.ELEMENTS_LIST_KEY]
-			self.resolvedElements	= None
+			self.elements: Union[str, list[str]] 			= attribute_definition[const.ELEMENTS_LIST_KEY]
+			self.resolvedElements: Union[None, ]	= None
 			self.targetedAttribute	= None
 			if(type(self.elements) is list):
 				self._needs_linking		= False

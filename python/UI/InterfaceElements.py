@@ -3,6 +3,7 @@ from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 
 from PySide6.QtWidgets import QCheckBox, QComboBox, QHBoxLayout, QLabel, QLayout, QLineEdit, QSpinBox, QWidget
+from Parser.AttributeTypes import BoolType, FloatType, IntType, SelectionType, StringType
 from Parser.ConfigTypes import AttributeInstance, ConfigElement
 
 
@@ -19,6 +20,7 @@ class String_element(Ui_element):
 	comparisonType = "string"
 	def __init__(self, parent: QWidget, attribute: AttributeInstance):
 		super().__init__(parent, attribute, QHBoxLayout())
+		self.attributeDef: StringType
 		self.label = QLabel(self.attributeDef.label, parent)
 		self.ui_element = QLineEdit(parent)
 		if(self.attributeDef.validation):
@@ -31,6 +33,7 @@ class Bool_element(Ui_element):
 	comparisonType = "bool"
 	def __init__(self, parent: QWidget, attribute: AttributeInstance):
 		super().__init__(parent, attribute, QHBoxLayout())
+		self.attributeDef: BoolType
 		self.ui_element = QCheckBox(self.attributeDef.label, parent)
 		self.ui_element.setChecked(attribute.value)
 		self.Layout.addWidget(self.ui_element, 1)
@@ -39,6 +42,7 @@ class Int_element(Ui_element):
 	comparisonType = "int"
 	def __init__(self, parent: QWidget, attribute: AttributeInstance):
 		super().__init__(parent, attribute, QHBoxLayout())
+		self.attributeDef: IntType
 		self.label = QLabel(self.attributeDef.label, parent)
 		self.ui_element = QSpinBox(parent)
 		if(self.attributeDef.min):
@@ -54,6 +58,7 @@ class Float_element(Ui_element):
 	comparisonType = "float"
 	def __init__(self, parent: QWidget, attribute: AttributeInstance):
 		super().__init__(parent, attribute, QHBoxLayout())
+		self.attributeDef: FloatType
 		self.label = QLabel(self.attributeDef.label, parent)
 		self.ui_element = QSpinBox(parent)
 		if(self.attributeDef.min):
@@ -69,6 +74,7 @@ class Selection_element(Ui_element):
 	comparisonType = "selection"
 	def __init__(self, parent: QWidget, attribute: AttributeInstance):
 		super().__init__(parent, attribute, QHBoxLayout())
+		self.attributeDef: SelectionType
 		self.label = QLabel(self.attributeDef.label, parent)
 		self.ui_element = QComboBox(parent)
 		if(type(self.attributeDef.elements) is list):

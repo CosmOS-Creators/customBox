@@ -136,7 +136,7 @@ class Subconfig(dynamicObject):
 		return self._get(elementLink.element)
 
 	@property
-	def elements(self) -> List[ConfigElement]:
+	def elements(self) -> Dict[str, ConfigElement]:
 		return self._getItems()
 
 	@property
@@ -194,7 +194,7 @@ class ConfigElement(dynamicObject):
 				References[name] = itemValue
 		return References
 
-	def getAttribute(self, name: str):
+	def getAttribute(self, name: str) -> Union[AttributeInstance, ReferenceCollection]:
 		return self._get(name)
 
 	def addReferenceObject(self, name: str, objectLinkName: str, ObjectLink):
