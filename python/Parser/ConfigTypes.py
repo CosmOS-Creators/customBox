@@ -1,6 +1,6 @@
 from __future__ 				import annotations
-from types 						import SimpleNamespace
 from typing 					import Dict, List, Union
+from pathlib 					import Path
 from Parser.LinkElement 		import Link
 from Parser.helpers 			import overrides
 import Parser.AttributeTypes 	as AttributeTypes
@@ -100,9 +100,9 @@ class Configuration(dynamicObject):
 	def configs(self):
 		return self._getItems()
 
-	def createSubconfig(self, name: Union[str,Link]) -> Subconfig:
+	def createSubconfig(self, name: Union[str,Link], source_file: Path) -> Subconfig:
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
-		return self._create(link.config, Subconfig(link.config, self))
+		return self._create(link.config, Subconfig(link.config, self, source_file))
 
 	def hasSubConfig(self, name: Union[str,Link]):
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
@@ -114,9 +114,10 @@ class Configuration(dynamicObject):
 
 
 class Subconfig(dynamicObject):
-	def __init__(self, name: str, parent: Configuration):
+	def __init__(self, name: str, parent: Configuration, source_file: Path):
 		self.__link								= Link.construct(config=name)  # example: cores/
 		self.__parent: Configuration			= parent
+		self.__source_config_file: Path			= source_file
 		forbidden = f'Creating an element with the name "{{0}}" in the subconfig "{self.link.config}" is not permitted as "{{0}}" is a reserved keyword'
 		duplicated = f'The creation of a new element named "{{0}}" was requested for subconfig "{self.link.config}" but an element with that name already exists for this subconfig'
 		doesNotExist = f'Tried to get element "{{0}}" from subconfig "{self.link.config}" but this subconfig has no element with that name'
@@ -126,7 +127,7 @@ class Subconfig(dynamicObject):
 		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
 		return self._has(elementLink.element)
 
-	def createElement(self, name: Union[str, Link]) -> ConfigElement:
+	def createElement(self, name: Union[str, Link], ) -> ConfigElement:
 		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
 		elementName = elementLink.element
 		return self._create(elementName, ConfigElement(elementName, self))
@@ -146,6 +147,10 @@ class Subconfig(dynamicObject):
 	@property
 	def parent(self):
 		return self.__parent
+
+	@property
+	def source_file(self):
+		return self.__source_config_file
 
 class ConfigElement(dynamicObject):
 	def __init__(self, name: str, parent: Subconfig):
@@ -278,7 +283,7 @@ class ConfigElement(dynamicObject):
 				error_msg = object.__getattribute__(self, '_dynamicObject__non_existant_error')
 				raise AttributeError(error_msg.format(name))
 
-class AttributeInstance(SimpleNamespace):
+class AttributeInstance():
 	def __init__(self, name: Union[str, Link], parent: ConfigElement, attribute: AttributeTypes.AttributeType, value = None):
 		link = Link.force(name, Link.EMPHASIZE_ATTRIBUTE)
 		self.__attribute 		= attribute

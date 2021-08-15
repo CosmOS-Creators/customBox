@@ -41,13 +41,13 @@ def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 
 	return attributeCollection
 
-def processConfig(config: dict, configName: str, completeConfig: ConfigTypes.Configuration, attributeCollection: AttributeCollectionType):
+def processConfig(config: dict, configName: str, completeConfig: ConfigTypes.Configuration, attributeCollection: AttributeCollectionType, source_file: Path):
 	for element in config[const.ELEMENTS_KEY]:
 		currentElement = config[const.ELEMENTS_KEY][element]
 		if(completeConfig.hasSubConfig(configName)):
 			subconfig = completeConfig.getSubconfig(configName)
 		else:
-			subconfig = completeConfig.createSubconfig(configName)
+			subconfig = completeConfig.createSubconfig(configName, source_file)
 		newElement = subconfig.createElement(element)
 		if(not type(currentElement) is list):
 			raise Exception(f"In config \"{configName}\" the \"{const.ELEMENTS_KEY}\" property is required to be a list but found {type(currentElement)}")
@@ -66,7 +66,7 @@ def config_file_sanity_check(config: dict):
 		if(not required_key in config):
 			raise KeyError(f"Every config file must have a key named \"{required_key}\"")
 
-def discoverConfigFiles(configPath: Union[str,List[str]]) -> List[str]:
+def discoverConfigFiles(configPath: Union[str,List[str]]) -> List[Path]:
 	configPaths: List[str] = []
 	if(type(configPath) is str):
 		configPaths = [configPath]
@@ -87,11 +87,11 @@ class ConfigParser():
 
 	def parse(self)  -> ConfigTypes.Configuration:
 		configFiles = discoverConfigFiles(self.__workspace.config)
-		jsonConfigs = {}
-		configFileNames = {}
+		jsonConfigs = dict()
+		configFileNames = dict()
 		for configFile in configFiles:
-			with open(configFile, "r") as currentFile:
-				configCleanName = Path(configFile).stem
+			with configFile.open("r") as currentFile:
+				configCleanName = configFile.stem
 				if(not const.configFileNameRegex.match(configCleanName)):
 					raise Exception(f"Config file names are oly allowed to contain lower case alphanumeric characters but the file \"{configFile}\" would generate a config named \"{configCleanName}\" which would violate this restriction")
 				if(configCleanName in jsonConfigs):
@@ -111,7 +111,7 @@ class ConfigParser():
 		# make sure to load all attributes before loading all configs
 		self.__attributeCollection = processAttributes(jsonConfigs)
 		for config in jsonConfigs:
-			processConfig(jsonConfigs[config], config, configuration, self.__attributeCollection)
+			processConfig(jsonConfigs[config], config, configuration, self.__attributeCollection, configFileNames[config])
 		linkParents(configuration)
 		return configuration
 
