@@ -9,51 +9,40 @@ from Parser.ConfigTypes import AttributeInstance, ConfigElement
 
 class Ui_element(QWidget):
 	comparisonType = ""
-	def __init__(self, parent: QWidget, attribute: AttributeInstance, layout: QLayout):
+	def __init__(self, parent: QWidget, attribute: AttributeInstance):
 		super().__init__(parent)
 		self.ui_element: QWidget	= None
 		self.label: QLabel			= None
 		self.attributeDef 			= attribute.attributeDefinition
-		self.Layout 				= layout
-		self.setLayout(self.Layout)
-		self.Layout.setContentsMargins(0,0,0,0)
 
-	def get_label_width(self):
-		self.label.adjustSize()
-		return self.label.width()
+	def get_Row(self):
+		return self.label, self.ui_element
 
-	def set_label_width(self, label_width):
-		self.label.setMinimumWidth(label_width)
-		self.label.setMaximumWidth(label_width)
 
 class String_element(Ui_element):
 	comparisonType = "string"
 	def __init__(self, parent: QWidget, attribute: AttributeInstance):
-		super().__init__(parent, attribute, QHBoxLayout())
+		super().__init__(parent, attribute)
 		self.attributeDef: StringType
 		self.label 		= QLabel(self.attributeDef.label, parent)
 		self.ui_element = QLineEdit(parent)
 		if(self.attributeDef.validation):
 			self.ui_element.setValidator(QRegularExpressionValidator(QRegularExpression(self.attributeDef.validation)))
 		self.ui_element.setText(attribute.value)
-		self.Layout.addWidget(self.label, 0)
-		self.Layout.addWidget(self.ui_element, 1)
 
 class Bool_element(Ui_element):
 	comparisonType = "bool"
 	def __init__(self, parent: QWidget, attribute: AttributeInstance):
-		super().__init__(parent, attribute, QHBoxLayout())
+		super().__init__(parent, attribute)
 		self.attributeDef: BoolType
 		self.label 		= QLabel(self.attributeDef.label, parent)
 		self.ui_element = QCheckBox(parent)
 		self.ui_element.setChecked(attribute.value)
-		self.Layout.addWidget(self.label, 0)
-		self.Layout.addWidget(self.ui_element, 1)
 
 class Int_element(Ui_element):
 	comparisonType = "int"
 	def __init__(self, parent: QWidget, attribute: AttributeInstance):
-		super().__init__(parent, attribute, QHBoxLayout())
+		super().__init__(parent, attribute)
 		self.attributeDef: IntType
 		self.label 		= QLabel(self.attributeDef.label, parent)
 		self.ui_element = QSpinBox(parent)
@@ -63,13 +52,11 @@ class Int_element(Ui_element):
 			self.ui_element.setMaximum(self.attributeDef.max)
 		self.ui_element.setSingleStep(1)
 		self.ui_element.setValue(attribute.value)
-		self.Layout.addWidget(self.label, 0)
-		self.Layout.addWidget(self.ui_element, 1)
 
 class Float_element(Ui_element):
 	comparisonType = "float"
 	def __init__(self, parent: QWidget, attribute: AttributeInstance):
-		super().__init__(parent, attribute, QHBoxLayout())
+		super().__init__(parent, attribute)
 		self.attributeDef: FloatType
 		self.label 		= QLabel(self.attributeDef.label, parent)
 		self.ui_element = QSpinBox(parent)
@@ -79,13 +66,11 @@ class Float_element(Ui_element):
 			self.ui_element.setMaximum(self.attributeDef.max)
 		self.ui_element.setValue(attribute.value)
 		self.ui_element.setSingleStep(0.1)
-		self.Layout.addWidget(self.label, 0)
-		self.Layout.addWidget(self.ui_element, 1)
 
 class Selection_element(Ui_element):
 	comparisonType = "selection"
 	def __init__(self, parent: QWidget, attribute: AttributeInstance):
-		super().__init__(parent, attribute, QHBoxLayout())
+		super().__init__(parent, attribute)
 		self.attributeDef: SelectionType
 		self.label 		= QLabel(self.attributeDef.label, parent)
 		self.ui_element = QComboBox(parent)
@@ -99,8 +84,6 @@ class Selection_element(Ui_element):
 			selected_element: ConfigElement = attribute.value
 			selected_attrib = selected_element.getAttribute(self.attributeDef.targetedAttribute)
 			self.ui_element.setCurrentText(selected_attrib.value)
-		self.Layout.addWidget(self.label, 0)
-		self.Layout.addWidget(self.ui_element, 1)
 
 avaliable_ui_elements: List[Ui_element] = [String_element, Bool_element, Int_element, Float_element, Selection_element]
 
