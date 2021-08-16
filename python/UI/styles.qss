@@ -73,3 +73,11 @@ QFrame[objectName^="seperatorLine"] {{
 #TitleBar .QPushButton[objectName^="CloseButton"]:hover {{
     background-color : #{CLOSE_BUTTON_HOVER_COLOR};
 }}
+
+QFrame[class^="cardContainer"] {{
+    margin: 5px;
+}}
+
+#windowTitle {{
+	font-size: 18px;
+}}

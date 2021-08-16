@@ -5,7 +5,7 @@
 		"cores":{
 			"tab_label": "Cores",
 			"tab_icon": "memory",
-			"view_type": "tabbed"
+			"view_type": "carded"
 		}
 	},
 

@@ -15,5 +15,5 @@ if __name__ == "__main__":
 
 	pages = buildAllPages(systemModel)
 
-	Interface.buildMainWindow(pages)
+	Interface.buildMainWindow(pages, "CustomBox")
 	sys.exit(Interface.run())

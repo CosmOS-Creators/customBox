@@ -2,7 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import List, Tuple
 from PySide6.QtCore import QEasingCurve, QParallelAnimationGroup, QPoint, QPropertyAnimation, Qt
-from PySide6.QtWidgets import QApplication, QCheckBox, QComboBox, QFormLayout, QFrame, QGraphicsDropShadowEffect, QLineEdit, QPushButton, QScrollArea, QSizeGrip, QSizePolicy, QStackedLayout, QVBoxLayout, QWidget, QHBoxLayout
+from PySide6.QtWidgets import QApplication, QCheckBox, QComboBox, QFormLayout, QFrame, QGraphicsDropShadowEffect, QLabel, QLineEdit, QPushButton, QScrollArea, QSizeGrip, QSizePolicy, QStackedLayout, QVBoxLayout, QWidget, QHBoxLayout
 from qt_material import apply_stylesheet
 import sys
 from UI.support import Icons
@@ -23,8 +23,6 @@ class sidebar(QWidget):
 		self.numPages       = 0
 		self.expandedWidth  = 0
 		self.collapsedWidth = styleExtensions.SIDEBAR_ICON_SIZE.width() + styleExtensions.SIDEBAR_ICON_PADDING_LEFT + styleExtensions.SIDEBAR_ICON_PADDING_RIGHT
-
-
 
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setObjectName("sideMenu")
@@ -180,7 +178,13 @@ class TitleBar(QWidget):
 		self.title_area_layout.addWidget(SeperatorLine(self))
 		self.setLayout(self.title_area_layout)
 
+		self.custom_window_title = QLabel(main_window.windowTitle())
+		self.custom_window_title.setObjectName("windowTitle")
+
+
 		self.title_bar_layout.setSpacing(0)
+		self.title_bar_layout.addSpacing(50) # placeholder for a potention future icon
+		self.title_bar_layout.addWidget(self.custom_window_title)
 		self.title_bar_layout.addStretch()
 		self.MinimizeButton = QPushButton(icons.Icon("minimize"), "", clicked=main_window.showMinimized)
 		self.MinimizeButton.setIconSize(styleExtensions.TITLEBAR_ICON_SIZE)
@@ -224,11 +228,14 @@ class TitleBar(QWidget):
 		self.window_offset = None
 		super().mouseReleaseEvent(event)
 
+	def mouseDoubleClickEvent(self, event):
+		self.main_window.toggleMaximized()
+
 class MainWindow(QWidget):
-	def __init__(self, pages: List[QWidget]):
+	def __init__(self, pages: List[QWidget], windowTitle: str):
 		super().__init__()
 		self.maximized = False
-		self.setWindowTitle("Configurator")
+		self.setWindowTitle(windowTitle)
 		self.setWindowFlags(Qt.FramelessWindowHint)
 		self.appLayout      = QVBoxLayout()
 		self.appLayout.setSpacing(0)
@@ -277,8 +284,8 @@ class Configurator():
 			style = stylesheet + file.read().format(**styleExtensions.get_Parameters())
 		self.app.setStyleSheet(style)
 
-	def buildMainWindow(self, Pages):
-		w = MainWindow(Pages)
+	def buildMainWindow(self, Pages: List[Tuple[QWidget, str]], windowTitle: str = "Configurator"):
+		w = MainWindow(Pages, windowTitle)
 		w.resize(800, 600)
 		w.show()
 
