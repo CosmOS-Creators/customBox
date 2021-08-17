@@ -19,7 +19,7 @@ class Page():
 class cardedPage(QScrollArea, Page):
 	viewType = UiViewTypes.carded
 
-	def __init__(self, subconfigs: dict[str, Subconfig], page_label: str):
+	def __init__(self, subconfigs: Dict[str, Subconfig], page_label: str):
 		super().__init__()
 		self.setObjectName(page_label)
 		self.page_widget = QWidget(self)
@@ -39,7 +39,7 @@ class cardedPage(QScrollArea, Page):
 class tabbedPage(QTabWidget, Page):
 	viewType = UiViewTypes.tabbed
 
-	def __init__(self, subconfigs: dict[str, Subconfig], page_label: str):
+	def __init__(self, subconfigs: Dict[str, Subconfig], page_label: str):
 		super().__init__()
 		self.setObjectName(page_label)
 
@@ -52,7 +52,7 @@ class tabbedPage(QTabWidget, Page):
 				scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 				self.addTab(scroll_area, page_name)
 
-def buildTabbedPage(subconfigs: dict[str, Subconfig], name: str):
+def buildTabbedPage(subconfigs: Dict[str, Subconfig], name: str):
 	tabwidget 	= QTabWidget()
 	tabwidget.setObjectName(name)
 	for subconfig in subconfigs.values():

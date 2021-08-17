@@ -116,7 +116,7 @@ class UiConfiguration(dynamicObject):
 	def pages(self) -> Dict[str, UiPage]:
 		return self._getItems()
 
-	def createpage(self, id: str, pageDefinition: dict[str,str]) -> UiPage:
+	def createpage(self, id: str, pageDefinition: Dict[str,str]) -> UiPage:
 		for requiredKey in const.ui_page_required_json_keys:
 			if(requiredKey not in pageDefinition):
 				raise KeyError(f'A UI page with the name "{id}" could not be created because it\'s definition is missing the reqired "{requiredKey}" key.')
@@ -296,7 +296,7 @@ class ConfigElement(dynamicObject):
 			raise TypeError(f'The requested reference object named "{name}" from element "{self.link}" was not of type AttributeInstance instead it was of type "{type(item)}"')
 		return item
 
-	def createAttributeInstance(self, element_definition: dict, attribute_lookup: dict[str,AttributeTypes.AttributeType]):
+	def createAttributeInstance(self, element_definition: dict, attribute_lookup: Dict[str,AttributeTypes.AttributeType]):
 		if(not const.TARGET_KEY in element_definition):
 			raise KeyError(f'Error creating an attribute instance in "{self.parent.link}", Element definition "{element_definition}" is missing the mandatory key "{const.TARGET_KEY}"')
 		targetLink = Link.force(element_definition[const.TARGET_KEY], Link.EMPHASIZE_ATTRIBUTE)
