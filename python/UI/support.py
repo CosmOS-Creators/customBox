@@ -3,7 +3,7 @@ from PySide6.QtGui import QIcon
 from pathlib import Path
 
 class Icons():
-	def __init__(self, icon_folder: Union[str, Path, None]):
+	def __init__(self, icon_folder: Union[str, Path, None] = None):
 		if(icon_folder):
 			if(not isinstance(icon_folder, Path)):
 				self.icon_folder = Path(icon_folder)

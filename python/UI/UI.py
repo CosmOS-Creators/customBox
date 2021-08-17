@@ -119,6 +119,7 @@ class sidebar(QWidget):
 		button.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
 		button.clicked.connect(lambda: self.switchSelection(layout_index))
 		button.setAttribute(Qt.WA_StyledBackground, True)
+		button.setToolTip(buttonText)
 
 		if(self.numPages == 0):
 			button.setProperty("Selected", "true")

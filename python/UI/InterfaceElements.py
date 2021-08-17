@@ -1,10 +1,11 @@
 from typing import List, Union
 from PySide6.QtCore import QRegularExpression
-from PySide6.QtGui import QRegularExpressionValidator
+from PySide6.QtGui import QImage, QRegularExpressionValidator
 
-from PySide6.QtWidgets import QCheckBox, QComboBox, QHBoxLayout, QLabel, QLayout, QLineEdit, QSpinBox, QWidget
+from PySide6.QtWidgets import QCheckBox, QComboBox, QHBoxLayout, QLabel, QLayout, QLineEdit, QPushButton, QSpinBox, QWidget
 from Parser.AttributeTypes import BoolType, FloatType, IntType, SelectionType, StringType
 from Parser.ConfigTypes import AttributeInstance, ConfigElement
+from UI.support import Icons
 
 
 class Ui_element(QWidget):
@@ -13,10 +14,27 @@ class Ui_element(QWidget):
 		super().__init__(parent)
 		self.ui_element: QWidget	= None
 		self.label: QLabel			= None
+		self.tooltip: str			= None
 		self.attributeDef 			= attribute.attributeDefinition
+		self.tooltip 				= self.attributeDef.tooltip
 
 	def get_Row(self):
-		return self.label, self.ui_element
+		if(self.tooltip):
+			icons = Icons()
+			element_widget = QWidget(self)
+			element_layout = QHBoxLayout()
+			element_widget.setLayout(element_layout)
+			element_layout.addWidget(self.ui_element, 1)
+			tooltip_icon = icons.Icon("help")
+			if(tooltip_icon):
+				tooltip_widget = QPushButton(element_widget)
+				tooltip_widget.setObjectName("HelpButton")
+				tooltip_widget.setToolTip(self.tooltip)
+				tooltip_widget.setIcon(tooltip_icon)
+				element_layout.addWidget(tooltip_widget, 0)
+			return self.label, element_widget
+		else:
+			return self.label, self.ui_element
 
 
 class String_element(Ui_element):

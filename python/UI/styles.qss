@@ -81,3 +81,9 @@ QFrame[class^="cardContainer"] {{
 #windowTitle {{
 	font-size: 18px;
 }}
+
+#HelpButton {{
+	border: none;
+	padding: 0px;
+	background-color : transparent;
+}}
