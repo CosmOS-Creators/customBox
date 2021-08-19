@@ -66,7 +66,7 @@ IS_INITIALIZED_TO
 {{"\t\t"}}{
         &TasksStacksCfgConst[STACK_TASK_{{task.taskId}}_PROGRAM_{{task.program.programId}}_CORE_{{task.program.core.coreId}}_ID],       /* const CosmOS_StackConfigurationType * stack                 */
         SCHEDULABLE_INSTANCE_ENUM__TASK,                              /* const CosmOS_SchedulableInstanceType instance                        */
-        wrapped_{{task.name}},                                        /* const CosmOS_HandlerType handler                            */
+        wrapped_{{task.name}},                                        /* const CosmOS_GenericVoidType handler                            */
         {{task.floatingPoint}},                                                        /* const CosmOS_BooleanType fp                                          */
         SCHEDULABLE_{{task.uniqueId}}_UNIQUE_ID,                                          /* const BitWidthType id                                         */
         TASK_{{task.taskId}}_PROGRAM_{{task.program.programId}}_CORE_{{task.program.core.coreId}}_ID,                                   /* const BitWidthType instanceId                                                */
@@ -83,7 +83,7 @@ IS_INITIALIZED_TO
 {{"\t\t"}}{
         &ThreadsStacksCfgConst[STACK_THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],       /* const CosmOS_StackConfigurationType * stack                              */
         SCHEDULABLE_INSTANCE_ENUM__THREAD,                                /* const CosmOS_SchedulableInstanceType instance                            */
-        wrapped_{{thread.name}},                                        /* const CosmOS_HandlerType handler                            */
+        wrapped_{{thread.name}},                                        /* const CosmOS_GenericVoidType handler                            */
         {{thread.floatingPoint}},                                                             /* const CosmOS_BooleanType fp                                              */
         SCHEDULABLE_{{thread.uniqueId}}_UNIQUE_ID,                                          /* const BitWidthType id                                         */
         THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID,                                     /* const BitWidthType instanceId                                                    */
