@@ -66,6 +66,20 @@ IS_INITIALIZED_TO
         0,									/* BitWidthType lockedByCoreId                                  */
     },
 {% endfor -%}
+{% for item in model.buffers -%}
+{% if item.isInterCore -%}
+{{"\t"}}{
+        SPINLOCK_STATE_ENUM__RELEASED,		/* BitWidthType spinlock                                  */
+        0,									/* BitWidthType lockedByCoreId                                  */
+    },
+{% if item.isDoubleBuffer -%}
+{{"\t"}}{
+        SPINLOCK_STATE_ENUM__RELEASED,		/* BitWidthType spinlock                                  */
+        0,									/* BitWidthType lockedByCoreId                                  */
+    },
+{% endif -%}
+{% endif -%}
+{% endfor -%}
 };
 /* @cond S */
 __SEC_STOP(__OS_VARS_SECTION_STOP)

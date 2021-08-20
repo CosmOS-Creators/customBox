@@ -7,7 +7,7 @@
 *****************************************************************************//**
 ** @file sysDefsSpinlocks.h
 *********************************************************************************
-<!--                    sysDefsSpinlocks Unit Group Definition                   -->
+<!--                   sysDefsSpinlocks Unit Group Definition                 -->
 *********************************************************************************
 ** @defgroup sysDefsSpinlocks_unit sysDefsSpinlocks Unit
 ** @ingroup sysDefs_module
@@ -25,7 +25,7 @@
 ** @warning Modifying code can lead to unexpected behaviour of the whole system
 ** @copyright MIT License
 *********************************************************************************
-<!--                sysDefsSpinlocks Unit Global Group Definition                -->
+<!--                sysDefsSpinlocks Unit Global Group Definition             -->
 *********************************************************************************
 ** @defgroup Global_sysDefsSpinlocks Global
 ** @ingroup sysDefsSpinlocks_unit
@@ -61,10 +61,22 @@
   * @ingroup Global_sysDefsSpinlocks
   * @{
 ********************************************************************************/
-#define SPINLOCK_NUM                                    (BitWidthType){{model.spinlocks|length}}    /* Number of configurated spinlocks */
+{% set ns = namespace(index=0) -%}
 {{"\n"}}{% for item in model.spinlocks -%}
 #define SPINLOCK_{{item.spinlockId}}_ID                      (BitWidthType){{item.spinlockId}}    /* Spinlock identificator */
+{% set ns.index = ns.index + 1 -%}
 {% endfor -%}
+{% for item in model.buffers -%}
+{% if item.isInterCore -%}
+#define SPINLOCK_{{item.spinlockId}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identificator */
+{% set ns.index = ns.index + 1 -%}
+{% if item.isDoubleBuffer -%}
+#define SPINLOCK_{{item.spinlockId}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identificator */
+{% set ns.index = ns.index + 1 -%}
+{% endif -%}
+{% endif -%}
+{% endfor -%}
+{{"\n"}}#define SPINLOCK_NUM                                    (BitWidthType){{ns.index}}    /* Number of configurated spinlocks */
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
