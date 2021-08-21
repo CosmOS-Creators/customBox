@@ -4,7 +4,7 @@ import Generator.GeneratorCorePlugins 	as GeneratorPlugins
 
 
 if __name__ == "__main__":
-	from Model import InitializerLogic, MemoryMapperLogic, PermissionerLogic
+	from Model import InitializerLogic, MemoryMapperLogic, PermissionerLogic, SchedulerLogic
 	args 				= Parser.Workspace.getReqiredArgparse().parse_args()
 	workspace 			= Parser.Workspace(args.WORKSPACE)
 	loggerPlugin 		= GeneratorPlugins.loggerPlugin()
@@ -13,7 +13,7 @@ if __name__ == "__main__":
 	timestampPlugin 	= GeneratorPlugins.timeStampPlugin()
 	FileCleaner 		= GeneratorPlugins.fileCleanerPlugin([workspace.ApplicationGeneratedDir, workspace.CoreGeneratedDir])
 
-	logicRunnerPlugin.registerLogic([InitializerLogic(), MemoryMapperLogic(), PermissionerLogic()])
+	logicRunnerPlugin.registerLogic([InitializerLogic(), MemoryMapperLogic(), PermissionerLogic(), SchedulerLogic()])
 	# try:
 	myGenerator = FileGenerator.Generator(workspace)
 	myGenerator.registerPlugin([loggerPlugin, sectionPlugin, logicRunnerPlugin, FileCleaner, timestampPlugin])

@@ -45,6 +45,8 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 							'scheduleTableEntries/:executionTick',
 							'schedulers/:table',
 							'spinlocks/:spinlockId',
+							'buffers/:spinlockId',
+							'buffers/:isInterCore',
 							])
 		except Exception as e:
 			raise Exception(f"Initializer is missing required attribute, more info : {str(e)}")
@@ -68,6 +70,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 		self.assigneIterativeId()
 		self.assigneSysJobHypertick()
 		self.assigneSchedulerEntries()
+		self.assigneBufferSpinlocks()
 
 	def assigneUniqueId(self):
 		uniqueId = 0
@@ -88,32 +91,32 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 			coreNumberOfTasks = 0
 			coreIterativeId += 1
 			for program in self.programs:
-				if (program.core == core):
+				if program.core == core:
 					core.corePrograms.append(program)
 					program.programId = programIterativeId
 					programIterativeId += 1
 					threadIterativeId = 0
 					taskIterativeId = 0
 					for thread in self.threads:
-						if (thread.program == program):
+						if thread.program == program:
 							program.programThreads.append(thread)
 							thread.threadId = threadIterativeId
 							threadIterativeId += 1
 							coreNumberOfThreads += 1
 					for task in self.tasks:
-						if (task.program == program):
+						if task.program == program:
 							program.programTasks.append(task)
 							task.taskId = taskIterativeId
 							taskIterativeId += 1
 							coreNumberOfTasks += 1
 			sysJobGroupIterativeId = 0
 			for sysJobGroup in self.sysJobs:
-				if (sysJobGroup.core == core):
+				if sysJobGroup.core == core:
 					core.coreSysJobGroups.append(sysJobGroup)
 					sysJobGroup.groupId = sysJobGroupIterativeId
 					sysJobGroupIterativeId += 1
 			for scheduler in self.schedulers:
-				if (scheduler.core == core):
+				if scheduler.core == core:
 					core.coreScheduler.append(scheduler)
 			core.coreNumberOfThreads = coreNumberOfThreads
 			core.coreNumberOfTasks = coreNumberOfTasks
@@ -122,7 +125,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 		for buffer in self.buffers:
 			buffer.bufferId = bufferIterativeId
 			bufferIterativeId += 1
-			if (buffer.isDoubleBuffer):
+			if buffer.isDoubleBuffer:
 				bufferIterativeId += 1
 				buffer.doubleBufferId = doubleBufferIterativeId
 				doubleBufferIterativeId += 1
@@ -140,10 +143,32 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 	def assigneSchedulerEntries(self):
 		for scheduler in self.schedulers:
 			for entry in self.scheduleTableEntries:
-				if (entry.scheduler == scheduler):
+				if entry.scheduler == scheduler:
 					scheduler.table.append(entry)
 			scheduler.table.sort(key=lambda entry: entry.executionTick)
 			entryIterativeId = 0
 			for entry in scheduler.table:
 				entry.entryId = entryIterativeId
 				entryIterativeId += 1
+
+	def assigneBufferSpinlocks(self):
+		highestSpinlockId = sorted(self.spinlocks,key=lambda x: x.spinlockId, reverse=True)[0].spinlockId
+		for buffer in self.buffers:
+			coreId = 0
+			isInterCore = False
+			for readPermission in buffer.readPermissions:
+				if coreId is not readPermission.program.core.coreId:
+					isInterCore = True
+					break
+			for writePermission in buffer.writePermissions:
+				if coreId is not writePermission.program.core.coreId:
+					isInterCore = True
+					break
+			if isInterCore:
+				highestSpinlockId += 1
+				buffer.spinlockId = highestSpinlockId
+				if buffer.isDoubleBuffer:
+					highestSpinlockId += 1
+			else:
+				buffer.spinlockId = 0
+			buffer.isInterCore = isInterCore

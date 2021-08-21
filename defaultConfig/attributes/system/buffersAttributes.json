@@ -69,6 +69,14 @@
 		"doubleBufferId": {
 			"placeholder": true,
 			"type": "int"
+		},
+		"spinlockId": {
+			"placeholder": true,
+			"type": "int"
+		},
+		"isInterCore": {
+			"placeholder": true,
+			"type": "bool"
 		}
 	},
 

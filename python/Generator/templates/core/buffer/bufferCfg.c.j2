@@ -81,6 +81,8 @@ IS_INITIALIZED_TO
         BUFFER_{{item.bufferId}}_SIZE,
         &PermissionsBuffer{{item.bufferId}}ReadCfgConst,
         &PermissionsBuffer{{item.bufferId}}WriteCfgConst,
+		{{item.isInterCore}},
+		{{item.spinlockId}},
     },
 {% if item.isDoubleBuffer -%}
 {{"\t\t"}}{
@@ -89,6 +91,8 @@ IS_INITIALIZED_TO
         BUFFER_{{item.bufferId+1}}_SIZE,
         &PermissionsBuffer{{item.bufferId+1}}ReadCfgConst,
         &PermissionsBuffer{{item.bufferId+1}}WriteCfgConst,
+		{{item.isInterCore}},
+		{{item.spinlockId+1}},
     },
 {% endif -%}
 {% endfor -%}
