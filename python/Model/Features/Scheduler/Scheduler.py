@@ -52,10 +52,10 @@ class SchedulerLogic(logicRunnerPlugin.logicRunner):
 			hyperPeriod = self.lcmm([task.period for task in self.tasks if task.period and task.program.core == core])
 			for task in self.tasks:
 				if task.program.core == core and task.period:
-					for startTime in range(0,task.period):
+					for startTime in range(0,task.period - 1):
 						foundStartTime = False
 						tmpStartTime = startTime
-						while tmpStartTime + task.wcet < hyperPeriod:
+						while tmpStartTime < hyperPeriod - 1:
 							tmpStartTime = tmpStartTime
 							isElement = [entry for entry in scheduleTable if ((entry.startTime < ((tmpStartTime + task.wcet) % hyperPeriod)) \
 								and (((entry.startTime + entry.wcet) % hyperPeriod) > tmpStartTime))]
@@ -67,7 +67,7 @@ class SchedulerLogic(logicRunnerPlugin.logicRunner):
 								foundStartTime = True
 						if foundStartTime:
 							tmpStartTime = startTime
-							while tmpStartTime + task.wcet < hyperPeriod:
+							while tmpStartTime < hyperPeriod - 1:
 								entryTmp = ScheduleEntry()
 								entryTmp.startTime = tmpStartTime
 								entryTmp.task = task
