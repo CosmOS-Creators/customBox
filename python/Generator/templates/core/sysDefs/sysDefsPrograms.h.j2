@@ -70,6 +70,9 @@
 #define PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_SIZE    (BitWidthType){{item.size}}    /* Program {{item.name}} size */
 #define PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_LOW_ADDRESS    (AddressType)0x{{'%04x' % item.lowAddress}}    /* Program {{item.name}} memoryLowAddress */
 #define PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_HIGH_ADDRESS    (AddressType)0x{{'%04x' % item.highAddress}}    /* Program {{item.name}} memoryHighAddress */
+#define PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_HEAP_SIZE    (BitWidthType){{item.heapSize}}    /* Program {{item.name}} heap size */
+#define PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_HEAP_LOW_ADDRESS    (AddressType)0x{{'%04x' % (item.highAddress - item.heapSize)}}    /* Program {{item.name}} heapLowAddress */
+#define PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_HEAP_HIGH_ADDRESS    (AddressType)0x{{'%04x' % item.highAddress}}    /* Program {{item.name}} heapHighAddress */
 {% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
