@@ -159,7 +159,7 @@ class IntType(AttributeType):
 					reportValidationError(f"The input value ({value}) is lower than the minimum value({self.min}) for this attribute")
 			if(not self.max is None):
 				if(value > self.max):
-					reportValidationError(f"The input value ({value}) is higher than the maximum value({self.min}) for this attribute")
+					reportValidationError(f"The input value ({value}) is higher than the maximum value({self.max}) for this attribute")
 			return value
 		else:
 			reportValidationError(f"The input value ({value}) must be of type int or float but got type ({type(value)}) instead")
@@ -317,9 +317,11 @@ class SelectionType(AttributeType):
 					print(f"WARNING: Attribute definition \"{self.globalID}\" requested an attribute instance named \"{link.element}\" from the config \"{link.config}\" but the element \"{name}\" does not have an instance of that attribute. Skipping this element.")
 					continue
 				possibleValues.append(targetValue)
-				if(attributeInstance.value == targetValue.value):
+				if(attributeInstance.value == targetValue.value or attributeInstance.value == targetValue):
 					attributeInstance.setValueDirect(targetValue.parent)
 					foundMatch = True
+					if(self.resolvedElements is not None):
+						break
 			if(self.resolvedElements is None):
 				self.resolvedElements = possibleValues
 				self.targetedAttribute = link.attribute

@@ -1,10 +1,7 @@
-from typing import List, Tuple
-from PySide6.QtWidgets import QVBoxLayout, QWidget
 from UI import Configurator
 import sys
 import Parser
-from UI.InterfaceElements import create_interface_element
-from UI.PageBuilder import buildAllPages, buildPage
+
 
 if __name__ == "__main__":
 	args 		= Parser.Workspace.getReqiredArgparse().parse_args()
@@ -13,7 +10,6 @@ if __name__ == "__main__":
 	systemModel = parser.parse()
 	Interface 	= Configurator()
 
-	pages = buildAllPages(systemModel)
+	mainUI = Interface.buildMainWindow(systemModel, "CustomBox")
 
-	Interface.buildMainWindow(pages, "CustomBox")
 	sys.exit(Interface.run())

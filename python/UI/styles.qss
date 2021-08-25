@@ -87,3 +87,22 @@ QFrame[class^="cardContainer"] {{
 	padding: 0px;
 	background-color : transparent;
 }}
+
+#ListBuilder_LineRemoveButton {{
+	border: none;
+	padding: 0px;
+	margin: 0px;
+	background-color : transparent;
+}}
+
+#ListBuilder_LineRemoveButton:hover {{
+	border: none;
+	padding: 0px;
+	margin: 0px;
+	background-color : {QTMATERIAL_SECONDARYLIGHTCOLOR};
+}}
+
+#ListBuilder_LineLabel {{
+	padding: 0px;
+	margin: 0px, 0px, 0px, 0px;
+}}

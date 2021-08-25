@@ -1,1 +1,1 @@
-from UI.UI import Configurator
+from UI.Configurator import Configurator

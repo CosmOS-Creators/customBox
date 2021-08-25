@@ -2,6 +2,7 @@ from __future__ 				import annotations
 from typing 					import Dict, List, Union
 from pathlib 					import Path
 from Parser.LinkElement 		import Link
+import Parser.Serializer 		as serializer
 from Parser.helpers 			import overrides
 import Parser.AttributeTypes 	as AttributeTypes
 import Parser.constants			as const
@@ -167,8 +168,12 @@ class Configuration(dynamicObject):
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
 		return self._get(link.config)
 
+	def serialize(self):
+		for subconfig in self.configs.values():
+			print(f'TODO: serialize to: {subconfig.source_file} with data: {serializer.serialize(subconfig)}')
 
-class Subconfig(dynamicObject):
+
+class Subconfig(dynamicObject, serializer.serializeable):
 	def __init__(self, name: str, parent: Configuration, source_file: Path):
 		self.__link								= Link.construct(config=name)  # example: cores/
 		self.__parent: Configuration			= parent
@@ -195,6 +200,14 @@ class Subconfig(dynamicObject):
 	def assignToUiPage(self, page_id: str):
 		self.__ui_page_assignment = page_id
 
+	@overrides(serializer.serializeable)
+	def _serialize(self):
+		data = dict()
+		for element_name, element in self.elements.items():
+			data[element_name] = serializer.serialize(element)
+		return data
+
+
 	def resolveUiAssignment(self):
 		if(self.__ui_page_assignment):
 			if(type(self.__ui_page_assignment) is str):
@@ -220,7 +233,7 @@ class Subconfig(dynamicObject):
 	def source_file(self):
 		return self.__source_config_file
 
-class ConfigElement(dynamicObject):
+class ConfigElement(dynamicObject, serializer.serializeable):
 	def __init__(self, name: str, parent: Subconfig):
 		self.__name 				= name
 		self.__link					= parent.link.copy()
@@ -266,6 +279,18 @@ class ConfigElement(dynamicObject):
 			if(type(itemValue) is ReferenceCollection):
 				References[name] = itemValue
 		return References
+
+	@overrides(serializer.serializeable)
+	def _serialize(self) -> Dict:
+		serialized_data = list()
+		for attribute in self.attributeInstances.values():
+			item = {
+				const.TARGET_KEY: str(attribute.link)
+			}
+			if(not attribute.attributeDefinition.is_placeholder):
+				item[const.VALUE_KEY] = serializer.serialize(attribute)
+			serialized_data.append(item)
+		return serialized_data
 
 	def getAttribute(self, name: str) -> Union[AttributeInstance, ReferenceCollection]:
 		return self._get(name)
@@ -351,7 +376,7 @@ class ConfigElement(dynamicObject):
 				error_msg = object.__getattribute__(self, '_dynamicObject__non_existant_error')
 				raise AttributeError(error_msg.format(name))
 
-class AttributeInstance():
+class AttributeInstance(serializer.serializeable):
 	def __init__(self, name: Union[str, Link], parent: ConfigElement, attribute: AttributeTypes.AttributeType, value = None):
 		link = Link.force(name, Link.EMPHASIZE_ATTRIBUTE)
 		self.__attribute 		= attribute
@@ -395,6 +420,10 @@ class AttributeInstance():
 	@value.setter
 	def value(self, value):
 		self.populate(value)
+
+	@overrides(serializer.serializeable)
+	def _serialize(self) -> Dict:
+		return self.value
 
 	def ResolveValueLink(self):
 		self.__attribute.link(self.__configLookup, self)

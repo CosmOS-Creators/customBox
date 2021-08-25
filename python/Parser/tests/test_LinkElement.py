@@ -384,7 +384,7 @@ class TestClassLinkFunctions:
 			noConfigLink.resolve(mocked_basic_config_structure)
 		with pytest.raises(AttributeError):
 			justAttributeLink.resolve(mocked_basic_config_structure)
-		assert noElementLink.resolve(mocked_basic_config_structure) == [{"target": attribute, "element": element}]
+		assert noElementLink.resolve(mocked_basic_config_structure) == [(attribute, element)]
 		with pytest.raises(ValueError):
 			noConfigLink.resolveElement(mocked_basic_config_structure)
 		with pytest.raises(ValueError):
