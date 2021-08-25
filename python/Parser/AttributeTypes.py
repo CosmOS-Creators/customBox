@@ -97,13 +97,24 @@ class AttributeType():
 			return type == cls._comparison_type
 
 	def create_inheritor(self, inherit_properties: dict, globalID: str):
-		overwriteWith = inherit_properties.copy()
+		overwriteWith 				= inherit_properties.copy()
 		del overwriteWith[const.INHERIT_KEY]
-		newAttributeDefinition = self._attribute_definition.copy()
+		newAttributeDefinition 		= self._attribute_definition.copy()
 		newAttributeDefinition.update(overwriteWith)
-		newAttribute = parseAttribute(newAttributeDefinition, globalID)
-		newAttribute._is_inherited = True
+		newAttribute 				= parseAttribute(newAttributeDefinition, globalID)
+		newAttribute._is_inherited 	= True
 		return newAttribute
+
+	def _serialize_value(self, value):
+		return value
+
+	def serialize_value(self, value):
+		data = {
+			const.TARGET_KEY: str(self.globalID)
+			}
+		if(not self.is_placeholder):
+			data[const.VALUE_KEY] = self._serialize_value(value)
+		return data
 
 class StringType(AttributeType):
 	_comparison_type 	= "string"
@@ -246,6 +257,13 @@ class ReferenceListType(AttributeType):
 			linkedTargets.append(targetElement)
 		attributeInstance.setValueDirect(linkedTargets)
 
+	@overrides(AttributeType)
+	def _serialize_value(self, value: List[ConfigTypes.ConfigElement]):
+		data = list()
+		for v in value:
+			data.append(str(v.link))
+		return data
+
 
 class StringListType(AttributeType):
 	_comparison_type 	= "stringList"
@@ -328,6 +346,13 @@ class SelectionType(AttributeType):
 			if(foundMatch == False):
 				raise NameError(f'"{attributeInstance.value}" is not a valid choice for Attribute instances of "{self.globalID}". Valid choices are: {possibleValues}')
 
+	@overrides(AttributeType)
+	def _serialize_value(self, value: Union[ConfigTypes.ConfigElement, str]):
+		if(type(value) is str):
+			return value
+		else:
+			return str(value.link)
+
 
 class HexType(IntType):
 	_comparison_type 	= "hex"
@@ -349,6 +374,10 @@ class HexType(IntType):
 	@overrides(AttributeType)
 	def getDefault(self) -> int:
 		return int(0)
+
+	@overrides(AttributeType)
+	def _serialize_value(self, value):
+		return helpers.toHex(value)
 
 class SliderType(IntType):
 	_comparison_type 	= "slider"
@@ -403,6 +432,10 @@ class ParentReferenceType(AttributeType):
 		targetedElement = linkTarget.resolveElement(objConfig)
 		targetedElement.addReferenceObject(attributeInstance.link.config, attributeInstance.link.element, selfElement)
 		attributeInstance.setValueDirect(targetedElement)
+
+	@overrides(AttributeType)
+	def _serialize_value(self, value: ConfigTypes.ConfigElement):
+		return str(value.link)
 
 attributeTypeList = [StringType, BoolType, IntType, FloatType, ReferenceListType, StringListType, SelectionType, SelectionType, HexType, SliderType, ParentReferenceType]
 

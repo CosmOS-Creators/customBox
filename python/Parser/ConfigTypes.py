@@ -6,6 +6,7 @@ import Parser.Serializer 		as serializer
 from Parser.helpers 			import overrides
 import Parser.AttributeTypes 	as AttributeTypes
 import Parser.constants			as const
+import json
 
 def formatConfig(config: Configuration, indent: int = 1):
 	stringRepresentation = ""
@@ -170,7 +171,12 @@ class Configuration(dynamicObject):
 
 	def serialize(self):
 		for subconfig in self.configs.values():
-			print(f'TODO: serialize to: {subconfig.source_file} with data: {serializer.serialize(subconfig)}')
+			with subconfig.source_file.open("r") as fp:
+				Data = json.load(fp)
+			Data[const.ELEMENTS_KEY].update(serializer.serialize(subconfig))
+			with subconfig.source_file.open("w") as fp:
+				json.dump(Data, fp, indent=4)
+			# print(f'TODO: serialize to: {subconfig.source_file} with data: {serializer.serialize(subconfig)}')
 
 
 class Subconfig(dynamicObject, serializer.serializeable):
@@ -284,12 +290,7 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 	def _serialize(self) -> Dict:
 		serialized_data = list()
 		for attribute in self.attributeInstances.values():
-			item = {
-				const.TARGET_KEY: str(attribute.link)
-			}
-			if(not attribute.attributeDefinition.is_placeholder):
-				item[const.VALUE_KEY] = serializer.serialize(attribute)
-			serialized_data.append(item)
+			serialized_data.append(serializer.serialize(attribute))
 		return serialized_data
 
 	def getAttribute(self, name: str) -> Union[AttributeInstance, ReferenceCollection]:
@@ -423,7 +424,7 @@ class AttributeInstance(serializer.serializeable):
 
 	@overrides(serializer.serializeable)
 	def _serialize(self) -> Dict:
-		return self.value
+		return self.__attribute.serialize_value(self.value)
 
 	def ResolveValueLink(self):
 		self.__attribute.link(self.__configLookup, self)
