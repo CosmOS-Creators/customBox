@@ -1,14 +1,12 @@
 {
 	"version": "1.0.0",
-
 	"ui_page": {
-		"spinlocks":{
+		"spinlocks": {
 			"tab_label": "Spinlocks",
 			"view_type": "tabbed",
 			"tab_icon": "screen_lock_rotation"
 		}
 	},
-
 	"attributes": {
 		"name": {
 			"label": "Name of the buffer",
@@ -21,6 +19,5 @@
 			"type": "int"
 		}
 	},
-
 	"elements": {}
 }

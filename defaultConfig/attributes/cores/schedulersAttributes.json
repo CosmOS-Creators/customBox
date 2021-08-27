@@ -1,14 +1,12 @@
 {
 	"version": "1.0.0",
-
 	"ui_page": {
-		"schedulers":{
+		"schedulers": {
 			"tab_label": "Schedulers",
 			"view_type": "tabbed",
 			"tab_icon": "history_toggle_off"
 		}
 	},
-
 	"attributes": {
 		"hyperTick": {
 			"label": "Hyper tick of this scheduler",
@@ -58,6 +56,5 @@
 			"type": "referenceList"
 		}
 	},
-
 	"elements": {}
 }

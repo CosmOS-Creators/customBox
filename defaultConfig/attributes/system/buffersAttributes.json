@@ -1,14 +1,12 @@
 {
 	"version": "1.0.0",
-
 	"ui_page": {
-		"buffers":{
+		"buffers": {
 			"tab_label": "Buffers",
 			"view_type": "tabbed",
 			"tab_icon": "inventory_2"
 		}
 	},
-
 	"attributes": {
 		"name": {
 			"label": "Name of the buffer",
@@ -32,7 +30,7 @@
 			"label": "List of schedulables which have read access to this buffer",
 			"type": "referenceList",
 			"tooltip": "All schedulables in this list can read data from this buffer",
-			"elements" : [
+			"elements": [
 				"threads/:name",
 				"tasks/:name"
 			]
@@ -41,7 +39,7 @@
 			"label": "List of schedulables which have write access to this buffer",
 			"type": "referenceList",
 			"tooltip": "All schedulables in this list can write data to this buffer",
-			"elements" : [
+			"elements": [
 				"threads/:name",
 				"tasks/:name"
 			]
@@ -79,6 +77,5 @@
 			"type": "bool"
 		}
 	},
-
 	"elements": {}
 }

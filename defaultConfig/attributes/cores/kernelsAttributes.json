@@ -1,14 +1,12 @@
 {
 	"version": "1.0.0",
-
 	"ui_page": {
-		"kernels":{
+		"kernels": {
 			"tab_label": "Kernels",
 			"tab_icon": "source",
 			"view_type": "tabbed"
 		}
 	},
-
 	"attributes": {
 		"stackSize": {
 			"label": "Stack size",

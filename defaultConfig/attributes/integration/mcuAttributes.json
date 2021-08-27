@@ -1,14 +1,12 @@
 {
 	"version": "1.0.0",
-
 	"ui_page": {
-		"mcu":{
+		"mcu": {
 			"tab_label": "MCU settings",
 			"view_type": "tabbed",
 			"tab_icon": "developer_board"
 		}
 	},
-
 	"attributes": {
 		"mcuName": {
 			"label": "Name of the MCU",
@@ -31,6 +29,5 @@
 			"tooltip": "Architecture of the MCU (must be picked from the integrated architectures list)"
 		}
 	},
-
 	"elements": {}
 }

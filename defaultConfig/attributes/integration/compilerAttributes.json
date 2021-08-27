@@ -1,14 +1,12 @@
 {
 	"version": "1.0.0",
-
 	"ui_page": {
-		"compiler":{
+		"compiler": {
 			"tab_label": "Compiler settings",
 			"view_type": "tabbed",
 			"tab_icon": "fact_check"
 		}
 	},
-
 	"attributes": {
 		"buildName": {
 			"label": "Name of the build",
@@ -29,6 +27,5 @@
 			"type": "parentReference"
 		}
 	},
-
 	"elements": {}
 }

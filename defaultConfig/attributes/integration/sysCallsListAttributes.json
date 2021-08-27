@@ -1,14 +1,12 @@
 {
 	"version": "1.0.0",
-
 	"ui_page": {
-		"sys_calls_list":{
+		"sys_calls_list": {
 			"tab_label": "Sys Calls List",
 			"view_type": "tabbed",
 			"tab_icon": "call"
 		}
 	},
-
 	"attributes": {
 		"name": {
 			"label": "Name of the sysCall",
@@ -16,6 +14,5 @@
 			"tooltip": "Name of the core system call integrated also in the integration layer"
 		}
 	},
-
 	"elements": {}
 }

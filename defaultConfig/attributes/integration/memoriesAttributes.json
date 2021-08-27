@@ -1,14 +1,12 @@
 {
 	"version": "1.0.0",
-
 	"ui_page": {
-		"memories":{
+		"memories": {
 			"tab_label": "Memories",
 			"view_type": "tabbed",
 			"tab_icon": "sd_card"
 		}
 	},
-
 	"attributes": {
 		"memory": {
 			"label": "Memory location",
@@ -40,6 +38,5 @@
 			"type": "referenceList"
 		}
 	},
-
 	"elements": {}
 }

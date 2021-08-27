@@ -1,14 +1,12 @@
 {
 	"version": "1.0.0",
-
 	"ui_page": {
-		"os":{
+		"os": {
 			"tab_label": "OS settings",
 			"view_type": "tabbed",
 			"tab_icon": "laptop"
 		}
 	},
-
 	"attributes": {
 		"schedulableNum": {
 			"placeholder": true,
@@ -23,6 +21,5 @@
 			"type": "int"
 		}
 	},
-
 	"elements": {}
 }

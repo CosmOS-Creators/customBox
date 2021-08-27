@@ -1,14 +1,12 @@
 {
 	"version": "1.0.0",
-
 	"ui_page": {
-		"sys_call_routes":{
+		"sys_call_routes": {
 			"tab_label": "Sys Call Routes",
 			"view_type": "tabbed",
 			"tab_icon": "alt_route"
 		}
 	},
-
 	"attributes": {
 		"routedFuncName": {
 			"label": "Name of the routed function",
@@ -50,10 +48,8 @@
 			"tooltip": "Return type of the routed function"
 		}
 	},
-
 	"elements": {
-		"route_0":
-		[
+		"route_0": [
 			{
 				"target": "routedFuncName",
 				"value": "buffer_readArray"
@@ -86,8 +82,7 @@
 				"value": "CosmOS_BufferStateType"
 			}
 		],
-		"route_1":
-		[
+		"route_1": [
 			{
 				"target": "routedFuncName",
 				"value": "buffer_writeArray"
@@ -120,8 +115,7 @@
 				"value": "CosmOS_BufferStateType"
 			}
 		],
-		"route_2":
-		[
+		"route_2": [
 			{
 				"target": "routedFuncName",
 				"value": "deviceIO_togglePin"
@@ -154,8 +148,7 @@
 				"value": "void"
 			}
 		],
-		"route_3":
-		[
+		"route_3": [
 			{
 				"target": "routedFuncName",
 				"value": "osInit_init"
@@ -185,8 +178,7 @@
 				"value": "void"
 			}
 		],
-		"route_4":
-		[
+		"route_4": [
 			{
 				"target": "routedFuncName",
 				"value": "os_start"
@@ -216,8 +208,7 @@
 				"value": "void"
 			}
 		],
-		"route_5":
-		[
+		"route_5": [
 			{
 				"target": "routedFuncName",
 				"value": "schedulable_setExecutionStateToFinished"
@@ -247,8 +238,7 @@
 				"value": "void"
 			}
 		],
-		"route_6":
-		[
+		"route_6": [
 			{
 				"target": "routedFuncName",
 				"value": "sysJobs_dispatcher"

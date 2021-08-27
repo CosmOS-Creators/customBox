@@ -1,14 +1,12 @@
 {
 	"version": "1.0.0",
-
 	"ui_page": {
-		"sys_jobs_list":{
+		"sys_jobs_list": {
 			"tab_label": "Sys Jobs List",
 			"view_type": "tabbed",
 			"tab_icon": "sort"
 		}
 	},
-
 	"attributes": {
 		"name": {
 			"label": "Name of the sysJob",
@@ -16,6 +14,5 @@
 			"tooltip": "Implemented system job in the integration layer"
 		}
 	},
-
 	"elements": {}
 }

@@ -1,14 +1,12 @@
 {
 	"version": "1.0.0",
-
 	"ui_page": {
-		"scheduler_entries":{
+		"scheduler_entries": {
 			"tab_label": "Scheduler entries",
 			"view_type": "tabbed",
 			"tab_icon": "more_time"
 		}
 	},
-
 	"attributes": {
 		"executionTick": {
 			"label": "",
@@ -27,6 +25,5 @@
 			"type": "int"
 		}
 	},
-
 	"elements": {}
 }

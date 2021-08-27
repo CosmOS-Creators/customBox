@@ -1,14 +1,12 @@
 {
 	"version": "1.0.0",
-
 	"ui_page": {
-		"cpus":{
+		"cpus": {
 			"tab_label": "CPUs",
 			"view_type": "tabbed",
 			"tab_icon": "memory"
 		}
 	},
-
 	"attributes": {
 		"stackMemory": {
 			"inherit": "memoriesAttributes/:memory",
@@ -36,6 +34,5 @@
 			"tooltip": "Presence of the MPU in current CPU"
 		}
 	},
-
 	"elements": {}
 }
