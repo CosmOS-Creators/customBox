@@ -108,9 +108,13 @@ class AttributeType():
 	def _serialize_value(self, value):
 		return value
 
-	def serialize_value(self, value):
+	def serialize_value(self, value, context: Link = None):
+		target = str(self.globalID)
+		if(context):
+			if(context.config == self.globalID.config):
+				target = self.globalID.attribute
 		data = {
-			const.TARGET_KEY: str(self.globalID)
+			const.TARGET_KEY: target
 			}
 		if(not self.is_placeholder):
 			data[const.VALUE_KEY] = self._serialize_value(value)
@@ -351,7 +355,8 @@ class SelectionType(AttributeType):
 		if(type(value) is str):
 			return value
 		else:
-			return str(value.link)
+			attr = self.targetedAttribute
+			return str(value.getAttribute(attr).value)
 
 
 class HexType(IntType):

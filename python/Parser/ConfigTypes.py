@@ -3,6 +3,7 @@ from typing 					import Dict, List, Union
 from pathlib 					import Path
 from Parser.LinkElement 		import Link
 import Parser.Serializer 		as serializer
+import Parser.VersionHandling 	as VersionHandling
 from Parser.helpers 			import overrides
 import Parser.AttributeTypes 	as AttributeTypes
 import Parser.constants			as const
@@ -157,9 +158,9 @@ class Configuration(dynamicObject):
 	def configs(self) -> Dict[str, Subconfig]:
 		return self._getItems()
 
-	def createSubconfig(self, name: Union[str,Link], source_file: Path) -> Subconfig:
+	def createSubconfig(self, name: Union[str,Link], source_file: Path, file_format_version: str) -> Subconfig:
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
-		return self._create(link.config, Subconfig(link.config, self, source_file))
+		return self._create(link.config, Subconfig(link.config, self, source_file, file_format_version))
 
 	def hasSubConfig(self, name: Union[str,Link]):
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
@@ -173,18 +174,22 @@ class Configuration(dynamicObject):
 		for subconfig in self.configs.values():
 			with subconfig.source_file.open("r") as fp:
 				Data = json.load(fp)
-			Data[const.ELEMENTS_KEY].update(serializer.serialize(subconfig))
+			Data.update(serializer.serialize(subconfig))
 			with subconfig.source_file.open("w") as fp:
-				json.dump(Data, fp, indent=4)
+				json.dump(Data, fp, indent='\t')
 			# print(f'TODO: serialize to: {subconfig.source_file} with data: {serializer.serialize(subconfig)}')
 
 
 class Subconfig(dynamicObject, serializer.serializeable):
-	def __init__(self, name: str, parent: Configuration, source_file: Path):
+	def __init__(self, name: str, parent: Configuration, source_file: Path, file_format_version: str):
 		self.__link								= Link.construct(config=name)  # example: cores/
 		self.__parent: Configuration			= parent
 		self.__source_config_file: Path			= source_file
 		self.__ui_page_assignment				= None
+		self.__file_format_version				= VersionHandling.Version(file_format_version)
+		if(not VersionHandling.CompatabilityManager.is_compatible(self.__file_format_version)):
+			raise ValueError(f'The file structure of "{str(source_file)}" is specified as version "{str(file_format_version)}" but this version is not compatible with the parser which is on version {VersionHandling.CompatabilityManager.get_current_version()}')
+
 		forbidden = f'Creating an element with the name "{{0}}" in the subconfig "{self.link.config}" is not permitted as "{{0}}" is a reserved keyword'
 		duplicated = f'The creation of a new element named "{{0}}" was requested for subconfig "{self.link.config}" but an element with that name already exists for this subconfig'
 		doesNotExist = f'Tried to get element "{{0}}" from subconfig "{self.link.config}" but this subconfig has no element with that name'
@@ -209,8 +214,10 @@ class Subconfig(dynamicObject, serializer.serializeable):
 	@overrides(serializer.serializeable)
 	def _serialize(self):
 		data = dict()
+		data[const.VERSION_KEY] = str(self.__file_format_version)
+		data[const.ELEMENTS_KEY] = dict()
 		for element_name, element in self.elements.items():
-			data[element_name] = serializer.serialize(element)
+			data[const.ELEMENTS_KEY][element_name] = serializer.serialize(element)
 		return data
 
 
@@ -238,6 +245,10 @@ class Subconfig(dynamicObject, serializer.serializeable):
 	@property
 	def source_file(self):
 		return self.__source_config_file
+
+	@property
+	def file_format_version(self):
+		return self.__file_format_version
 
 class ConfigElement(dynamicObject, serializer.serializeable):
 	def __init__(self, name: str, parent: Subconfig):
@@ -424,7 +435,8 @@ class AttributeInstance(serializer.serializeable):
 
 	@overrides(serializer.serializeable)
 	def _serialize(self) -> Dict:
-		return self.__attribute.serialize_value(self.value)
+		own_subconfig = self.parent.parent.link
+		return self.__attribute.serialize_value(self.value, own_subconfig)
 
 	def ResolveValueLink(self):
 		self.__attribute.link(self.__configLookup, self)
