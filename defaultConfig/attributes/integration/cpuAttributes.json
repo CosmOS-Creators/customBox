@@ -1,5 +1,5 @@
 {
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"ui_page": {
 		"cpus": {
 			"tab_label": "CPUs",
@@ -34,5 +34,6 @@
 			"tooltip": "Presence of the MPU in current CPU"
 		}
 	},
-	"elements": {}
+	"elements": {},
+	"checksum": 2043697403089895796
 }

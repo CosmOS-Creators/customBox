@@ -41,29 +41,6 @@ def processAttributes(config: Dict[str, object]) -> AttributeCollectionType:
 
 	return attributeCollection
 
-def processConfig(config: dict, configName: str, completeConfig: ConfigTypes.Configuration, source_file: Path):
-	file_version = vh.Version(config[const.VERSION_KEY])
-	if(not vh.CompatabilityManager.is_compatible(file_version)):
-		config = vh.CompatabilityManager.upgrade(config)
-	if(completeConfig.hasSubConfig(configName)):
-		subconfig = completeConfig.getSubconfig(configName)
-	else:
-		subconfig = completeConfig.createSubconfig(configName, source_file, config[const.VERSION_KEY])
-	for element in config[const.ELEMENTS_KEY]:
-		currentElement = config[const.ELEMENTS_KEY][element]
-		newElement = subconfig.createElement(element)
-		if(not type(currentElement) is list):
-			raise Exception(f"In config \"{configName}\" the \"{const.ELEMENTS_KEY}\" property is required to be a list but found {type(currentElement)}")
-		for attributeInstance in currentElement:
-			newElement.createAttributeInstanceFromDefinition(attributeInstance)
-	if(const.UI_PAGE_KEY in config):
-		for pageName, uiPage in config[const.UI_PAGE_KEY].items():
-			completeConfig.UiConfig.createpage(pageName, uiPage)
-	if(const.UI_KEY in config):
-		if(const.UI_USE_PAGE_KEY in config[const.UI_KEY]):
-			subconfig = completeConfig.getSubconfig(configName)
-			subconfig.assignToUiPage(config[const.UI_KEY][const.UI_USE_PAGE_KEY])
-
 def linkParents(objConfigs: ConfigTypes.Configuration):
 	for subConfig in objConfigs.configs.values():
 		for element in subConfig:
@@ -121,8 +98,8 @@ class ConfigParser():
 		# make sure to load all attributes before loading all configs
 		self.__attributeCollection = processAttributes(jsonConfigs)
 		configuration = ConfigTypes.Configuration(self.__attributeCollection)
-		for config in jsonConfigs:
-			processConfig(jsonConfigs[config], config, configuration, configFileNames[config])
+		for config_name, config in jsonConfigs.items():
+			configuration.createSubconfigFromDefinition(config_name, config, configFileNames[config_name])
 		linkParents(configuration)
 		return configuration
 

@@ -1,5 +1,5 @@
 {
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"ui_page": {
 		"programs": {
 			"tab_label": "Programs",
@@ -50,5 +50,6 @@
 			"type": "referenceList"
 		}
 	},
-	"elements": {}
+	"elements": {},
+	"checksum": 2043697403089895796
 }

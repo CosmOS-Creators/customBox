@@ -4,4 +4,4 @@ from Parser.WorkspaceParser import Workspace
 import Parser.helpers as helpers
 from Parser.LinkElement import Link
 
-FILE_FORMAT_VERSION = Version("1.0.0")
+FILE_FORMAT_VERSION = Version("1.1.0")

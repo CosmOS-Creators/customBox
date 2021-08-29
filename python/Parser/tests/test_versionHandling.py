@@ -24,8 +24,6 @@ class TestCompatabilityManager:
 		}
 		return CompatabilityManager
 
-
-
 	def test_direct_upgrade_path(self, upgrade_lookup_test: CompatabilityManager):
 		def version_1_1_0():
 			return Version("1.1.0")

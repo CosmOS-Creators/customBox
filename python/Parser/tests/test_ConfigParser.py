@@ -86,3 +86,17 @@ class TestCreatingNewElements:
 			newElement.createAttributeInstance("stringType", "test")
 		with pytest.raises(ValueError):
 			newElement.createAttributeInstance("stringType", attributeName="test1")
+
+
+class TestChecksumFunctionality:
+	@pytest.fixture
+	def parsed_config(self):
+		workspace = Workspace("./Cosmos/customBox/python/Parser/tests/testConfigs/workspaces/BasicConfig.json")
+		parser = ConfigParser(workspace)
+		return parser.parse()
+
+	def test_checksum(self, parsed_config: ConfigTypes.Configuration):
+		subconfig = parsed_config.getSubconfig("basicTypes")
+		assert subconfig.needs_serialization() == False
+		newElement = subconfig.createElement("element_3")
+		assert subconfig.needs_serialization() == True

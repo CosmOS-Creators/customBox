@@ -4,7 +4,7 @@ from pathlib 					import Path
 import Parser
 from Parser.LinkElement 		import Link
 import Parser.Serializer 		as serializer
-import Parser.VersionHandling 	as VersionHandling
+import Parser.VersionHandling 	as vh
 from Parser.helpers 			import overrides
 import Parser.AttributeTypes 	as AttributeTypes
 import Parser.constants			as const
@@ -164,11 +164,30 @@ class Configuration(dynamicObject):
 	def attribute_lookup(self):
 		return self.__attribute_lookup
 
-	def createSubconfig(self, name: Union[str,Link], source_file: Path, file_format_version: str = None) -> Subconfig:
+	def createSubconfigFromDefinition(self, configName: str, config: dict, source_file: Path):
+		file_version = vh.Version(config[const.VERSION_KEY])
+		if(not vh.CompatabilityManager.is_compatible(file_version)):
+			config = vh.CompatabilityManager.upgrade(config)
+		subconfig = self.createSubconfig(configName, source_file, config[const.VERSION_KEY], config[const.CHECKSUM_KEY])
+		for element in config[const.ELEMENTS_KEY]:
+			currentElement = config[const.ELEMENTS_KEY][element]
+			newElement = subconfig.createElement(element)
+			if(not type(currentElement) is list):
+				raise Exception(f'In config "{configName}" the "{const.ELEMENTS_KEY}" property is required to be a list but found {type(currentElement)}')
+			for attributeInstance in currentElement:
+				newElement.createAttributeInstanceFromDefinition(attributeInstance)
+		if(const.UI_PAGE_KEY in config):
+			for pageName, uiPage in config[const.UI_PAGE_KEY].items():
+				self.UiConfig.createpage(pageName, uiPage)
+		if(const.UI_KEY in config):
+			if(const.UI_USE_PAGE_KEY in config[const.UI_KEY]):
+				subconfig.assignToUiPage(config[const.UI_KEY][const.UI_USE_PAGE_KEY])
+
+	def createSubconfig(self, name: Union[str,Link], source_file: Path, file_format_version: str = None, file_element_hash: int = None) -> Subconfig:
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
 		if(not file_format_version):
 			file_format_version = Parser.FILE_FORMAT_VERSION
-		return self._create(link.config, Subconfig(link.config, self, source_file, file_format_version))
+		return self._create(link.config, Subconfig(link.config, self, source_file, file_format_version, file_element_hash))
 
 	def hasSubConfig(self, name: Union[str,Link]):
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
@@ -184,59 +203,25 @@ class Configuration(dynamicObject):
 				Data = json.load(fp)
 			Data.update(serializer.serialize(subconfig))
 			with subconfig.source_file.open("w") as fp:
-				json.dump(Data, fp, indent='\t')
-			# print(f'TODO: serialize to: {subconfig.source_file} with data: {serializer.serialize(subconfig)}')
+				json.dump(Data, fp, indent = '\t')
+			subconfig._file_elements_hash = subconfig.elements_hash
 
 
 class Subconfig(dynamicObject, serializer.serializeable):
-	def __init__(self, name: str, parent: Configuration, source_file: Path, file_format_version: str):
+	def __init__(self, name: str, parent: Configuration, source_file: Path, file_format_version: str, file_element_hash: int = None):
 		self.__link								= Link.construct(config=name)  # example: cores/
 		self.__parent: Configuration			= parent
 		self.__source_config_file: Path			= source_file
 		self.__ui_page_assignment				= None
-		self.__file_format_version				= VersionHandling.Version(file_format_version)
-		if(not VersionHandling.CompatabilityManager.is_compatible(self.__file_format_version)):
+		self.__file_format_version				= vh.Version(file_format_version)
+		self._file_elements_hash				= file_element_hash
+		if(not vh.CompatabilityManager.is_compatible(self.__file_format_version)):
 			raise ValueError(f'The file structure of "{str(source_file)}" is specified as version "{str(file_format_version)}" but this version is not compatible with the parser which is on version {VersionHandling.CompatabilityManager.get_current_version()}')
 
 		forbidden = f'Creating an element with the name "{{0}}" in the subconfig "{self.link.config}" is not permitted as "{{0}}" is a reserved keyword'
 		duplicated = f'The creation of a new element named "{{0}}" was requested for subconfig "{self.link.config}" but an element with that name already exists for this subconfig'
 		doesNotExist = f'Tried to get element "{{0}}" from subconfig "{self.link.config}" but this subconfig has no element with that name'
 		super().__init__("Subconfig", forbidden, duplicated, doesNotExist)
-
-	def hasElement(self, name: Union[str, Link]):
-		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
-		return self._has(elementLink.element)
-
-	def createElement(self, name: Union[str, Link], ) -> ConfigElement:
-		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
-		elementName = elementLink.element
-		return self._create(elementName, ConfigElement(elementName, self))
-
-	def getElement(self, name: Union[str, Link]) -> ConfigElement:
-		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
-		return self._get(elementLink.element)
-
-	def assignToUiPage(self, page_id: str):
-		self.__ui_page_assignment = page_id
-
-	@overrides(serializer.serializeable)
-	def _serialize(self):
-		data = dict()
-		data[const.VERSION_KEY] = str(self.__file_format_version)
-		data[const.ELEMENTS_KEY] = dict()
-		for element_name, element in self.elements.items():
-			data[const.ELEMENTS_KEY][element_name] = serializer.serialize(element)
-		return data
-
-
-	def resolveUiAssignment(self):
-		if(self.__ui_page_assignment):
-			if(type(self.__ui_page_assignment) is str):
-				if(self.parent.UiConfig.haspage(self.__ui_page_assignment)):
-					self.__ui_page_assignment = self.parent.UiConfig.getpage(self.__ui_page_assignment)
-					self.__ui_page_assignment.assignSubconfig(self.__link.config, self)
-				else:
-					raise ValueError(f'The subconfig "{self.__link}" was assigned to a UI page named "{self.__ui_page_assignment}" but a page with that name does not exist')
 
 	@property
 	def elements(self) -> Dict[str, ConfigElement]:
@@ -257,6 +242,57 @@ class Subconfig(dynamicObject, serializer.serializeable):
 	@property
 	def file_format_version(self):
 		return self.__file_format_version
+
+	@property
+	def elements_hash(self):
+		return hash(json.dumps(self._serialize_elements()))
+
+	@property
+	def file_elements_hash(self):
+		return self._file_elements_hash
+
+	def needs_serialization(self):
+		return self.elements_hash != self._file_elements_hash
+
+	def hasElement(self, name: Union[str, Link]):
+		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
+		return self._has(elementLink.element)
+
+	def createElement(self, name: Union[str, Link], ) -> ConfigElement:
+		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
+		elementName = elementLink.element
+		return self._create(elementName, ConfigElement(elementName, self))
+
+	def getElement(self, name: Union[str, Link]) -> ConfigElement:
+		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
+		return self._get(elementLink.element)
+
+	def assignToUiPage(self, page_id: str):
+		self.__ui_page_assignment = page_id
+
+	def _serialize_elements(self):
+		data = dict()
+		for element_name, element in self.elements.items():
+			data[element_name] = serializer.serialize(element)
+		return data
+
+	@overrides(serializer.serializeable)
+	def _serialize(self):
+		data = dict()
+		data[const.VERSION_KEY] = str(self.__file_format_version)
+		serialized_elements = self._serialize_elements()
+		data[const.ELEMENTS_KEY] = serialized_elements
+		data[const.CHECKSUM_KEY] = hash(json.dumps(serialized_elements))
+		return data
+
+	def resolveUiAssignment(self):
+		if(self.__ui_page_assignment):
+			if(type(self.__ui_page_assignment) is str):
+				if(self.parent.UiConfig.haspage(self.__ui_page_assignment)):
+					self.__ui_page_assignment = self.parent.UiConfig.getpage(self.__ui_page_assignment)
+					self.__ui_page_assignment.assignSubconfig(self.__link.config, self)
+				else:
+					raise ValueError(f'The subconfig "{self.__link}" was assigned to a UI page named "{self.__ui_page_assignment}" but a page with that name does not exist')
 
 class ConfigElement(dynamicObject, serializer.serializeable):
 	def __init__(self, name: str, parent: Subconfig):

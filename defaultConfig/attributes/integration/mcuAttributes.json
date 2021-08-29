@@ -1,5 +1,5 @@
 {
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"ui_page": {
 		"mcu": {
 			"tab_label": "MCU settings",
@@ -29,5 +29,6 @@
 			"tooltip": "Architecture of the MCU (must be picked from the integrated architectures list)"
 		}
 	},
-	"elements": {}
+	"elements": {},
+	"checksum": 2043697403089895796
 }
