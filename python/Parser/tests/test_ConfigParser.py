@@ -64,3 +64,25 @@ class TestClassBasicFunctions:
 			}
 		for name, attribute in reference_test_0_configElement.attributes.items():
 			assert element_1_attribute_values[name] == attribute.value
+
+class TestCreatingNewElements:
+	@pytest.fixture
+	def parsed_config(self):
+		workspace = Workspace("./Cosmos/customBox/python/Parser/tests/testConfigs/workspaces/BasicConfig.json")
+		parser = ConfigParser(workspace)
+		return parser.parse()
+
+	def test_new_elemnt_creation(self, parsed_config: ConfigTypes.Configuration):
+		subconfig = parsed_config.getSubconfig("basicTypes")
+		assert len(subconfig.elements) == 2
+		assert "element_1" in subconfig.elements and "element_2" in subconfig.elements
+		newElement = subconfig.createElement("element_3")
+		assert len(newElement.attributes) == 0
+		assert len(subconfig.elements) == 3
+		assert "element_1" in subconfig.elements and "element_2" in subconfig.elements and "element_3" in subconfig.elements
+		newAttribInst = newElement.createAttributeInstance("stringType", "test")
+		assert len(newElement.attributes) == 1
+		with pytest.raises(AttributeError):
+			newElement.createAttributeInstance("stringType", "test")
+		with pytest.raises(ValueError):
+			newElement.createAttributeInstance("stringType", attributeName="test1")

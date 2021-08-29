@@ -9,29 +9,27 @@ class TestClassLinkFunctions:
 		from pathlib import Path
 		attribLookup = {
 				"cores/:bootOs": 	AttributeTypes.BoolType({"label": "Bool type", "type": "bool"}, "cores/:bootOs"),
-				"cores/:coreName":	AttributeTypes.StringType({"label": "Core Name", "type": "string"}, "cores/:coreName")
+				"cores/:coreName":	AttributeTypes.StringType({"label": "Core Name", "type": "string"}, "cores/:coreName"),
+				"programs/:core": AttributeTypes.ParentReferenceType({"type": "parentReference"}, "programs/:core"),
+				"programs/:name":	AttributeTypes.StringType({"label": "Program Name", "type": "string"}, "programs/:name")
 		}
-		configuration = ConfigTypes.Configuration()
+		configuration = ConfigTypes.Configuration(attribLookup)
 		subconfig = configuration.createSubconfig("cores", Path("test.json"))
 		configElement = subconfig.createElement("core_0")
-		configElement.createAttributeInstance({"target": "bootOs", "value": True}, attribLookup)
-		configElement.createAttributeInstance({"target": "coreName", "value": "CM4"}, attribLookup)
+		configElement.createAttributeInstanceFromDefinition({"target": "bootOs", "value": True})
+		configElement.createAttributeInstanceFromDefinition({"target": "coreName", "value": "CM4"})
 		return configuration
 
 	@pytest.fixture
 	def mocked_cores_program_config_structure(self, mocked_basic_cores_config_structure: ConfigTypes.Configuration):
 		from pathlib import Path
-		attribLookup = {
-				"programs/:core": AttributeTypes.ParentReferenceType({"type": "parentReference"}, "programs/:core"),
-				"programs/:name":	AttributeTypes.StringType({"label": "Program Name", "type": "string"}, "programs/:name")
-		}
 		subconfig = mocked_basic_cores_config_structure.createSubconfig("programs", Path("test.json"))
 		configElement = subconfig.createElement("program_0")
-		configElement.createAttributeInstance({"target": "name", "value": "default_CM4"},attribLookup)
-		configElement.createAttributeInstance({"target": "core", "value": "cores/core_0"},attribLookup)
+		configElement.createAttributeInstanceFromDefinition({"target": "name", "value": "default_CM4"})
+		configElement.createAttributeInstanceFromDefinition({"target": "core", "value": "cores/core_0"})
 		configElement = subconfig.createElement("program_1")
-		configElement.createAttributeInstance({"target": "name", "value": "blinking_led_CM4"},attribLookup)
-		configElement.createAttributeInstance({"target": "core", "value": "cores/core_0"},attribLookup)
+		configElement.createAttributeInstanceFromDefinition({"target": "name", "value": "blinking_led_CM4"})
+		configElement.createAttributeInstanceFromDefinition({"target": "core", "value": "cores/core_0"})
 		return mocked_basic_cores_config_structure
 
 	def test_defaultValue_methods(self):

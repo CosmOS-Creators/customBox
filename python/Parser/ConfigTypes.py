@@ -1,6 +1,7 @@
 from __future__ 				import annotations
 from typing 					import Dict, List, Union
 from pathlib 					import Path
+import Parser
 from Parser.LinkElement 		import Link
 import Parser.Serializer 		as serializer
 import Parser.VersionHandling 	as VersionHandling
@@ -137,7 +138,8 @@ class UiConfiguration(dynamicObject):
 		return self._get(id)
 
 class Configuration(dynamicObject):
-	def __init__(self):
+	def __init__(self, attribute_lookup: Dict[str, AttributeTypes.AttributeType]):
+		self.__attribute_lookup = attribute_lookup
 		self.UiConfig 	= UiConfiguration()
 		forbidden 		= 'Creating a subconfig with the name "{0}" is not permitted as "{0}" is a reserved keyword'
 		duplicated 		= 'It was requested to create a subconfig named "{0}" but a subconfig with that name already exists'
@@ -158,8 +160,14 @@ class Configuration(dynamicObject):
 	def configs(self) -> Dict[str, Subconfig]:
 		return self._getItems()
 
-	def createSubconfig(self, name: Union[str,Link], source_file: Path, file_format_version: str) -> Subconfig:
+	@property
+	def attribute_lookup(self):
+		return self.__attribute_lookup
+
+	def createSubconfig(self, name: Union[str,Link], source_file: Path, file_format_version: str = None) -> Subconfig:
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
+		if(not file_format_version):
+			file_format_version = Parser.FILE_FORMAT_VERSION
 		return self._create(link.config, Subconfig(link.config, self, source_file, file_format_version))
 
 	def hasSubConfig(self, name: Union[str,Link]):
@@ -333,30 +341,41 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 			raise TypeError(f'The requested reference object named "{name}" from element "{self.link}" was not of type AttributeInstance instead it was of type "{type(item)}"')
 		return item
 
-	def createAttributeInstance(self, element_definition: dict, attribute_lookup: Dict[str,AttributeTypes.AttributeType]):
-		if(not const.TARGET_KEY in element_definition):
-			raise KeyError(f'Error creating an attribute instance in "{self.parent.link}", Element definition "{element_definition}" is missing the mandatory key "{const.TARGET_KEY}"')
-		targetLink = Link.force(element_definition[const.TARGET_KEY], Link.EMPHASIZE_ATTRIBUTE)
-		targetLink = self.link.merge(targetLink, Link.EMPHASIZE_ATTRIBUTE)
-		attribute_lookup_key = targetLink.getLink(Element=False)
+	def createAttributeInstance(self, target: Link, value = None, attributeName: str = None):
+		attribute_lookup 				= self.parent.parent.attribute_lookup
+		targetLink 						= Link.force(target, Link.EMPHASIZE_ATTRIBUTE)
+		targetLink 						= self.link.merge(targetLink, Link.EMPHASIZE_ATTRIBUTE)
+		attribute_lookup_key 			= targetLink.getLink(Element=False)
 		if(targetLink.attribute in self.__dict__):
 			raise KeyError(f'Creating an attribute instance named "{targetLink.attribute}" within the element "{self.link}" is not permitted as "{targetLink.attribute}" is a reserved keyword')
 		if(not attribute_lookup_key in attribute_lookup):
 			raise KeyError(f'Target attribute "{attribute_lookup_key}" could not be found')
-		targetedAttribute 							= attribute_lookup[attribute_lookup_key]
-		AttributeInstanceLink 						= self.link.copy()
-		AttributeInstanceLink.attribute 			= targetedAttribute.id
-		if(const.TARGET_NAME_OVERWRITE_KEY in element_definition):
-			AttributeInstanceLink.attribute = element_definition[const.TARGET_NAME_OVERWRITE_KEY]
+		targetedAttribute 				= attribute_lookup[attribute_lookup_key]
+		AttributeInstanceLink 			= self.link.copy()
+		AttributeInstanceLink.attribute = targetedAttribute.id
+		if(attributeName):
+			AttributeInstanceLink.attribute = attributeName
 		if(targetedAttribute.is_placeholder):
-			if(const.VALUE_KEY in element_definition):
+			if(value is not None):
 				raise Exception(f'Element "{self.link}" instantiates the attribute definition "{AttributeInstanceLink}" which is a placeholder but the value key ist also defined, which is an invalid combination for placeholder entries.')
 			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute)
-		elif(const.VALUE_KEY in element_definition): # this is a normal attribute instance
-			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute, element_definition[const.VALUE_KEY])
+		elif(value is not None):
+			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute, value)
 		else:
-			raise Exception(f'Invalid attribute instance formatting in element "{self.link}". The following element definition is missing the "{const.VALUE_KEY}" property: {element_definition}')
+			raise ValueError(f'The attribute instance for "{self.link}" could not be created because there was no value provided which is mandatory for attributes which are not placeholders')
 		return self._create(targetedAttribute.id, newAttributeInstance)
+
+	def createAttributeInstanceFromDefinition(self, element_definition: dict):
+		if(not const.TARGET_KEY in element_definition):
+			raise KeyError(f'Error creating an attribute instance in "{self.parent.link}", Element definition "{element_definition}" is missing the mandatory key "{const.TARGET_KEY}"')
+		target = element_definition[const.TARGET_KEY]
+		name_overwrite = None
+		value = None
+		if(const.TARGET_NAME_OVERWRITE_KEY in element_definition):
+			name_overwrite = element_definition[const.TARGET_NAME_OVERWRITE_KEY]
+		if(const.VALUE_KEY in element_definition):
+			value = element_definition[const.VALUE_KEY]
+		return self.createAttributeInstance(target, value, name_overwrite)
 
 	def populate(self, property_name: str, value, isPlaceholder: bool = True):
 		attributeInstance = self.getAttributeInstance(property_name)

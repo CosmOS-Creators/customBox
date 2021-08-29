@@ -24,6 +24,7 @@ baseKeys = [LABEL_KEY, TOOLTIP_KEY, HIDDEN_KEY, PLACEHOLDER_KEY, TYPE_KEY]
 ELEMENTS_KEY				= "elements"
 ATTRIBUTES_KEY				= "attributes"
 VERSION_KEY					= "version"
+CHECKSUM_KEY				= "checksum"
 UI_KEY						= "ui"
 UI_PAGE_KEY					= "ui_page"
 

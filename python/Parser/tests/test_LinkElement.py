@@ -11,10 +11,10 @@ class TestClassLinkFunctions:
 		boolType = AttributeTypes.BoolType({"label": "Bool type", "type": "bool"}, "config/:attribute")
 		attribLookup = dict()
 		attribLookup["config/:attribute"] = boolType
-		configuration = ConfigTypes.Configuration()
+		configuration = ConfigTypes.Configuration(attribLookup)
 		subconfig = configuration.createSubconfig("config", Path("test.json"))
 		configElement = subconfig.createElement("element")
-		configElement.createAttributeInstance({"target": "attribute", "value": True}, attribLookup)
+		configElement.createAttributeInstanceFromDefinition({"target": "attribute", "value": True})
 		return configuration
 
 	def test_constructor(self):

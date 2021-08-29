@@ -41,7 +41,7 @@ def processAttributes(config: Dict[str, object]) -> AttributeCollectionType:
 
 	return attributeCollection
 
-def processConfig(config: dict, configName: str, completeConfig: ConfigTypes.Configuration, attributeCollection: AttributeCollectionType, source_file: Path):
+def processConfig(config: dict, configName: str, completeConfig: ConfigTypes.Configuration, source_file: Path):
 	file_version = vh.Version(config[const.VERSION_KEY])
 	if(not vh.CompatabilityManager.is_compatible(file_version)):
 		config = vh.CompatabilityManager.upgrade(config)
@@ -55,7 +55,7 @@ def processConfig(config: dict, configName: str, completeConfig: ConfigTypes.Con
 		if(not type(currentElement) is list):
 			raise Exception(f"In config \"{configName}\" the \"{const.ELEMENTS_KEY}\" property is required to be a list but found {type(currentElement)}")
 		for attributeInstance in currentElement:
-			newElement.createAttributeInstance(attributeInstance, attributeCollection)
+			newElement.createAttributeInstanceFromDefinition(attributeInstance)
 	if(const.UI_PAGE_KEY in config):
 		for pageName, uiPage in config[const.UI_PAGE_KEY].items():
 			completeConfig.UiConfig.createpage(pageName, uiPage)
@@ -117,12 +117,12 @@ class ConfigParser():
 					raise KeyError(f"Error in config file \"{configFile}\": {str(e)}")
 				configFileNames[configCleanName] = configFile
 				jsonConfigs[configCleanName] = loaded_json_config
-		configuration = ConfigTypes.Configuration()
 
 		# make sure to load all attributes before loading all configs
 		self.__attributeCollection = processAttributes(jsonConfigs)
+		configuration = ConfigTypes.Configuration(self.__attributeCollection)
 		for config in jsonConfigs:
-			processConfig(jsonConfigs[config], config, configuration, self.__attributeCollection, configFileNames[config])
+			processConfig(jsonConfigs[config], config, configuration, configFileNames[config])
 		linkParents(configuration)
 		return configuration
 

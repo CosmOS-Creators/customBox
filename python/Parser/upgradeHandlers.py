@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Dict
 import Parser.constants as const
 import Parser.VersionHandling as vh
-import Parser.helpers as helpers
+import json
 
 class baseUpgradeHandler:
 	def __init__(self, new_version: vh.Version) -> None:
@@ -13,4 +13,8 @@ class baseUpgradeHandler:
 		return data
 
 class upgrade_1_0_0_to_1_1_0(baseUpgradeHandler):
-	pass
+	def do_upgrade(self, data: Dict) -> Dict:
+		super().do_upgrade(data)
+		elements_str = json.dumps(data[const.ELEMENTS_KEY])
+		data[const.CHECKSUM_KEY] = hash(elements_str)
+		return data
