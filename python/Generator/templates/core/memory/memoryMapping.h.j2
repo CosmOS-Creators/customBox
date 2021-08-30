@@ -68,9 +68,6 @@
     #define __APPLICATION_FUNC_SECTION_START
     #define __APPLICATION_FUNC_SECTION_STOP
 
-    #define __UNMAPPED_SECTION        __attribute__((section(".unmapped")))
-    #define __UNMAPPED_SECTION_START
-    #define __UNMAPPED_SECTION_STOP
 {% for item in model.osPartitions %}
     #define __OS_{{item.name.upper()}}_SECTION        __attribute__((section(".os_{{item.name}}")))
     #define __OS_{{item.name.upper()}}_SECTION_START
@@ -95,9 +92,6 @@
     #define __APPLICATION_FUNC_SECTION_START
     #define __APPLICATION_FUNC_SECTION_STOP
 
-    #define __UNMAPPED__SECTION
-    #define __UNMAPPED__SECTION_START
-    #define __UNMAPPED__SECTION_STOP
 {% for item in model.osPartitions %}
     #define __OS_{{item.name.upper()}}_SECTION
     #define __OS_{{item.name.upper()}}_SECTION_START
