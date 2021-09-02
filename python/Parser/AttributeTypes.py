@@ -22,8 +22,8 @@ class AttributeType():
 		else:
 			raise ValueError(f'An attribute link must be global but "{globalID}" was not.')
 		# internal helpers
-		self._is_inherited 			= False
-		self._attribute_definition 	= attribute_definition.copy()
+		self._inherit_from: AttributeType	= None
+		self._attribute_definition 			= attribute_definition.copy()
 
 		# check if any forbidden keys exist:
 		try:
@@ -45,8 +45,7 @@ class AttributeType():
 		# optional properties
 		self.tooltip 				= self.checkForKey(const.TOOLTIP_KEY, "")
 		self.hidden 				= self.checkForKey(const.HIDDEN_KEY, False)
-		if(const.LABEL_KEY in attribute_definition):
-			self.label 				= attribute_definition[const.LABEL_KEY]
+		self.label					= self.checkForKey(const.LABEL_KEY, "")
 
 	def __new__(cls, *args, **kwargs):
 		""" Prevent the instantiation of the base class
@@ -87,7 +86,7 @@ class AttributeType():
 
 	@property
 	def is_inherited(self) -> bool:
-		return self._is_inherited
+		return self._inherit_from is not None
 
 	@classmethod
 	def is_type(cls, type: str) -> bool:
@@ -102,7 +101,7 @@ class AttributeType():
 		newAttributeDefinition 		= self._attribute_definition.copy()
 		newAttributeDefinition.update(overwriteWith)
 		newAttribute 				= parseAttribute(newAttributeDefinition, globalID)
-		newAttribute._is_inherited 	= True
+		newAttribute._inherit_from 	= self
 		return newAttribute
 
 	def _serialize_value(self, value):
@@ -118,6 +117,22 @@ class AttributeType():
 			}
 		if(not self.is_placeholder):
 			data[const.VALUE_KEY] = self._serialize_value(value)
+		return data
+
+	def serialize_attribute(self):
+		data = dict()
+		attributeDef = dict()
+		data[self.id] = attributeDef
+		if(self.is_inherited):
+			attributeDef[const.INHERIT_KEY] = self._inherit_from.globalID
+		else:
+			attributeDef[const.TYPE_KEY] = self.type
+			if(self.label):
+				attributeDef[const.LABEL_KEY] = self.label
+			if(self.tooltip):
+				attributeDef[const.TOOLTIP_KEY] = self.tooltip
+			if(self.hidden):
+				attributeDef[const.HIDDEN_KEY] = self.hidden
 		return data
 
 class StringType(AttributeType):

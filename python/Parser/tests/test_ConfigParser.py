@@ -1,12 +1,11 @@
+from pathlib import Path
 import pytest
-from Parser import Workspace, ConfigParser, ConfigTypes
+from Parser import Workspace, ConfigParser, ConfigTypes, constants
+from Parser.tests.test_setup import test_workspace, parsed_config
+import json
+import hashlib
 
 class TestClassBasicFunctions:
-	@pytest.fixture
-	def parsed_config(self):
-		workspace = Workspace("./Cosmos/customBox/python/Parser/tests/testConfigs/workspaces/BasicConfig.json")
-		parser = ConfigParser(workspace)
-		return parser.parse()
 
 	def test_return_type(self, parsed_config):
 		assert type(parsed_config) is ConfigTypes.Configuration
@@ -66,11 +65,6 @@ class TestClassBasicFunctions:
 			assert element_1_attribute_values[name] == attribute.value
 
 class TestCreatingNewElements:
-	@pytest.fixture
-	def parsed_config(self):
-		workspace = Workspace("./Cosmos/customBox/python/Parser/tests/testConfigs/workspaces/BasicConfig.json")
-		parser = ConfigParser(workspace)
-		return parser.parse()
 
 	def test_new_elemnt_creation(self, parsed_config: ConfigTypes.Configuration):
 		subconfig = parsed_config.getSubconfig("basicTypes")
@@ -90,12 +84,16 @@ class TestCreatingNewElements:
 
 class TestChecksumFunctionality:
 	@pytest.fixture
-	def parsed_config(self):
+	def config_file(self, test_workspace):
 		workspace = Workspace("./Cosmos/customBox/python/Parser/tests/testConfigs/workspaces/BasicConfig.json")
-		parser = ConfigParser(workspace)
-		return parser.parse()
+		configFolders = workspace.requireFolder("config")
+		for configFolder in configFolders:
+			basicTypesConfig = configFolder.joinpath("basicTypes.json")
+			if(basicTypesConfig.exists()):
+				return basicTypesConfig
+		return None
 
-	def test_checksum(self, parsed_config: ConfigTypes.Configuration):
+	def test_checksum(self, parsed_config: ConfigTypes.Configuration, config_file: Path):
 		subconfig = parsed_config.getSubconfig("basicTypes")
 		assert subconfig.needs_serialization() == False
 		newElement = subconfig.createElement("element_3")

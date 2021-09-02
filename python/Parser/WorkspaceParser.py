@@ -1,3 +1,4 @@
+from genericpath import isfile
 import os
 import json
 import argparse
@@ -69,6 +70,7 @@ class Workspace():
 								If false will check that the path exists and is an actual directory. If not an exception will be raised.
 		"""
 		requiredKeys = helpers.forceStrList(requiredKeys)
+		requiredFolders: List[Path] 	= list()
 		for key in requiredKeys:
 			try:
 				folderPaths = getattr(self, key)
@@ -77,20 +79,26 @@ class Workspace():
 			if(type(folderPaths) is str):
 				folderPaths = [folderPaths]
 			for path in folderPaths:
-				if(os.path.exists(path)):
-					if(not os.path.isdir(path)):
+				path = Path(path)
+				if(path.exists()):
+					if(not path.is_dir()):
 						raise IOError(f"The path \"{path}\" for the config \"{key}\" does not point to a directory")
+					else:
+						requiredFolders.append(path)
 				elif(createMissingDirs):
-					os.makedirs(path)
+					path.mkdir(parents=True)
+					requiredFolders.append(path)
 				else:
 					raise IOError(f"The path \"{path}\" for the config \"{key}\" does not exist")
+		return requiredFolders
 
 	def requireFile(self, requiredKeys: Union[List[str], str], createMissingDirs: bool = False):
 		""" Check that a config path with a certain name exists
 			@createMissingDirs 	If true will create missing dirs instead of throwing an exception. This will not create a file, only the directory paths.
 								If false will check that the path exists and is an actual existing file. If not an exception will be raised.
 		"""
-		requiredKeys = helpers.forceStrList(requiredKeys)
+		requiredKeys 				= helpers.forceStrList(requiredKeys)
+		requiredFiles: List[Path] 	= list()
 		for key in requiredKeys:
 			try:
 				filePaths = getattr(self, key)
@@ -99,13 +107,18 @@ class Workspace():
 			if(type(filePaths) is str):
 				filePaths = [filePaths]
 			for path in filePaths:
-				if(os.path.exists(path)):
-					if(not os.path.isfile(path)):
-						raise IOError(f"The path \"{path}\" for the config \"{key}\" does not point to a file")
+				path = Path(path)
+				if(path.exists()):
+					if(not path.is_file()):
+						raise IOError(f"The path \"{str(path)}\" for the config \"{key}\" does not point to a file")
+					else:
+						requiredFiles.append(path)
 				elif(createMissingDirs):
-					os.makedirs(Path(path).parent)
+					path.parent.mkdir(parents=True)
+					requiredFiles.append(path)
 				else:
 					raise IOError(f"The path \"{path}\" for the config \"{key}\" does not exist")
+		return requiredFiles
 
 	def require(self, requiredKeys: Union[List[str], str]):
 		""" Check that a key exists in the workspace file

@@ -1,4 +1,5 @@
 from __future__ 				import annotations
+import hashlib
 from typing 					import Dict, List, Union
 from pathlib 					import Path
 import Parser
@@ -245,11 +246,17 @@ class Subconfig(dynamicObject, serializer.serializeable):
 
 	@property
 	def elements_hash(self):
-		return hash(json.dumps(self._serialize_elements()))
+		own_elements = self._serialize_elements()
+		return self.__get_dict_hash(own_elements)
 
 	@property
 	def file_elements_hash(self):
 		return self._file_elements_hash
+
+	def __get_dict_hash(self, input):
+		str			= json.dumps(input).encode('utf-8')
+		str_hash 	= hashlib.md5(str).hexdigest()
+		return str_hash
 
 	def needs_serialization(self):
 		return self.elements_hash != self._file_elements_hash
@@ -276,13 +283,20 @@ class Subconfig(dynamicObject, serializer.serializeable):
 			data[element_name] = serializer.serialize(element)
 		return data
 
+	def _serialize_attributes(self):
+		attributes = dict()
+		for element in self.elements.values():
+			element: ConfigElement
+			for attribute in element.attributeInstances.items():
+				pass
+
 	@overrides(serializer.serializeable)
 	def _serialize(self):
 		data = dict()
 		data[const.VERSION_KEY] = str(self.__file_format_version)
 		serialized_elements = self._serialize_elements()
 		data[const.ELEMENTS_KEY] = serialized_elements
-		data[const.CHECKSUM_KEY] = hash(json.dumps(serialized_elements))
+		data[const.CHECKSUM_KEY] = self.__get_dict_hash(serialized_elements)
 		return data
 
 	def resolveUiAssignment(self):
@@ -347,6 +361,11 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 		for attribute in self.attributeInstances.values():
 			serialized_data.append(serializer.serialize(attribute))
 		return serialized_data
+
+	def _serialize_attributes(self):
+		serialized_data = dict()
+		for attribute in self.attributeInstances.values():
+			pass
 
 	def getAttribute(self, name: str) -> Union[AttributeInstance, ReferenceCollection]:
 		return self._get(name)

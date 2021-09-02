@@ -73,6 +73,10 @@ class ConfigParser():
 		workspace.requireFolder(["config"])
 		self.__workspace 	= workspace
 
+	@property
+	def workspace(self):
+		return self.__workspace
+
 	def parse(self)  -> ConfigTypes.Configuration:
 		configFiles = discoverConfigFiles(self.__workspace.config)
 		jsonConfigs = dict()
