@@ -119,21 +119,36 @@ class AttributeType():
 			data[const.VALUE_KEY] = self._serialize_value(value)
 		return data
 
+	def _get_serialization_specifics(self):
+		return dict()
+
 	def serialize_attribute(self):
-		data = dict()
 		attributeDef = dict()
-		data[self.id] = attributeDef
+		attributeDef[const.TYPE_KEY] = self.type
+		if(self.label):
+			attributeDef[const.LABEL_KEY] = self.label
+		if(self.tooltip):
+			attributeDef[const.TOOLTIP_KEY] = self.tooltip
+		if(self.hidden):
+			attributeDef[const.HIDDEN_KEY] = self.hidden
+		if(self.is_placeholder):
+			attributeDef[const.PLACEHOLDER_KEY] = self.is_placeholder
+
+		serialization_specifics = self._get_serialization_specifics()
+		for specific_key, specific_value in serialization_specifics.items():
+			attributeDef[specific_key] = specific_value
+
 		if(self.is_inherited):
-			attributeDef[const.INHERIT_KEY] = self._inherit_from.globalID
-		else:
-			attributeDef[const.TYPE_KEY] = self.type
-			if(self.label):
-				attributeDef[const.LABEL_KEY] = self.label
-			if(self.tooltip):
-				attributeDef[const.TOOLTIP_KEY] = self.tooltip
-			if(self.hidden):
-				attributeDef[const.HIDDEN_KEY] = self.hidden
-		return data
+			non_modified_keys = list()
+			_ ,inherited_attrib_def = self._inherit_from.serialize_attribute()
+			for property_key, attrib_property in attributeDef.items():
+				if(property_key in inherited_attrib_def):
+					if(inherited_attrib_def[property_key] == attrib_property):
+						non_modified_keys.append(property_key)
+			for key in non_modified_keys:
+				del attributeDef[key]
+			attributeDef[const.INHERIT_KEY] = str(self._inherit_from.globalID)
+		return self.id, attributeDef
 
 class StringType(AttributeType):
 	_comparison_type 	= "string"
@@ -160,6 +175,13 @@ class StringType(AttributeType):
 	@overrides(AttributeType)
 	def getDefault(self) -> str:
 		return str("")
+
+	@overrides(AttributeType)
+	def _get_serialization_specifics(self):
+		specifics = dict()
+		if(self.validation):
+			specifics[const.VALIDATION_KEY] = self.validation
+		return specifics
 
 class BoolType(AttributeType):
 	_comparison_type 	= "bool"
@@ -201,6 +223,15 @@ class IntType(AttributeType):
 	@overrides(AttributeType)
 	def getDefault(self) -> int:
 		return int(0)
+
+	@overrides(AttributeType)
+	def _get_serialization_specifics(self):
+		specifics = dict()
+		if(self.min is not None):
+			specifics[const.MIN_KEY] = self.min
+		if(self.max is not None):
+			specifics[const.MAX_KEY] = self.max
+		return specifics
 
 class FloatType(IntType):
 	_comparison_type 	= "float"

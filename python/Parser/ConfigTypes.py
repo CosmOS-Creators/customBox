@@ -200,6 +200,7 @@ class Configuration(dynamicObject):
 
 	def serialize(self):
 		for subconfig in self.configs.values():
+			Data = dict()
 			with subconfig.source_file.open("r") as fp:
 				Data = json.load(fp)
 			Data.update(serializer.serialize(subconfig))
@@ -217,7 +218,7 @@ class Subconfig(dynamicObject, serializer.serializeable):
 		self.__file_format_version				= vh.Version(file_format_version)
 		self._file_elements_hash				= file_element_hash
 		if(not vh.CompatabilityManager.is_compatible(self.__file_format_version)):
-			raise ValueError(f'The file structure of "{str(source_file)}" is specified as version "{str(file_format_version)}" but this version is not compatible with the parser which is on version {VersionHandling.CompatabilityManager.get_current_version()}')
+			raise ValueError(f'The file structure of "{str(source_file)}" is specified as version "{str(file_format_version)}" but this version is not compatible with the parser which is on version {vh.CompatabilityManager.get_current_version()}')
 
 		forbidden = f'Creating an element with the name "{{0}}" in the subconfig "{self.link.config}" is not permitted as "{{0}}" is a reserved keyword'
 		duplicated = f'The creation of a new element named "{{0}}" was requested for subconfig "{self.link.config}" but an element with that name already exists for this subconfig'
@@ -285,18 +286,22 @@ class Subconfig(dynamicObject, serializer.serializeable):
 
 	def _serialize_attributes(self):
 		attributes = dict()
-		for element in self.elements.values():
-			element: ConfigElement
-			for attribute in element.attributeInstances.items():
-				pass
+		for attribute in self.parent.attribute_lookup.values():
+			attribute: AttributeTypes.AttributeType
+			if(attribute.globalID.config == self.link.config):
+				name, attributeDef = attribute.serialize_attribute()
+				attributes[name] = attributeDef
+		return attributes
 
 	@overrides(serializer.serializeable)
 	def _serialize(self):
 		data = dict()
-		data[const.VERSION_KEY] = str(self.__file_format_version)
-		serialized_elements = self._serialize_elements()
-		data[const.ELEMENTS_KEY] = serialized_elements
-		data[const.CHECKSUM_KEY] = self.__get_dict_hash(serialized_elements)
+		data[const.VERSION_KEY] 	= str(self.__file_format_version)
+		serialized_elements 		= self._serialize_elements()
+		serialized_attributes 		= self._serialize_attributes()
+		data[const.ELEMENTS_KEY] 	= serialized_elements
+		data[const.ATTRIBUTES_KEY] 	= serialized_attributes
+		data[const.CHECKSUM_KEY] 	= self.__get_dict_hash(serialized_elements)
 		return data
 
 	def resolveUiAssignment(self):
@@ -361,11 +366,6 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 		for attribute in self.attributeInstances.values():
 			serialized_data.append(serializer.serialize(attribute))
 		return serialized_data
-
-	def _serialize_attributes(self):
-		serialized_data = dict()
-		for attribute in self.attributeInstances.values():
-			pass
 
 	def getAttribute(self, name: str) -> Union[AttributeInstance, ReferenceCollection]:
 		return self._get(name)
