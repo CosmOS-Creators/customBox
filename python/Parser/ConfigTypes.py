@@ -88,6 +88,12 @@ class UiViewType():
 	def __init__(self, key):
 		self.key = key
 
+	def __str__(self) -> str:
+		return self.key
+
+	def __repr__(self) -> str:
+		return f'UiViewType({self.key})'
+
 class UiViewTypes():
 	tabbed 		= UiViewType(const.UI_VIEW_TYPE_TABBED_KEY)
 	carded 		= UiViewType(const.UI_VIEW_TYPE_CARDED_KEY)
@@ -100,17 +106,27 @@ class UiViewTypes():
 				return t
 		return None
 
-class UiPage():
-	def __init__(self, label: str, viewType: UiViewType, icon: str = None):
-		self.label 		= label
-		self.icon 		= icon
-		self.viewType 	= viewType
+class UiPage(serializer.serializeable):
+	def __init__(self, id: str, label: str, viewType: UiViewType, origin: Subconfig, icon: str = None):
+		self.origin_subconfig 	= origin
+		self.id 				= id
+		self.label 				= label
+		self.icon 				= icon
+		self.viewType 			= viewType
 		self.assignedSubconfigs: Dict[str, Subconfig] = dict()
 
 	def assignSubconfig(self, name: str, config: Subconfig):
 		self.assignedSubconfigs[name] = config
 
-class UiConfiguration(dynamicObject):
+	def _serialize(self):
+		data = dict()
+		data[const.UI_VIEW_TYPE_KEY] = str(self.viewType)
+		data[const.UI_TAB_LABEL_KEY] = self.label
+		if(self.icon is not None):
+			data[const.UI_TAB_ICON_KEY] = self.icon
+		return data
+
+class UiConfiguration(dynamicObject, serializer.serializeable):
 	def __init__(self):
 		forbidden 		= 'Creating a user interface page with the name "{0}" is not permitted as "{0}" is a reserved keyword'
 		duplicated 		= 'It was requested to create a user interface page named "{0}" but a page with that name already exists'
@@ -121,7 +137,7 @@ class UiConfiguration(dynamicObject):
 	def pages(self) -> Dict[str, UiPage]:
 		return self._getItems()
 
-	def createpage(self, id: str, pageDefinition: Dict[str,str]) -> UiPage:
+	def createpage(self, id: str, pageDefinition: Dict[str,str], origin: Subconfig) -> UiPage:
 		for requiredKey in const.ui_page_required_json_keys:
 			if(requiredKey not in pageDefinition):
 				raise KeyError(f'A UI page with the name "{id}" could not be created because it\'s definition is missing the reqired "{requiredKey}" key.')
@@ -130,7 +146,7 @@ class UiConfiguration(dynamicObject):
 			else:
 				icon = None
 			viewType = UiViewTypes.getViewType(pageDefinition[const.UI_VIEW_TYPE_KEY])
-		return self._create(id, UiPage(pageDefinition[const.UI_TAB_LABEL_KEY], viewType, icon))
+		return self._create(id, UiPage(id, pageDefinition[const.UI_TAB_LABEL_KEY], viewType, origin, icon))
 
 	def haspage(self, id: str):
 		return self._has(id)
@@ -138,7 +154,13 @@ class UiConfiguration(dynamicObject):
 	def getpage(self, id: str) -> UiPage:
 		return self._get(id)
 
-class Configuration(dynamicObject):
+	def _serialize(self):
+		data = dict()
+		for page_id, page in self.pages.items():
+			data[page_id] = serializer.serialize(page)
+		return data
+
+class Configuration(dynamicObject, serializer.serializeable):
 	def __init__(self, attribute_lookup: Dict[str, AttributeTypes.AttributeType]):
 		self.__attribute_lookup = attribute_lookup
 		self.UiConfig 	= UiConfiguration()
@@ -179,7 +201,7 @@ class Configuration(dynamicObject):
 				newElement.createAttributeInstanceFromDefinition(attributeInstance)
 		if(const.UI_PAGE_KEY in config):
 			for pageName, uiPage in config[const.UI_PAGE_KEY].items():
-				self.UiConfig.createpage(pageName, uiPage)
+				self.UiConfig.createpage(pageName, uiPage, subconfig)
 		if(const.UI_KEY in config):
 			if(const.UI_USE_PAGE_KEY in config[const.UI_KEY]):
 				subconfig.assignToUiPage(config[const.UI_KEY][const.UI_USE_PAGE_KEY])
@@ -199,11 +221,11 @@ class Configuration(dynamicObject):
 		return self._get(link.config)
 
 	def serialize(self):
+		serializer.serialize(self)
+
+	def _serialize(self):
 		for subconfig in self.configs.values():
-			Data = dict()
-			with subconfig.source_file.open("r") as fp:
-				Data = json.load(fp)
-			Data.update(serializer.serialize(subconfig))
+			Data = serializer.serialize(subconfig)
 			with subconfig.source_file.open("w") as fp:
 				json.dump(Data, fp, indent = '\t')
 			subconfig._file_elements_hash = subconfig.elements_hash
@@ -298,14 +320,26 @@ class Subconfig(dynamicObject, serializer.serializeable):
 		data = dict()
 		data[const.VERSION_KEY] 	= str(self.__file_format_version)
 		serialized_elements 		= self._serialize_elements()
-		serialized_attributes 		= self._serialize_attributes()
 		data[const.ELEMENTS_KEY] 	= serialized_elements
-		data[const.ATTRIBUTES_KEY] 	= serialized_attributes
+		data[const.ATTRIBUTES_KEY] 	= self._serialize_attributes()
 		data[const.CHECKSUM_KEY] 	= self.__get_dict_hash(serialized_elements)
+		if(self.__ui_page_assignment is not None):
+			data[const.UI_KEY] = dict()
+			if(type(self.__ui_page_assignment) is str):
+				ui_page = self.__ui_page_assignment
+			else:
+				ui_page = self.__ui_page_assignment.id
+			data[const.UI_KEY][const.UI_USE_PAGE_KEY] = ui_page
+		ui_page_definitions = dict()
+		for ui_assignment in self.parent.UiConfig.pages.values():
+			if(ui_assignment.origin_subconfig == self):
+				ui_page_definitions[ui_assignment.id] = serializer.serialize(ui_assignment)
+		if(len(ui_page_definitions) > 0):
+			data[const.UI_PAGE_KEY] = ui_page_definitions
 		return data
 
 	def resolveUiAssignment(self):
-		if(self.__ui_page_assignment):
+		if(self.__ui_page_assignment is not None):
 			if(type(self.__ui_page_assignment) is str):
 				if(self.parent.UiConfig.haspage(self.__ui_page_assignment)):
 					self.__ui_page_assignment = self.parent.UiConfig.getpage(self.__ui_page_assignment)

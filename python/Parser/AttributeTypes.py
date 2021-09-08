@@ -179,7 +179,7 @@ class StringType(AttributeType):
 	@overrides(AttributeType)
 	def _get_serialization_specifics(self):
 		specifics = dict()
-		if(self.validation):
+		if(self.validation is not None):
 			specifics[const.VALIDATION_KEY] = self.validation
 		return specifics
 
@@ -314,6 +314,15 @@ class ReferenceListType(AttributeType):
 			data.append(str(v.link))
 		return data
 
+	@overrides(AttributeType)
+	def _get_serialization_specifics(self):
+		specifics = dict()
+		if(self.elements is not None):
+			elements_str = list()
+			for elementLink in self.elements:
+				elements_str.append(str(elementLink))
+			specifics[const.ELEMENTS_LIST_KEY] = elements_str
+		return specifics
 
 class StringListType(AttributeType):
 	_comparison_type 	= "stringList"
@@ -404,6 +413,13 @@ class SelectionType(AttributeType):
 			attr = self.targetedAttribute
 			return str(value.getAttribute(attr).value)
 
+	@overrides(AttributeType)
+	def _get_serialization_specifics(self):
+		specifics = dict()
+		if(self.elements is not None):
+			specifics[const.ELEMENTS_LIST_KEY] = self.elements
+		return specifics
+
 
 class HexType(IntType):
 	_comparison_type 	= "hex"
@@ -450,6 +466,17 @@ class SliderType(IntType):
 	@overrides(AttributeType)
 	def getDefault(self) -> float:
 		return float(0)
+
+	@overrides(AttributeType)
+	def _get_serialization_specifics(self):
+		specifics = dict()
+		if(self.min is not None):
+			specifics[const.MIN_KEY] = self.min
+		if(self.max is not None):
+			specifics[const.MAX_KEY] = self.max
+		if(self.step is not None):
+			specifics[const.STEP_KEY] = self.step
+		return specifics
 
 class ParentReferenceType(AttributeType):
 	_comparison_type 	= "parentReference"
