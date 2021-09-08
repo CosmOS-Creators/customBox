@@ -1,32 +1,33 @@
 {
 	"version": "1.1.0",
-	"ui_page": {
-		"compiler": {
-			"tab_label": "Compiler settings",
-			"view_type": "tabbed",
-			"tab_icon": "fact_check"
-		}
-	},
+	"elements": {},
 	"attributes": {
 		"buildName": {
-			"label": "Name of the build",
 			"type": "string",
-			"tooltip": "Binary file name for the current CPU"
+			"label": "Name of the build",
+			"tooltip": "Binary file name for the current CPU",
+			"validation": ""
 		},
 		"flags": {
-			"label": "List of compiler flags",
 			"type": "stringList",
+			"label": "List of compiler flags",
 			"tooltip": "List of compiler flags for the current CPU"
 		},
 		"defines": {
-			"label": "List of defines",
 			"type": "stringList",
+			"label": "List of defines",
 			"tooltip": "List of compiler defines for the current CPU"
 		},
 		"core": {
 			"type": "parentReference"
 		}
 	},
-	"elements": {},
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b"
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"compiler": {
+			"view_type": "tabbed",
+			"tab_label": "Compiler settings",
+			"tab_icon": "fact_check"
+		}
+	}
 }

@@ -1,32 +1,32 @@
 {
 	"version": "1.1.0",
-	"ui_page": {
-		"kernels": {
-			"tab_label": "Kernels",
-			"tab_icon": "source",
-			"view_type": "tabbed"
-		}
-	},
+	"elements": {},
 	"attributes": {
 		"stackSize": {
-			"label": "Stack size",
 			"type": "int",
+			"label": "Stack size",
+			"tooltip": "Stack size of the current kernel",
 			"min": 0,
-			"max": 2048,
-			"tooltip": "Stack size of the current kernel"
+			"max": 2048
 		},
 		"lowAddress": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"highAddress": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"core": {
 			"type": "parentReference"
 		}
 	},
-	"elements": {},
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b"
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"kernels": {
+			"view_type": "tabbed",
+			"tab_label": "Kernels",
+			"tab_icon": "source"
+		}
+	}
 }

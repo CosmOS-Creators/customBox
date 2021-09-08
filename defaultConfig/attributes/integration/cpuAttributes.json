@@ -1,39 +1,39 @@
 {
 	"version": "1.1.0",
-	"ui_page": {
-		"cpus": {
-			"tab_label": "CPUs",
-			"view_type": "tabbed",
-			"tab_icon": "memory"
-		}
-	},
+	"elements": {},
 	"attributes": {
-		"stackMemory": {
-			"inherit": "memoriesAttributes/:memory",
-			"label": "Memory location of the kernel/task/thread stacks"
-		},
-		"flashMemory": {
-			"inherit": "memoriesAttributes/:memory",
-			"label": "Memory location of the local code"
-		},
 		"systemTimerWidth": {
-			"label": "System Timer bit width",
-			"type": "int"
+			"type": "int",
+			"label": "System Timer bit width"
 		},
 		"systemTimerFrequency": {
-			"label": "System timer frequency in Hz",
-			"type": "int"
+			"type": "int",
+			"label": "System timer frequency in Hz"
 		},
 		"systemTimerTickCount": {
-			"label": "System timer one tick count",
-			"type": "int"
+			"type": "int",
+			"label": "System timer one tick count"
 		},
 		"memoryProtection": {
-			"label": "MPU engine available",
 			"type": "bool",
+			"label": "MPU engine available",
 			"tooltip": "Presence of the MPU in current CPU"
+		},
+		"stackMemory": {
+			"label": "Memory location of the kernel/task/thread stacks",
+			"inherit": "memoriesAttributes/:memory"
+		},
+		"flashMemory": {
+			"label": "Memory location of the local code",
+			"inherit": "memoriesAttributes/:memory"
 		}
 	},
-	"elements": {},
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b"
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"cpus": {
+			"view_type": "tabbed",
+			"tab_label": "CPUs",
+			"tab_icon": "memory"
+		}
+	}
 }

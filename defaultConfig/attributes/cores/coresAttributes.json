@@ -1,80 +1,80 @@
 {
 	"version": "1.1.0",
-	"ui_page": {
-		"cores": {
-			"tab_label": "Cores",
-			"tab_icon": "memory",
-			"view_type": "carded"
-		}
-	},
+	"elements": {},
 	"attributes": {
 		"CoreName": {
-			"label": "Core Name",
 			"type": "string",
-			"validation": "^[A-Za-z0-9]+$",
-			"tooltip": "Current core name"
+			"label": "Core Name",
+			"tooltip": "Current core name",
+			"validation": "^[A-Za-z0-9]+$"
 		},
 		"bootOs": {
-			"label": "Boot OS",
 			"type": "bool",
+			"label": "Boot OS",
 			"tooltip": "Will current core boot the operating system?"
 		},
 		"isCosmos": {
-			"label": "Is CosmOS core",
 			"type": "bool",
+			"label": "Is CosmOS core",
 			"tooltip": "Runs current core the CosmOS operating system?"
 		},
-		"unmappedDataMemory": {
-			"inherit": "memoriesAttributes/:memory",
-			"label": "Memory location of the unmapped data"
-		},
 		"unmappedDataSize": {
-			"label": "Unmapped data section size",
 			"type": "int",
+			"label": "Unmapped data section size",
+			"tooltip": "Size of the unmapped data section",
 			"min": 0,
-			"max": 2048,
-			"tooltip": "Size of the unmapped data section"
+			"max": 2048
 		},
 		"unmappedDataLowAddress": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"unmappedDataHighAddress": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"cpu": {
 			"type": "parentReference"
 		},
 		"coreId": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"corePrograms": {
-			"placeholder": true,
-			"type": "referenceList"
+			"type": "referenceList",
+			"placeholder": true
 		},
 		"coreSysJobGroups": {
-			"placeholder": true,
-			"type": "referenceList"
+			"type": "referenceList",
+			"placeholder": true
 		},
 		"coreSysJobHyperTick": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"coreScheduler": {
-			"placeholder": true,
-			"type": "referenceList"
+			"type": "referenceList",
+			"placeholder": true
 		},
 		"coreNumberOfThreads": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"coreNumberOfTasks": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
+		},
+		"unmappedDataMemory": {
+			"label": "Memory location of the unmapped data",
+			"inherit": "memoriesAttributes/:memory"
 		}
 	},
-	"elements": {},
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b"
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"cores": {
+			"view_type": "carded",
+			"tab_label": "Cores",
+			"tab_icon": "memory"
+		}
+	}
 }

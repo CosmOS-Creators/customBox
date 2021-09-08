@@ -1,37 +1,38 @@
 {
 	"version": "1.1.0",
-	"ui_page": {
-		"os_partitions": {
-			"tab_label": "OS partitions",
-			"view_type": "tabbed",
-			"tab_icon": "segment"
-		}
-	},
+	"elements": {},
 	"attributes": {
 		"name": {
-			"label": "Name of partition",
 			"type": "string",
-			"tooltip": "Name of the partition cannot be changed by user because it is used in linker script generation process"
-		},
-		"memory": {
-			"inherit": "memoriesAttributes/:memory",
-			"label": "Memory location of the current partition",
-			"tooltip": "Memory location of the current partition can be picked from available memories for current MCU"
+			"label": "Name of partition",
+			"tooltip": "Name of the partition cannot be changed by user because it is used in linker script generation process",
+			"validation": ""
 		},
 		"size": {
-			"label": "Size of the current partition",
 			"type": "hex",
+			"label": "Size of the current partition",
 			"tooltip": "Size in bytes for the current partition"
 		},
 		"lowAddress": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"highAddress": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
+		},
+		"memory": {
+			"label": "Memory location of the current partition",
+			"tooltip": "Memory location of the current partition can be picked from available memories for current MCU",
+			"inherit": "memoriesAttributes/:memory"
 		}
 	},
-	"elements": {},
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b"
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"os_partitions": {
+			"view_type": "tabbed",
+			"tab_label": "OS partitions",
+			"tab_icon": "segment"
+		}
+	}
 }

@@ -1,34 +1,28 @@
 {
 	"version": "1.1.0",
-	"ui_page": {
-		"buffers": {
-			"tab_label": "Buffers",
-			"view_type": "tabbed",
-			"tab_icon": "inventory_2"
-		}
-	},
+	"elements": {},
 	"attributes": {
 		"name": {
-			"label": "Name of the buffer",
 			"type": "string",
-			"validation": "^[A-Za-z][A-Za-z0-9_]+$",
-			"tooltip": "Name of the current buffer"
+			"label": "Name of the buffer",
+			"tooltip": "Name of the current buffer",
+			"validation": "^[A-Za-z][A-Za-z0-9_]+$"
 		},
 		"size": {
-			"label": "Buffer size",
 			"type": "int",
+			"label": "Buffer size",
+			"tooltip": "Size of the current buffer in bytes",
 			"min": 0,
-			"max": 1024,
-			"tooltip": "Size of the current buffer in bytes"
+			"max": 1024
 		},
 		"isDoubleBuffer": {
-			"label": "Double buffer",
 			"type": "bool",
+			"label": "Double buffer",
 			"tooltip": "If true, two buffers will be created to handle user/os data access"
 		},
 		"readPermissions": {
-			"label": "List of schedulables which have read access to this buffer",
 			"type": "referenceList",
+			"label": "List of schedulables which have read access to this buffer",
 			"tooltip": "All schedulables in this list can read data from this buffer",
 			"elements": [
 				"threads/:name",
@@ -36,8 +30,8 @@
 			]
 		},
 		"writePermissions": {
-			"label": "List of schedulables which have write access to this buffer",
 			"type": "referenceList",
+			"label": "List of schedulables which have write access to this buffer",
 			"tooltip": "All schedulables in this list can write data to this buffer",
 			"elements": [
 				"threads/:name",
@@ -45,38 +39,44 @@
 			]
 		},
 		"compressedReadPermission": {
-			"placeholder": true,
-			"type": "stringList"
+			"type": "stringList",
+			"placeholder": true
 		},
 		"compressedWritePermission": {
-			"placeholder": true,
-			"type": "stringList"
+			"type": "stringList",
+			"placeholder": true
 		},
 		"compressedReadPermissionInverted": {
-			"placeholder": true,
-			"type": "stringList"
+			"type": "stringList",
+			"placeholder": true
 		},
 		"compressedWritePermissionInverted": {
-			"placeholder": true,
-			"type": "stringList"
+			"type": "stringList",
+			"placeholder": true
 		},
 		"bufferId": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"doubleBufferId": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"spinlockId": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"isInterCore": {
-			"placeholder": true,
-			"type": "bool"
+			"type": "bool",
+			"placeholder": true
 		}
 	},
-	"elements": {},
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b"
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"buffers": {
+			"view_type": "tabbed",
+			"tab_label": "Buffers",
+			"tab_icon": "inventory_2"
+		}
+	}
 }
