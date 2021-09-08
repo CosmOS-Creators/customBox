@@ -75,7 +75,8 @@ SECTIONS
   {
     . = ALIGN(4);
     _s_os_section_{{item.name}} = .;          /* create a global symbol at data start */
-    KEEP(*(.os_{{item.name}}));
+	KEEP (*(SORT(.os_{{item.name}}.*)));
+    KEEP (*(.os_{{item.name}}*));
     _e_{{item.name}}_align_helper = .;        /* create a helper for log2 alignment */
     . = ALIGN((0x2 << (LOG2CEIL (_e_{{item.name}}_align_helper) - 1)));
     _e_os_section_{{item.name}} = .;          /* create a global symbol at data end */
