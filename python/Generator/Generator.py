@@ -123,11 +123,11 @@ class generationElement():
 				link = Parser.Link.construct(config=self.__targetConfig)
 				config.require(link)
 				configDict[self.__targetConfig] = link.resolve(config)
-			for element in self.__loopElements:
+			for attribDef, element in self.__loopElements:
 				filename = self.__specialOutName
 				if(not self.__targetName is None):
-					configDict[self.__targetName] = element["element"]
-				targetValue = element["target"].value
+					configDict[self.__targetName] = element
+				targetValue = attribDef.value
 				if(not filename is None):
 					filename = filename.replace(TARGET_PLACEHOLDER, targetValue)
 				outPath = self.__outputPath
