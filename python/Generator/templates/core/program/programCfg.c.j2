@@ -21,6 +21,7 @@
 **                            Include Files | Start                            **
 ********************************************************************************/
 /* CORE interfaces */
+#include "spinlockCfg.h"
 #include "programCfg.h"
 #include "threadCfg.h"
 #include "taskCfg.h"
@@ -74,7 +75,14 @@ IS_INITIALIZED_TO
         PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_HEAP_SIZE,                      /* const BitWidthType programHeapSize                     */
         PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_HEAP_LOW_ADDRESS,                      /* const AddressType programHeapLowAddress                     */
         PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_HEAP_HIGH_ADDRESS,                      /* const AddressType programHeapHighAddress                     */
-    },
+		{% if program.heapSpinlockId != None -%}
+		SYSCALL_GET_SPINLOCK_{{program.heapSpinlockId}}_ID,                      /* const BitWidthType programHeapGetSpinlockRouteId                     */
+		SYSCALL_RELEASE_SPINLOCK_{{program.heapSpinlockId}}_ID,                      /* const BitWidthType programHeapReleaseSpinlockRouteId                     */
+		{% else -%}
+		0,                      /* const BitWidthType programHeapGetSpinlockRouteId                     */
+		0,                      /* const BitWidthType programHeapReleaseSpinlockRouteId                     */
+		{% endif -%}
+	},
 {% endfor -%}
 };
 {% endfor -%}

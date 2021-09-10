@@ -66,11 +66,14 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 		self.cpuBitWidth = config.mcu.MCU.cpuBitWidth
 		self.os = config.os.os
 
+		self.highestSpinlockId = 0
+
 		self.assigneUniqueId()
 		self.assigneIterativeId()
 		self.assigneSysJobHypertick()
 		self.assigneSchedulerEntries()
 		self.assigneBufferSpinlocks()
+		self.assigneHeapSpinlocks()
 
 	def assigneUniqueId(self):
 		uniqueId = 0
@@ -135,6 +138,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 			spinlockIterativeId += 1
 		self.os.buffersNum = bufferIterativeId
 		self.os.doubleBuffersNum = doubleBufferIterativeId
+		self.highestSpinlockId = sorted(self.spinlocks,key=lambda x: x.spinlockId, reverse=True)[0].spinlockId
 
 	def assigneSysJobHypertick(self):
 		for core in self.cores:
@@ -152,7 +156,6 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 				entryIterativeId += 1
 
 	def assigneBufferSpinlocks(self):
-		highestSpinlockId = sorted(self.spinlocks,key=lambda x: x.spinlockId, reverse=True)[0].spinlockId
 		for buffer in self.buffers:
 			coreId = 0
 			isInterCore = False
@@ -165,10 +168,18 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 					isInterCore = True
 					break
 			if isInterCore:
-				highestSpinlockId += 1
-				buffer.spinlockId = highestSpinlockId
+				self.highestSpinlockId += 1
+				buffer.spinlockId = self.highestSpinlockId
 				if buffer.isDoubleBuffer:
-					highestSpinlockId += 1
+					self.highestSpinlockId += 1
 			else:
 				buffer.spinlockId = 0
 			buffer.isInterCore = isInterCore
+
+	def assigneHeapSpinlocks(self):
+		for program in self.programs:
+			if len(program.programThreads):
+				self.highestSpinlockId += 1
+				program.heapSpinlockId = self.highestSpinlockId
+			else:
+				program.heapSpinlockId = None

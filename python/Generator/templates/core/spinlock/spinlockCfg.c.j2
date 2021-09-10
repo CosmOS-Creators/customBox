@@ -63,21 +63,29 @@ IS_INITIALIZED_TO
 {% for item in model.spinlocks -%}
 {{"\t"}}{
         SPINLOCK_STATE_ENUM__RELEASED,		/* BitWidthType spinlock                                  */
-        0,									/* BitWidthType lockedByCoreId                                  */
+        NULL,									/* CosmOS_SchedulableVariableType * schedulableOwner                                  */
     },
 {% endfor -%}
 {% for item in model.buffers -%}
 {% if item.isInterCore -%}
 {{"\t"}}{
         SPINLOCK_STATE_ENUM__RELEASED,		/* BitWidthType spinlock                                  */
-        0,									/* BitWidthType lockedByCoreId                                  */
+        NULL,									/* CosmOS_SchedulableVariableType * schedulableOwner                                  */
     },
 {% if item.isDoubleBuffer -%}
 {{"\t"}}{
         SPINLOCK_STATE_ENUM__RELEASED,		/* BitWidthType spinlock                                  */
-        0,									/* BitWidthType lockedByCoreId                                  */
+        NULL,									/* CosmOS_SchedulableVariableType * schedulableOwner                                  */
     },
 {% endif -%}
+{% endif -%}
+{% endfor -%}
+{% for item in model.programs -%}
+{% if item.heapSpinlockId != None -%}
+{{"\t"}}{
+        SPINLOCK_STATE_ENUM__RELEASED,		/* BitWidthType spinlock                                  */
+        NULL,									/* CosmOS_SchedulableVariableType * schedulableOwner                                  */
+    },
 {% endif -%}
 {% endfor -%}
 };
