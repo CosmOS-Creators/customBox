@@ -35,7 +35,7 @@ class generationElement():
 	__preFileGenHook	= None
 	__postFileGenHook	= None
 
-	def __init__(self, outPath: str, templateFiles: List[Union[str, Path]]):
+	def __init__(self, outPath: Path, templateFiles: List[Union[str, Path]]):
 		self.__outputPath 	= outPath
 		self.__templates 	= templateFiles
 
@@ -65,7 +65,7 @@ class generationElement():
 		self.registerPreFileGenHook(preFileGenHook)
 		self.registerPostFileGenHook(postFileGenHook)
 
-	def injectTemplates(self, config: Dict[str, configTypes.Configuration], fileNamePattern: str):
+	def injectTemplates(self, config: Dict[str, configTypes.Configuration], fileNamePattern: str, outputPath: Path):
 		generatedFiles = []
 		for template in self.__templates:
 			templateName = Path(template).stem
@@ -76,15 +76,15 @@ class generationElement():
 			else:
 				outFileName = Path(fileNamePattern.replace(TEMPLATE_PLACEHOLDER, templateName)).stem
 
-			outputFilePath = Path.joinpath(self.__outputPath, outFileName + outFileSuffix)
+			outputFilePath = Path.joinpath(outputPath, outFileName + outFileSuffix)
 			config["filename"] = outFileName + outFileSuffix
 			if(not self.__pattern is None):
 				for pattern in self.__pattern:
 					if(pattern in outFileSuffix):
-						outputDir = Path.joinpath(self.__outputPath, self.__pattern[pattern])
+						outputDir = Path.joinpath(outputPath, self.__pattern[pattern])
 						outputFilePath = outputDir.joinpath(outFileName + outFileSuffix)
 						if(not outputDir.exists()):
-							os.makedirs(outputDir)
+							outputDir.mkdir(parents = True)
 						break
 
 			with open(template, "r") as template:
@@ -114,8 +114,10 @@ class generationElement():
 		if(self.__loopElements is None):
 			if(not self.__specialOutName is None):
 				if(TARGET_PLACEHOLDER in self.__specialOutName):
-					raise AttributeError("The value for the key \"fileName\" included a placeholder for the target name but no loop property was defined. This is an invalid combination")
-			generatedFiles += self.injectTemplates(configDict, self.__specialOutName)
+					raise AttributeError(f'The value for the key "{FILE_NAME_KEY}" included a placeholder for the target name but no loop property was defined. This is an invalid combination')
+			if(TARGET_PLACEHOLDER in str(self.__outputPath)):
+				raise AttributeError(f'The value for the key "{OUTPUT_DIR_KEY}"" included a placeholder for the target name but no loop property was defined. This is an invalid combination')
+			generatedFiles += self.injectTemplates(configDict, self.__specialOutName, self.__outputPath)
 		else:
 			if(not self.__targetConfig is None):
 				link = Parser.Link.construct(config=self.__targetConfig)
@@ -125,10 +127,15 @@ class generationElement():
 				filename = self.__specialOutName
 				if(not self.__targetName is None):
 					configDict[self.__targetName] = element["element"]
+				targetValue = element["target"].value
 				if(not filename is None):
-					filename = filename.replace(TARGET_PLACEHOLDER, element["target"].value)
+					filename = filename.replace(TARGET_PLACEHOLDER, targetValue)
+				outPath = self.__outputPath
+				outPath_str = str(self.__outputPath)
+				if(TARGET_PLACEHOLDER in outPath_str):
+					outPath = Path(outPath_str.replace(TARGET_PLACEHOLDER, targetValue))
 
-				generatedFiles += self.injectTemplates(configDict, filename)
+				generatedFiles += self.injectTemplates(configDict, filename, outPath)
 		return generatedFiles
 
 class Generator():
@@ -174,7 +181,7 @@ class Generator():
 				for templateDir in workspaceTemplateDirs:
 					templateFileDir = Path(template).parent
 					testpath = Path.joinpath(Path(templateDir), templateFileDir)
-					if(os.path.isdir(testpath)):
+					if(testpath.is_dir()):
 						foundMatch = True
 						break
 				if(foundMatch):
@@ -187,7 +194,7 @@ class Generator():
 			except TypeError as e:
 				raise TypeError(f"Error in generator config: {str(e)}")
 			if(not outputPath.exists()):
-					os.makedirs(outputPath)
+				outputPath.mkdir(parents = True)
 			newElement = generationElement(outputPath, parsedTemplates)
 			newElement.registerHooks(self.__callPreFileGenerationPluginHooks, self.__callPostFileGenerationPluginHooks)
 			if(TARGET_KEY in config):
