@@ -26,18 +26,6 @@ class sidebar(QWidget):
 		self.sidebar_layout = QVBoxLayout(self)
 		self.sidebar_layout.setContentsMargins(0, 0, 0, 0)
 		self.sidebar_layout.setSpacing(0)
-		menuButton = QPushButton("Hide", self, clicked=self.toggleSidebar)
-		menuButton.setIcon(icons.Icon("menu"))
-		menuButton.setIconSize(styleExtensions.SIDEBAR_ICON_SIZE)
-		self.saveButton = QPushButton("Save", self)
-		self.saveButton.setIcon(icons.Icon("save"))
-		self.saveButton.setIconSize(styleExtensions.SIDEBAR_ICON_SIZE)
-		newButton = QPushButton("New", self)
-		newButton.setIcon(icons.Icon("create"))
-		newButton.setIconSize(styleExtensions.SIDEBAR_ICON_SIZE)
-		settingsButton = QPushButton("Settings", self)
-		settingsButton.setIcon(icons.Icon("settings"))
-		settingsButton.setIconSize(styleExtensions.SIDEBAR_ICON_SIZE)
 
 		configPagesScrollArea 	= QScrollArea()
 		configPages 			= QWidget()
@@ -51,21 +39,14 @@ class sidebar(QWidget):
 		configPagesScrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		configPagesScrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-		self.getMaxButtonSize(menuButton)
-		self.getMaxButtonSize(self.saveButton)
-		self.getMaxButtonSize(newButton)
-		self.getMaxButtonSize(settingsButton)
-		self.pageButtons.append((menuButton, menuButton.text(), True))
-		self.pageButtons.append((self.saveButton, self.saveButton.text(), True))
-		self.pageButtons.append((newButton, newButton.text(), True))
-		self.pageButtons.append((settingsButton, settingsButton.text(), True))
-		self.sidebar_layout.addWidget(menuButton)
+		self._addMenuButton("Hide", "menu", self.toggleSidebar)
 		self.sidebar_layout.addWidget(SeperatorLine(self))
 		self.sidebar_layout.addWidget(configPagesScrollArea)
 		self.sidebar_layout.addWidget(SeperatorLine(self))
-		self.sidebar_layout.addWidget(newButton)
-		self.sidebar_layout.addWidget(self.saveButton)
-		self.sidebar_layout.addWidget(settingsButton)
+		self._addMenuButton("New", "create")
+		self.saveButton 	= self._addMenuButton("Save", "save")
+		self.generateButton = self._addMenuButton("Generate", "sync")
+		self._addMenuButton("Settings", "settings")
 
 		self.numStaticButtons 	= self.sidebar_layout.count() - 1
 		self.current_index      = 0
@@ -84,6 +65,18 @@ class sidebar(QWidget):
 
 		self.setMaximumWidth(self.collapsedWidth)
 		self.setMinimumWidth(self.collapsedWidth)
+
+	def _addMenuButton(self, text: str, icon: str, action = None):
+		if(action is not None):
+			newButton = QPushButton(text, self, clicked=action)
+		else:
+			newButton = QPushButton(text, self)
+		newButton.setIcon(icons.Icon(icon))
+		newButton.setIconSize(styleExtensions.SIDEBAR_ICON_SIZE)
+		self.getMaxButtonSize(newButton)
+		self.pageButtons.append((newButton, text, True))
+		self.sidebar_layout.addWidget(newButton)
+		return newButton
 
 	def switchSelection(self, new_selection):
 		old_selection   = self.page_layout.currentIndex()
@@ -267,3 +260,6 @@ class MainWindow(QWidget):
 
 	def save_config_to_file(self):
 		self.systemConfig.serialize()
+
+	def register_generate_callback(self, callback):
+		self.sidebar.generateButton.clicked.connect(callback)

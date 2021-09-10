@@ -142,23 +142,15 @@ class Generator():
 	__pluginList:List[GeneratorPlugins.GeneratorPlugin] = []
 
 	def __init__(self, workspace: Parser.Workspace):
-		self.total_num_generated_files = 0
 		try:
 			workspace.requireFolder(["config", "TemplateDir"])
 			workspace.requireFile(["GeneratorConfig"])
 		except AttributeError as e:
 			raise AttributeError(f"Workspace file is missing some required keys: {str(e)}")
-		try:
-			parser = Parser.ConfigParser(workspace)
-			self.__sysConfig = parser.parse()
-		except Exception as e:
-			raise Exception(f"The input config was not valid: \n{str(e)}")
-		try:
-			self.__genConfig = self.__parseGeneratorConfig(workspace, self.__sysConfig)
-		except Exception as e:
-			raise Exception(f"The generator config was not valid: \n{str(e)}")
+		self.__workspace = workspace
 
 	def __parseGeneratorConfig(self, workspace: Parser.Workspace, SysConfig: configTypes.Configuration):
+		self.total_num_generated_files = 0
 		filepath = workspace.GeneratorConfig
 		with open(filepath, "r") as file:
 			jsonData = json.load(file)
@@ -229,11 +221,21 @@ class Generator():
 		for plugin in self.__pluginList:
 			plugin.postGeneration(file_paths)
 
-	def generate(self):
-		self.__callPreGenerationPluginHooks(self.__sysConfig, self.total_num_generated_files)
+	def generate(self, systemConfig: configTypes.Configuration = None):
+		if(systemConfig is None):
+			try:
+				parser 			= Parser.ConfigParser(self.__workspace)
+				systemConfig 	= parser.parse()
+			except Exception as e:
+				raise Exception(f"The input config was not valid: \n{str(e)}")
+		try:
+			self.__genConfig = self.__parseGeneratorConfig(self.__workspace, systemConfig)
+		except Exception as e:
+			raise Exception(f"The generator config was not valid: \n{str(e)}")
+		self.__callPreGenerationPluginHooks(systemConfig, self.total_num_generated_files)
 		generatedFiles = []
 		for genConf in self.__genConfig:
-			generatedFiles += genConf.generate(self.__sysConfig)
+			generatedFiles += genConf.generate(systemConfig)
 		self.__callPostGenerationPluginHooks(generatedFiles)
 
 	def registerPlugin(self, plugin: Union[GeneratorPlugins.GeneratorPlugin, List[GeneratorPlugins.GeneratorPlugin]]):
