@@ -36,7 +36,7 @@
 {% if not task.isSysJob -%}
 {% if task.isIdle -%}
 {% else -%}
-extern void {{task.name}}(void);
+extern "C" void {{task.name}}(void);
 {% endif -%}
 {% endif -%}
 {% endfor -%}
@@ -45,7 +45,7 @@ extern void {{task.name}}(void);
 {% for thread in program.programThreads -%}
 {% if thread.isIdle-%}
 {% else -%}
-extern void {{thread.name}}(void);
+extern "C" void {{thread.name}}(void);
 {% endif -%}
 {% endfor -%}
 {% endif -%}
@@ -93,7 +93,10 @@ __SEC_STOP(__{{program.name.upper()}}_INIT_SECTION_STOP)
 ** WCET macro = TASK_{{task.taskId}}_PROGRAM_{{program.programId}}_CORE_{{program.core.coreId}}_WCET
 ** Period of task in ticks = {{task.period}}
 ********************************************************************************/
-void {{task.name}}(void)
+/* @cond S */
+__SEC_START(__APPLICATION_FUNC_SECTION_START)
+/* @endcond*/
+__APPLICATION_FUNC_SECTION void {{task.name}}(void)
 {
 {% set section_name = task.name -%}
 /********************************************************************************
@@ -106,6 +109,9 @@ void {{task.name}}(void)
 ** DO NOT MODIFY THIS COMMENT !                      USER SECTION | Stop       **
 ********************************************************************************/
 };
+/* @cond S */
+__SEC_STOP(__APPLICATION_FUNC_SECTION_STOP)
+/* @endcond*/
 {% endif -%}
 {% endif -%}
 {% endfor -%}
@@ -117,7 +123,10 @@ void {{task.name}}(void)
 ** Thread ID macro = THREAD_{{thread.threadId}}_PROGRAM_{{program.programId}}_CORE_{{program.core.coreId}}_ID
 ** Program ID macro = PROGRAM_{{program.programId}}_CORE_{{program.core.coreId}}_ID
 ********************************************************************************/
-void {{thread.name}}(void)
+/* @cond S */
+__SEC_START(__APPLICATION_FUNC_SECTION_START)
+/* @endcond*/
+__APPLICATION_FUNC_SECTION void {{thread.name}}(void)
 {
 {% set section_name = thread.name -%}
 /********************************************************************************
@@ -130,6 +139,9 @@ void {{thread.name}}(void)
 ** DO NOT MODIFY THIS COMMENT !                      USER SECTION | Stop       **
 ********************************************************************************/
 };
+/* @cond S */
+__SEC_STOP(__APPLICATION_FUNC_SECTION_STOP)
+/* @endcond*/
 {% endif -%}
 {% endfor -%}
 {% endif -%}

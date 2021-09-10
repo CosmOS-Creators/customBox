@@ -63,15 +63,15 @@
 ********************************************************************************/
 {% set ns = namespace(index=0) -%}
 {{"\n"}}{% for item in model.spinlocks -%}
-#define SPINLOCK_{{item.spinlockId}}_ID                      (BitWidthType){{item.spinlockId}}    /* Spinlock identificator */
+#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identificator */
 {% set ns.index = ns.index + 1 -%}
 {% endfor -%}
 {% for item in model.buffers -%}
 {% if item.isInterCore -%}
-#define SPINLOCK_{{item.spinlockId}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identificator */
+#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identificator */
 {% set ns.index = ns.index + 1 -%}
 {% if item.isDoubleBuffer -%}
-#define SPINLOCK_{{item.spinlockId}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identificator */
+#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identificator */
 {% set ns.index = ns.index + 1 -%}
 {% endif -%}
 {% endif -%}
