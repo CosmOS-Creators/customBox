@@ -77,6 +77,13 @@ IS_INITIALIZED_TO
 {{"\t\t"}}SPINLOCK_TRYSPINLOCK,
 {{"\t\t"}}SPINLOCK_RELEASESPINLOCK,
 {% endfor -%}
+{% for item in model.programs -%}
+{% if item.heapSpinlockId != None -%}
+{{"\t\t"}}SPINLOCK_GETSPINLOCK,
+{{"\t\t"}}SPINLOCK_TRYSPINLOCK,
+{{"\t\t"}}SPINLOCK_RELEASESPINLOCK,
+{% endif -%}
+{% endfor -%}
 {% for item in model.buffers -%}
 {{"\t\t"}}BUFFER_READARRAY,
 {{"\t\t"}}BUFFER_WRITEARRAY,
@@ -99,6 +106,13 @@ IS_INITIALIZED_TO
 {{"\t\t"}}SPINLOCK_{{item.spinlockId}}_ID,
 {{"\t\t"}}SPINLOCK_{{item.spinlockId}}_ID,
 {{"\t\t"}}SPINLOCK_{{item.spinlockId}}_ID,
+{% endfor -%}
+{% for item in model.programs -%}
+{% if item.heapSpinlockId != None -%}
+{{"\t\t"}}SPINLOCK_{{item.heapSpinlockId}}_ID,
+{{"\t\t"}}SPINLOCK_{{item.heapSpinlockId}}_ID,
+{{"\t\t"}}SPINLOCK_{{item.heapSpinlockId}}_ID,
+{% endif -%}
 {% endfor -%}
 {% for item in model.buffers -%}
 {{"\t\t"}}BUFFER_{{item.bufferId}}_ID,
