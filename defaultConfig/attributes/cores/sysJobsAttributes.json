@@ -1,6 +1,13 @@
 {
 	"version": "1.1.0",
-	"elements": {},
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"sys_jobs": {
+			"view_type": "tabbed",
+			"tab_label": "Sys Jobs",
+			"tab_icon": "work_outline"
+		}
+	},
 	"attributes": {
 		"tickMultiplicator": {
 			"type": "int",
@@ -25,12 +32,5 @@
 			"placeholder": true
 		}
 	},
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"sys_jobs": {
-			"view_type": "tabbed",
-			"tab_label": "Sys Jobs",
-			"tab_icon": "work_outline"
-		}
-	}
+	"elements": {}
 }

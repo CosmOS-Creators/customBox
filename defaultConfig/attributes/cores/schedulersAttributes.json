@@ -1,6 +1,13 @@
 {
 	"version": "1.1.0",
-	"elements": {},
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"schedulers": {
+			"view_type": "tabbed",
+			"tab_label": "Schedulers",
+			"tab_icon": "history_toggle_off"
+		}
+	},
 	"attributes": {
 		"hyperTick": {
 			"type": "int",
@@ -47,12 +54,5 @@
 			"placeholder": true
 		}
 	},
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"schedulers": {
-			"view_type": "tabbed",
-			"tab_label": "Schedulers",
-			"tab_icon": "history_toggle_off"
-		}
-	}
+	"elements": {}
 }

@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import re
 import Parser.ConfigTypes 	as ConfigTypes
 import Parser.helpers		as helpers
@@ -120,10 +121,10 @@ class AttributeType():
 		return data
 
 	def _get_serialization_specifics(self):
-		return dict()
+		return OrderedDict()
 
 	def serialize_attribute(self):
-		attributeDef = dict()
+		attributeDef = OrderedDict()
 		attributeDef[const.TYPE_KEY] = self.type
 		if(self.label):
 			attributeDef[const.LABEL_KEY] = self.label
@@ -178,7 +179,7 @@ class StringType(AttributeType):
 
 	@overrides(AttributeType)
 	def _get_serialization_specifics(self):
-		specifics = dict()
+		specifics = OrderedDict()
 		if(self.validation is not None):
 			specifics[const.VALIDATION_KEY] = self.validation
 		return specifics
@@ -226,7 +227,7 @@ class IntType(AttributeType):
 
 	@overrides(AttributeType)
 	def _get_serialization_specifics(self):
-		specifics = dict()
+		specifics = OrderedDict()
 		if(self.min is not None):
 			specifics[const.MIN_KEY] = self.min
 		if(self.max is not None):
@@ -316,7 +317,7 @@ class ReferenceListType(AttributeType):
 
 	@overrides(AttributeType)
 	def _get_serialization_specifics(self):
-		specifics = dict()
+		specifics = OrderedDict()
 		if(self.elements is not None):
 			elements_str = list()
 			for elementLink in self.elements:
@@ -415,7 +416,7 @@ class SelectionType(AttributeType):
 
 	@overrides(AttributeType)
 	def _get_serialization_specifics(self):
-		specifics = dict()
+		specifics = OrderedDict()
 		if(self.elements is not None):
 			specifics[const.ELEMENTS_LIST_KEY] = self.elements
 		return specifics
@@ -469,7 +470,7 @@ class SliderType(IntType):
 
 	@overrides(AttributeType)
 	def _get_serialization_specifics(self):
-		specifics = dict()
+		specifics = OrderedDict()
 		if(self.min is not None):
 			specifics[const.MIN_KEY] = self.min
 		if(self.max is not None):

@@ -10,6 +10,7 @@ from Parser.helpers 			import overrides
 import Parser.AttributeTypes 	as AttributeTypes
 import Parser.constants			as const
 import json
+from collections 				import OrderedDict
 
 def formatConfig(config: Configuration, indent: int = 1):
 	stringRepresentation = ""
@@ -223,6 +224,16 @@ class Configuration(dynamicObject, serializer.serializeable):
 	def serialize(self):
 		serializer.serialize(self)
 
+	def clear_placeholders(self):
+		for subconfig in self.configs.values():
+			subconfig: Subconfig
+			for element in subconfig.elements.values():
+				element: ConfigElement
+				for attribute in element.attributeInstances.values():
+					attribute: AttributeInstance
+					if(attribute.attributeDefinition.is_placeholder):
+						attribute.value = attribute.attributeDefinition.getDefault()
+
 	def _serialize(self):
 		for subconfig in self.configs.values():
 			Data = serializer.serialize(subconfig)
@@ -307,7 +318,7 @@ class Subconfig(dynamicObject, serializer.serializeable):
 		return data
 
 	def _serialize_attributes(self):
-		attributes = dict()
+		attributes = OrderedDict()
 		for attribute in self.parent.attribute_lookup.values():
 			attribute: AttributeTypes.AttributeType
 			if(attribute.globalID.config == self.link.config):
@@ -317,25 +328,25 @@ class Subconfig(dynamicObject, serializer.serializeable):
 
 	@overrides(serializer.serializeable)
 	def _serialize(self):
-		data = dict()
-		data[const.VERSION_KEY] 	= str(self.__file_format_version)
+		data = OrderedDict()
 		serialized_elements 		= self._serialize_elements()
-		data[const.ELEMENTS_KEY] 	= serialized_elements
-		data[const.ATTRIBUTES_KEY] 	= self._serialize_attributes()
+		data[const.VERSION_KEY] 	= str(self.__file_format_version)
 		data[const.CHECKSUM_KEY] 	= self.__get_dict_hash(serialized_elements)
 		if(self.__ui_page_assignment is not None):
-			data[const.UI_KEY] = dict()
+			data[const.UI_KEY] = OrderedDict()
 			if(type(self.__ui_page_assignment) is str):
 				ui_page = self.__ui_page_assignment
 			else:
 				ui_page = self.__ui_page_assignment.id
 			data[const.UI_KEY][const.UI_USE_PAGE_KEY] = ui_page
-		ui_page_definitions = dict()
+		ui_page_definitions = OrderedDict()
 		for ui_assignment in self.parent.UiConfig.pages.values():
 			if(ui_assignment.origin_subconfig == self):
 				ui_page_definitions[ui_assignment.id] = serializer.serialize(ui_assignment)
 		if(len(ui_page_definitions) > 0):
 			data[const.UI_PAGE_KEY] = ui_page_definitions
+		data[const.ATTRIBUTES_KEY] 	= self._serialize_attributes()
+		data[const.ELEMENTS_KEY] 	= serialized_elements
 		return data
 
 	def resolveUiAssignment(self):

@@ -1,6 +1,13 @@
 {
 	"version": "1.1.0",
-	"elements": {},
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"scheduler_entries": {
+			"view_type": "tabbed",
+			"tab_label": "Scheduler entries",
+			"tab_icon": "more_time"
+		}
+	},
 	"attributes": {
 		"executionTick": {
 			"type": "int",
@@ -18,12 +25,5 @@
 			"placeholder": true
 		}
 	},
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"scheduler_entries": {
-			"view_type": "tabbed",
-			"tab_label": "Scheduler entries",
-			"tab_icon": "more_time"
-		}
-	}
+	"elements": {}
 }

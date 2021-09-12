@@ -1,13 +1,5 @@
 {
 	"version": "1.1.0",
-	"elements": {},
-	"attributes": {
-		"state": {
-			"type": "bool",
-			"label": "State of the switch",
-			"tooltip": "Switch for the specific feature of operating system"
-		}
-	},
 	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
 	"ui_page": {
 		"switches": {
@@ -15,5 +7,13 @@
 			"tab_label": "Switches",
 			"tab_icon": "toggle_on"
 		}
-	}
+	},
+	"attributes": {
+		"state": {
+			"type": "bool",
+			"label": "State of the switch",
+			"tooltip": "Switch for the specific feature of operating system"
+		}
+	},
+	"elements": {}
 }

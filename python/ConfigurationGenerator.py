@@ -16,6 +16,7 @@ class configGenerator():
 		self.__generator.registerPlugin([self.loggerPlugin, self.sectionPlugin, self.logicRunnerPlugin, self.FileCleaner, self.timestampPlugin])
 
 	def generate(self, config: Parser.ConfigTypes.Configuration):
+		config.clear_placeholders()
 		self.__generator.generate(config)
 
 	def generate_from_files(self):

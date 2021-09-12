@@ -1,6 +1,13 @@
 {
 	"version": "1.1.0",
-	"elements": {},
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"cores": {
+			"view_type": "carded",
+			"tab_label": "Cores",
+			"tab_icon": "memory"
+		}
+	},
 	"attributes": {
 		"CoreName": {
 			"type": "string",
@@ -69,12 +76,5 @@
 			"inherit": "memoriesAttributes/:memory"
 		}
 	},
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"cores": {
-			"view_type": "carded",
-			"tab_label": "Cores",
-			"tab_icon": "memory"
-		}
-	}
+	"elements": {}
 }

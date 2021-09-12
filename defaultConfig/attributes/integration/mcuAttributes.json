@@ -1,6 +1,13 @@
 {
 	"version": "1.1.0",
-	"elements": {},
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"mcu": {
+			"view_type": "tabbed",
+			"tab_label": "MCU settings",
+			"tab_icon": "developer_board"
+		}
+	},
 	"attributes": {
 		"mcuName": {
 			"type": "string",
@@ -25,12 +32,5 @@
 			"validation": ""
 		}
 	},
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"mcu": {
-			"view_type": "tabbed",
-			"tab_label": "MCU settings",
-			"tab_icon": "developer_board"
-		}
-	}
+	"elements": {}
 }

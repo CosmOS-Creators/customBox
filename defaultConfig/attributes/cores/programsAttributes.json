@@ -1,6 +1,13 @@
 {
 	"version": "1.1.0",
-	"elements": {},
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"programs": {
+			"view_type": "tabbed",
+			"tab_label": "Programs",
+			"tab_icon": "book"
+		}
+	},
 	"attributes": {
 		"name": {
 			"type": "string",
@@ -45,22 +52,15 @@
 			"type": "referenceList",
 			"placeholder": true
 		},
+		"heapSpinlockId": {
+			"type": "int",
+			"placeholder": true
+		},
 		"memory": {
 			"label": "Memory location of the Program",
 			"tooltip": "Memory location of the Program, all the program data will be stored here",
 			"inherit": "memoriesAttributes/:memory"
-		},
-		"heapSpinlockId": {
-			"placeholder": true,
-			"type": "int"
 		}
 	},
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"programs": {
-			"view_type": "tabbed",
-			"tab_label": "Programs",
-			"tab_icon": "book"
-		}
-	}
+	"elements": {}
 }
