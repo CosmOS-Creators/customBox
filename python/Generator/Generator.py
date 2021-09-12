@@ -134,7 +134,8 @@ class generationElement():
 				outPath_str = str(self.__outputPath)
 				if(TARGET_PLACEHOLDER in outPath_str):
 					outPath = Path(outPath_str.replace(TARGET_PLACEHOLDER, targetValue))
-
+				if(not outPath.exists()):
+					outPath.mkdir(parents = True)
 				generatedFiles += self.injectTemplates(configDict, filename, outPath)
 		return generatedFiles
 
@@ -193,8 +194,6 @@ class Generator():
 				outputPath = Path(workspace.resolvePath(config[OUTPUT_DIR_KEY]))
 			except TypeError as e:
 				raise TypeError(f"Error in generator config: {str(e)}")
-			if(not outputPath.exists()):
-				outputPath.mkdir(parents = True)
 			newElement = generationElement(outputPath, parsedTemplates)
 			newElement.registerHooks(self.__callPreFileGenerationPluginHooks, self.__callPostFileGenerationPluginHooks)
 			if(TARGET_KEY in config):
