@@ -79,6 +79,16 @@
 #define SYSCALL_RELEASE_SPINLOCK_{{item.spinlockId}}_ID (BitWidthType){{ns.index}}   /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
 {% set ns.index = ns.index + 1 -%}
 {% endfor -%}
+{% for item in model.programs -%}
+{% if item.heapSpinlockId != None -%}
+#define SYSCALL_GET_SPINLOCK_{{item.heapSpinlockId}}_ID (BitWidthType){{ns.index}}   /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
+{% set ns.index = ns.index + 1 -%}
+#define SYSCALL_TRY_SPINLOCK_{{item.heapSpinlockId}}_ID (BitWidthType){{ns.index}}   /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
+{% set ns.index = ns.index + 1 -%}
+#define SYSCALL_RELEASE_SPINLOCK_{{item.heapSpinlockId}}_ID (BitWidthType){{ns.index}}   /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
+{% set ns.index = ns.index + 1 -%}
+{% endif -%}
+{% endfor -%}
 {% for item in model.buffers -%}
 #define SYSCALL_READ_BUFFER_{{item.bufferId}}_ID (BitWidthType){{ns.index}}   /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
 {% set ns.index = ns.index + 1 -%}

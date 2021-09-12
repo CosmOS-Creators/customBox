@@ -196,13 +196,13 @@ __SEC_START(__APPLICATION_FUNC_SECTION_START)
 __APPLICATION_FUNC_SECTION void wrapped_{{task.name}}(void)
 {
     {% if task.isSysJob -%}
-    sysCalls_os(SYSCALL_SYSJOBS_DISPATCHER);
-    sysCalls_os(SYSCALL_SCHEDULABLE_SETEXECUTIONSTATETOFINISHED);
+    sysCalls_bitWidthType_ret_void(SYSCALL_SYSJOBS_DISPATCHER);
+    sysCalls_bitWidthType_ret_void(SYSCALL_SCHEDULABLE_SETEXECUTIONSTATETOFINISHED);
     {% elif task.isIdle -%}
     {{task.name}}();
     {% else -%}
     {{task.name}}();
-    sysCalls_os(SYSCALL_SCHEDULABLE_SETEXECUTIONSTATETOFINISHED);
+    sysCalls_bitWidthType_ret_void(SYSCALL_SCHEDULABLE_SETEXECUTIONSTATETOFINISHED);
     {% endif -%}
     for(;;);
 };

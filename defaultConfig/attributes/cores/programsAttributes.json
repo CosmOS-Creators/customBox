@@ -49,6 +49,10 @@
 			"label": "Memory location of the Program",
 			"tooltip": "Memory location of the Program, all the program data will be stored here",
 			"inherit": "memoriesAttributes/:memory"
+		},
+		"heapSpinlockId": {
+			"placeholder": true,
+			"type": "int"
 		}
 	},
 	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
