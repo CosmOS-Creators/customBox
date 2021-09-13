@@ -140,15 +140,15 @@ extern CosmOS_SchedulableVariableType ThreadsSchedulablesVar[THREAD_NUM];
 ********************************************************************************/
 {% for item in model.programs -%}
 {% for task in item.programTasks -%}
-__APPLICATION_FUNC_SECTION void {{task.name}}(void);
-__APPLICATION_FUNC_SECTION void wrapped_{{task.name}}(void);
+__APPLICATION_FUNC_SECTION_{{item.core.CoreName}} void {{task.name}}(void);
+__APPLICATION_FUNC_SECTION_{{item.core.CoreName}} void wrapped_{{task.name}}(void);
 {% endfor -%}
 {% endfor -%}
 
 {% for item in model.programs -%}
 {% for thread in item.programThreads -%}
-__APPLICATION_FUNC_SECTION void {{thread.name}}(void);
-__APPLICATION_FUNC_SECTION void wrapped_{{thread.name}}(void);
+__APPLICATION_FUNC_SECTION_{{item.core.CoreName}} void {{thread.name}}(void);
+__APPLICATION_FUNC_SECTION_{{item.core.CoreName}} void wrapped_{{thread.name}}(void);
 {% endfor -%}
 {% endfor -%}
 /********************************************************************************
@@ -199,11 +199,11 @@ __APPLICATION_FUNC_SECTION void wrapped_{{thread.name}}(void);
 {% for item in model.programs -%}
 {% for task in item.programTasks -%}
 /* @cond S */
-__SEC_START(__APPLICATION_FUNC_SECTION_START)
+__SEC_START(__APPLICATION_FUNC_SECTION_START_{{item.core.CoreName}})
 /* @endcond*/
-__APPLICATION_FUNC_SECTION __WEAK void {{task.name}}(void){};
+__APPLICATION_FUNC_SECTION_{{item.core.CoreName}} __WEAK void {{task.name}}(void){};
 /* @cond S */
-__SEC_STOP(__APPLICATION_FUNC_SECTION_STOP)
+__SEC_STOP(__APPLICATION_FUNC_SECTION_STOP_{{item.core.CoreName}})
 /* @endcond*/
 {% endfor -%}
 {% endfor -%}
@@ -211,11 +211,11 @@ __SEC_STOP(__APPLICATION_FUNC_SECTION_STOP)
 {% for item in model.programs -%}
 {% for thread in item.programThreads -%}
 /* @cond S */
-__SEC_START(__APPLICATION_FUNC_SECTION_START)
+__SEC_START(__APPLICATION_FUNC_SECTION_START_{{item.core.CoreName}})
 /* @endcond*/
-__APPLICATION_FUNC_SECTION __WEAK void {{thread.name}}(void){};
+__APPLICATION_FUNC_SECTION_{{item.core.CoreName}} __WEAK void {{thread.name}}(void){};
 /* @cond S */
-__SEC_STOP(__APPLICATION_FUNC_SECTION_STOP)
+__SEC_STOP(__APPLICATION_FUNC_SECTION_STOP_{{item.core.CoreName}})
 /* @endcond*/
 {% endfor -%}
 {% endfor -%}

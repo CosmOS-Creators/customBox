@@ -20,6 +20,11 @@
 			"label": "Size of the current partition",
 			"tooltip": "Size in bytes for the current partition"
 		},
+		"boot": {
+			"type": "bool",
+			"label": "Boot",
+			"tooltip": "Section need to be loaded in to the RAM"
+		},
 		"lowAddress": {
 			"type": "int",
 			"placeholder": true

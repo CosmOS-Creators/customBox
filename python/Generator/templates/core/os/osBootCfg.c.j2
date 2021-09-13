@@ -58,21 +58,27 @@
 extern unsigned char _s_program_{{item.name}}_section_init[];
 {% endfor -%}
 {% for item in model.osPartitions -%}
+{% if item.boot -%}
 extern unsigned char _s_os_section_{{item.name}}[];
+{% endif -%}
 {% endfor -%}
 
 {% for item in model.programs -%}
 extern unsigned char _e_program_{{item.name}}_section_init[];
 {% endfor -%}
 {% for item in model.osPartitions -%}
+{% if item.boot -%}
 extern unsigned char _e_os_section_{{item.name}}[];
+{% endif -%}
 {% endfor -%}
 
 {% for item in model.programs -%}
 extern unsigned char _flash_program_{{item.name}}_section_init[];
 {% endfor -%}
 {% for item in model.osPartitions -%}
+{% if item.boot -%}
 extern unsigned char _flash_os_section_{{item.name}}_start[];
+{% endif -%}
 {% endfor -%}
 
 {{"\n"}}{% for item in model.cores -%}
@@ -88,11 +94,13 @@ IS_INITIALIZED_TO
 {% endfor -%}
 {% if item.bootOs -%}
 {% for osPartition in model.osPartitions -%}
+{% if osPartition.boot -%}
 {{"\t\t"}}{
         _s_os_section_{{osPartition.name}},
         _e_os_section_{{osPartition.name}},
         _flash_os_section_{{osPartition.name}}_start,
     },
+{% endif -%}
 {% endfor -%}
 {% endif -%}
 };

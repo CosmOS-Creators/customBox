@@ -24,10 +24,12 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 							'cores/:coreScheduler',
 							'cores/:coreSysJobHyperTick',
 							'cores/:corePrograms',
+							'cores/:cpu',
 							'programs/:programId',
 							'programs/:core',
 							'programs/:programThreads',
 							'programs/:programTasks',
+							'programs/:heapSpinlockId',
 							'tasks/:program',
 							'tasks/:taskId',
 							'tasks/:uniqueId',
@@ -44,9 +46,13 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 							'scheduleTableEntries/:entryId',
 							'scheduleTableEntries/:executionTick',
 							'schedulers/:table',
+							'schedulers/:core',
+							'schedulers/:maxTimerTick',
 							'spinlocks/:spinlockId',
 							'buffers/:spinlockId',
 							'buffers/:isInterCore',
+							'cpu/:systemTimerWidth',
+							'cpu/:systemTimerTickCount',
 							])
 		except Exception as e:
 			raise Exception(f"Initializer is missing required attribute, more info : {str(e)}")
@@ -54,6 +60,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 		self.maxUniqueId = None
 
 		self.cores = config.cores									#type: List[ConfigElement]
+		self.cpus = config.cpu										#type: List[ConfigElement]
 		self.programs = config.programs								#type: List[ConfigElement]
 		self.buffers = config.buffers								#type: List[ConfigElement]
 		self.tasks = config.tasks									#type: List[ConfigElement]
@@ -74,6 +81,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 		self.assigneSchedulerEntries()
 		self.assigneBufferSpinlocks()
 		self.assigneHeapSpinlocks()
+		self.assigneMaxTimerTick()
 
 	def assigneUniqueId(self):
 		uniqueId = 0
@@ -183,3 +191,9 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 				program.heapSpinlockId = self.highestSpinlockId
 			else:
 				program.heapSpinlockId = None
+
+	def assigneMaxTimerTick(self):
+		for scheduler in self.schedulers:
+			cpu = [cpu for cpu
+			in [core.cpu for core in self.cores if scheduler.core == core]][0]
+			scheduler.maxTimerTick = (2**cpu.systemTimerWidth - 1) / cpu.systemTimerTickCount

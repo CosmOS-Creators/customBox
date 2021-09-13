@@ -70,6 +70,8 @@
 #define LAST_TO_FIRST_TASK_TICK_SCHEDULER_{{item.coreId}}     (BitWidthType){{scheduler.lastToFistTaskTicks}}        /* Last to first task for scheduler {{item.coreId}} in ticks */
 #define SYNCTICKS_SCHEDULER_{{item.coreId}}                  (BitWidthType){{scheduler.syncTicks}}       /* SyncTicks for scheduler {{item.coreId}} in ticks */
 #define FIRST_SYNC_TASK_STARTTICK_SCHEDULER_{{item.coreId}}                  (BitWidthType)(BitWidthType){{scheduler.firstSyncTaskStartTick}}        /* FirstSyncTaskStartTick for scheduler {{item.coreId}} in ticks */
+#define MAX_TIMER_TICK_SCHEDULER_{{item.coreId}}		(BitWidthType){{scheduler.maxTimerTick}}        /* MaxTimerTick for scheduler {{item.coreId}} in ticks */
+#define TIMER_TICK_COUNT_SCHEDULER_{{item.coreId}}		(BitWidthType){{item.cpu.systemTimerTickCount}}        /* TimerTickCount for scheduler {{item.coreId}} in ticks */
 {% endfor -%}
 {% endfor -%}
 /********************************************************************************

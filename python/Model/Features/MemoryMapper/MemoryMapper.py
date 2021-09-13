@@ -30,6 +30,10 @@ class MemoryMapperLogic(logicRunnerPlugin.logicRunner):
 							'cores/:unmappedDataMemory',
 							'cores/:unmappedDataLowAddress',
 							'cores/:unmappedDataHighAddress',
+							'cores/:userCodeSize',
+							'cores/:userCodeMemory',
+							'cores/:userCodeLowAddress',
+							'cores/:userCodeHighAddress',
 							'cores/:cpu',
 							'tasks/:stackSize',
 							'tasks/:name',
@@ -57,12 +61,16 @@ class MemoryMapperLogic(logicRunnerPlugin.logicRunner):
 
 		self.assignFreeChunks()
 
+		#must be executed first to place startup code first to the flash - requirement by stm
+		self.mapStaticData()
+
 		self.mapKernelStacks()
 		self.mapOsData()
 		self.mapTasksStacks()
 		self.mapThreadStacks()
 		self.mapProgramData()
 		self.mapUnmappedData()
+		self.mapUserCode()
 
 	def assignFreeChunks(self):
 		for memory in self.memories:
@@ -145,6 +153,28 @@ class MemoryMapperLogic(logicRunnerPlugin.logicRunner):
 				else:
 					core.unmappedDataLowAddress = lowAddress
 					core.unmappedDataHighAddress = highAddress
+
+	def mapUserCode(self):
+		for core in self.cores:
+			if core.userCodeSize:
+				lowAddress,highAddress = self.allocateMemory(core.userCodeMemory,core.userCodeSize)
+				if not lowAddress or not highAddress:
+					raise ValueError(f"User code for core {core.name} with size :{core.userCodeSize} bytes cannot be allocated in the {core.userCodeMemory}\
+									cause it has only {self.returnFreeBytes(core.userCodeMemory)} free bytes")
+				else:
+					core.userCodeLowAddress = lowAddress
+					core.userCodeHighAddress = highAddress
+
+	def mapStaticData(self):
+		for core in self.cores:
+			if core.staticDataSize:
+				lowAddress,highAddress = self.allocateMemory(core.staticDataMemory,core.staticDataSize)
+				if not lowAddress or not highAddress:
+					raise ValueError(f"Unmapped code for core {core.name} with size :{core.staticDataSize} bytes cannot be allocated in the {core.staticDataMemory}\
+									cause it has only {self.returnFreeBytes(core.staticDataMemory)} free bytes")
+				else:
+					core.staticDataLowAddress = lowAddress
+					core.staticDataHighAddress = highAddress
 
 	def allocateMemory(self, memory, size):
 		lowAddress = None

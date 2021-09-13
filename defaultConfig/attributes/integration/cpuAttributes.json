@@ -19,7 +19,8 @@
 		},
 		"systemTimerTickCount": {
 			"type": "int",
-			"label": "System timer one tick count"
+			"label": "System timer one tick count",
+			"tooltip": "Defines load value of the one tick for the system timer"
 		},
 		"memoryProtection": {
 			"type": "bool",

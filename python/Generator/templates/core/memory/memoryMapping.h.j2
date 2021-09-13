@@ -63,10 +63,11 @@
     #define __OS_FUNC_SECTION       __attribute__((section(".os_funcs")))
     #define __OS_FUNC_SECTION_START
     #define __OS_FUNC_SECTION_STOP
-
-    #define __APPLICATION_FUNC_SECTION       __attribute__((section(".application_funcs")))
-    #define __APPLICATION_FUNC_SECTION_START
-    #define __APPLICATION_FUNC_SECTION_STOP
+{% for item in model.cores %}
+    #define __APPLICATION_FUNC_SECTION_{{item.CoreName.upper()}}       __attribute__((section(".application_funcs_{{item.CoreName}}")))
+    #define __APPLICATION_FUNC_SECTION_START_{{item.CoreName.upper()}}
+    #define __APPLICATION_FUNC_SECTION_STOP_{{item.CoreName.upper()}}
+{% endfor -%}
 
 {% for item in model.osPartitions %}
     #define __OS_{{item.name.upper()}}_SECTION        __attribute__((section(".os_{{item.name}}")))
@@ -87,10 +88,11 @@
     #define __OS_FUNC_SECTION
     #define __OS_FUNC_SECTION_START
     #define __OS_FUNC_SECTION_STOP
-
-    #define __APPLICATION_FUNC_SECTION
-    #define __APPLICATION_FUNC_SECTION_START
-    #define __APPLICATION_FUNC_SECTION_STOP
+{% for item in model.cores %}
+    #define __APPLICATION_FUNC_SECTION_{{item.CoreName.upper()}}
+    #define __APPLICATION_FUNC_SECTION_START_{{item.CoreName.upper()}}
+    #define __APPLICATION_FUNC_SECTION_STOP_{{item.CoreName.upper()}}
+{% endfor -%}
 
 {% for item in model.osPartitions %}
     #define __OS_{{item.name.upper()}}_SECTION

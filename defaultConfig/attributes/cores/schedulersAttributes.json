@@ -52,6 +52,10 @@
 		"table": {
 			"type": "referenceList",
 			"placeholder": true
+		},
+		"maxTimerTick": {
+			"type": "int",
+			"placeholder": true
 		}
 	},
 	"elements": {}
