@@ -3,7 +3,7 @@
 	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
 	"ui_page": {
 		"switches": {
-			"view_type": "tabbed",
+			"view_type": "carded",
 			"tab_label": "Switches",
 			"tab_icon": "toggle_on"
 		}
