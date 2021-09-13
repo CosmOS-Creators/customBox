@@ -94,9 +94,9 @@ __SEC_STOP(__{{program.name.upper()}}_INIT_SECTION_STOP)
 ** Period of task in ticks = {{task.period}}
 ********************************************************************************/
 /* @cond S */
-__SEC_START(__APPLICATION_FUNC_SECTION_START)
+__SEC_START(__APPLICATION_FUNC_SECTION_START_{{program.core.CoreName}})
 /* @endcond*/
-__APPLICATION_FUNC_SECTION void {{task.name}}(void)
+__APPLICATION_FUNC_SECTION_{{program.core.CoreName}} void {{task.name}}(void)
 {
 {% set section_name = task.name -%}
 /********************************************************************************
@@ -110,7 +110,7 @@ __APPLICATION_FUNC_SECTION void {{task.name}}(void)
 ********************************************************************************/
 };
 /* @cond S */
-__SEC_STOP(__APPLICATION_FUNC_SECTION_STOP)
+__SEC_STOP(__APPLICATION_FUNC_SECTION_STOP_{{program.core.CoreName}})
 /* @endcond*/
 {% endif -%}
 {% endif -%}
@@ -124,9 +124,9 @@ __SEC_STOP(__APPLICATION_FUNC_SECTION_STOP)
 ** Program ID macro = PROGRAM_{{program.programId}}_CORE_{{program.core.coreId}}_ID
 ********************************************************************************/
 /* @cond S */
-__SEC_START(__APPLICATION_FUNC_SECTION_START)
+__SEC_START(__APPLICATION_FUNC_SECTION_START_{{program.core.CoreName}})
 /* @endcond*/
-__APPLICATION_FUNC_SECTION void {{thread.name}}(void)
+__APPLICATION_FUNC_SECTION_{{program.core.CoreName}} void {{thread.name}}(void)
 {
 {% set section_name = thread.name -%}
 /********************************************************************************
@@ -140,7 +140,7 @@ __APPLICATION_FUNC_SECTION void {{thread.name}}(void)
 ********************************************************************************/
 };
 /* @cond S */
-__SEC_STOP(__APPLICATION_FUNC_SECTION_STOP)
+__SEC_STOP(__APPLICATION_FUNC_SECTION_STOP_{{program.core.CoreName}})
 /* @endcond*/
 {% endif -%}
 {% endfor -%}

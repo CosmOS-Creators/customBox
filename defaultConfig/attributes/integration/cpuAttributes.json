@@ -20,7 +20,8 @@
 		},
 		"systemTimerTickCount": {
 			"label": "System timer one tick count",
-			"type": "int"
+			"type": "int",
+			"tooltip": "Defines load value of the one tick for the system timer"
 		},
 		"memoryProtection": {
 			"label": "MPU engine available",

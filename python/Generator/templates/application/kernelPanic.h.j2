@@ -20,8 +20,8 @@
 /********************************************************************************
 **                           START OF THE HEADER FILE                          **
 ********************************************************************************/
-#ifndef __USERKERNELPANICHOOK_H__
-#define __USERKERNELPANICHOOK_H__
+#ifndef __USERKERNELPANICHOOK_{{core.CoreName.upper()}}_H__
+#define __USERKERNELPANICHOOK_{{core.CoreName.upper()}}_H__
 /********************************************************************************
 **                         START OF C++ SUPPORT SECTION                        **
 ********************************************************************************/
@@ -38,7 +38,7 @@
 /********************************************************************************
 **                            Include Files | Stop                             **
 ********************************************************************************/
-{% set section_name = "userKernelPanicHook" -%}
+{% set section_name = filename + '_includeFiles' -%}
 /********************************************************************************
 ** DO NOT MODIFY THIS COMMENT !                      USER SECTION | Start      **
 ** start_name ={{section_name}}
@@ -52,7 +52,7 @@
 ** DO NOT MODIFY THIS COMMENT !                 GENERATED SECTION | Start      **
 ** FUNCTION DECLARATION
 ********************************************************************************/
-__APPLICATION_FUNC_SECTION void userKernelPanicHook(void);
+__APPLICATION_FUNC_SECTION_{{core.CoreName.upper()}} void userKernelPanicHook_{{core.CoreName}}(void);
 /********************************************************************************
 ** DO NOT MODIFY THIS COMMENT !         	    GENERATED SECTION | Stop       **
 ** FUNCTION DECLARATION

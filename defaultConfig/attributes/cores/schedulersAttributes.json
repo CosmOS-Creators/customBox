@@ -48,6 +48,10 @@
 		"table": {
 			"placeholder": true,
 			"type": "referenceList"
+		},
+		"maxTimerTick": {
+			"placeholder": true,
+			"type": "int"
 		}
 	},
 

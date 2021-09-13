@@ -26,6 +26,9 @@
 #include "programCfg.h"
 #include "sysJobsCfg.h"
 #include "schedulerCfg.h"
+{% for item in model.cores -%}
+#include "userKernelPanicHook_{{item.CoreName}}.h"
+{% endfor -%}
 /********************************************************************************
 **                            Include Files | Stop                             **
 ********************************************************************************/
@@ -70,6 +73,11 @@ IS_INITIALIZED_TO
         PROGRAM_CORE_{{item.coreId}}_NUM,                         /* const BitWidthType numberOfPrograms              */
         &SchedulersCfgConst[SCHEDULER_CORE_{{item.coreId}}_ID],   /* CosmOS_SchedulerConfigurationType * scheduler       */
 		CORE_{{item.coreId}}_ID,		 /* const BitWidthType coreId       */
+		userKernelPanicHook_{{item.CoreName}},		/* const CosmOS_GenericVoidType kernelPanicHook   */
+		CORE_{{item.coreId}}_STACK_MEMORY_LOW_ADDRESS,		/* const AddressType stackMemoryLowAddress   */
+		CORE_{{item.coreId}}_STACK_MEMORY_HIGH_ADDRESS,		/* const AddressType stackMemoryHighAddress   */
+		CORE_{{item.coreId}}_CODE_MEMORY_LOW_ADDRESS,		/* const AddressType codeMemoryLowAddress   */
+		CORE_{{item.coreId}}_CODE_MEMORY_HIGH_ADDRESS,		/* const AddressType codeMemoryHighAddress   */
     },
 {% endfor -%}
 };
@@ -91,7 +99,7 @@ IS_INITIALIZED_TO
         ProgramsCore{{item.coreId}}Var,                           /* CosmOS_ProgramVariableType * programVars                */
         &SchedulersVar[SCHEDULER_CORE_{{item.coreId}}_ID],        /* CosmOS_SchedulerVariableType * scheduler                */
         BarriersCore{{item.coreId}}Var,                           /* CosmOS_BarrierVariableType * barrierVars                */
-        OS_STATE_ENUM__NOT_STARTED,                 /* CosmOS_OsState osState                                  */
+        OS_STATE_ENUM__NOT_INITIALIZED,                 /* CosmOS_OsState osState                                  */
         &SysJobsVar[CORE_{{item.coreId}}_ID],                 /* CosmOS_SysJobsVariableType * const sysJobs               */
     },
 {% endfor -%}

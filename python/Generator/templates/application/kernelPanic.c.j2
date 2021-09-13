@@ -17,8 +17,8 @@
 ** @warning Modifying user sections comments can lead to removing user code
 **          during generating of the new CosmOS configuration
 ********************************************************************************/
-#include "userKernelPanicHook.h"
-{% set section_name = "userKernelPanicHook" -%}
+#include "userKernelPanicHook_{{core.CoreName}}.h"
+{% set section_name = filename + '_includeFiles' -%}
 /********************************************************************************
 ** DO NOT MODIFY THIS COMMENT ! Include Files        USER SECTION | Start      **
 ** start_name ={{section_name}}
@@ -43,11 +43,11 @@
 ** function is called during os kernel panic
 ********************************************************************************/
 /* @cond S */
-__SEC_START(__APPLICATION_FUNC_SECTION_START)
+__SEC_START(__APPLICATION_FUNC_SECTION_START_{{core.CoreName.upper()}})
 /* @endcond*/
-__APPLICATION_FUNC_SECTION void userKernelPanicHook(void)
+__APPLICATION_FUNC_SECTION_{{core.CoreName.upper()}} void userKernelPanicHook_{{core.CoreName}}(void)
 {
-{% set section_name = "userKernelPanicHook"-%}
+{% set section_name = filename + 'func'-%}
 /********************************************************************************
 ** DO NOT MODIFY THIS COMMENT !                      USER SECTION | Start      **
 ** start_name ={{section_name}}
@@ -59,7 +59,7 @@ __APPLICATION_FUNC_SECTION void userKernelPanicHook(void)
 ********************************************************************************/
 };
 /* @cond S */
-__SEC_STOP(__APPLICATION_FUNC_SECTION_STOP)
+__SEC_STOP(__APPLICATION_FUNC_SECTION_STOP_{{core.CoreName.upper()}})
 /* @endcond*/
 /********************************************************************************
 **                           END OF THE SOURCE FILE                            **

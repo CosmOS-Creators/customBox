@@ -17,6 +17,11 @@
 			"type": "hex",
 			"tooltip": "Size in bytes for the current partition"
 		},
+		"boot": {
+			"label": "Boot",
+			"type": "bool",
+			"tooltip": "Section need to be loaded in to the RAM"
+		},
 		"lowAddress": {
 			"placeholder": true,
 			"type": "int"

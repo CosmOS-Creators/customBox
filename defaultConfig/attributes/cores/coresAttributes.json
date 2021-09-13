@@ -17,6 +17,40 @@
             "type": "bool",
             "tooltip": "Runs current core the CosmOS operating system?"
         },
+		"userCodeSize": {
+            "type": "int",
+            "label": "User code section size",
+			"tooltip": "Size of the user code section in the local core flash memory bank"
+        },
+		"userCodeMemory": {
+            "inherit": "memoriesAttributes/:memory",
+            "label": "Memory location of the user code - advised local core flash memory bank for improving performance"
+        },
+        "userCodeLowAddress": {
+            "placeholder": true,
+            "type": "int"
+        },
+        "userCodeHighAddress": {
+            "placeholder": true,
+            "type": "int"
+        },
+		"staticDataSize": {
+            "type": "int",
+            "label": "Unmapped code section size",
+			"tooltip": "Size of the static data section in the local core flash memory bank"
+        },
+		"staticDataMemory": {
+            "inherit": "memoriesAttributes/:memory",
+            "label": "Memory location of the static data - local core flash memory bank"
+        },
+        "staticDataLowAddress": {
+            "placeholder": true,
+            "type": "int"
+        },
+        "staticDataHighAddress": {
+            "placeholder": true,
+            "type": "int"
+        },
         "unmappedDataMemory": {
             "inherit": "memoriesAttributes/:memory",
             "label": "Memory location of the unmapped data"

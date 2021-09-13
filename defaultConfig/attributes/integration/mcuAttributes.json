@@ -15,7 +15,7 @@
 		"addressBitWidth": {
 			"label": "Bit width of the address bus",
 			"type": "int",
-			"tooltip": "Address bus bitwidth defined by datasheet"
+			"tooltip": "Address width defined by datasheet"
 		},
 		"architecture": {
 			"label": "Architecture",
