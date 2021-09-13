@@ -1,69 +1,75 @@
 {
-	"version": "1.0.0",
-
+	"version": "1.1.0",
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"tasks": {
+			"view_type": "tabbed",
+			"tab_label": "Tasks",
+			"tab_icon": "task_alt"
+		}
+	},
 	"attributes": {
 		"name": {
-			"label": "Name of the task",
 			"type": "string",
-			"validation": "^[A-Za-z][A-Za-z0-9_]*$",
-			"tooltip": "Name of the task, be aware that the task name is used also as a function name"
+			"label": "Name of the task",
+			"tooltip": "Name of the task, be aware that the task name is used also as a function name",
+			"validation": "^[A-Za-z][A-Za-z0-9_]*$"
 		},
 		"wcet": {
-			"label": "Worst case execution time",
 			"type": "int",
+			"label": "Worst case execution time",
+			"tooltip": "Worst case execution time in ticks",
 			"min": 0,
-			"max": 2048,
-			"tooltip": "Worst case execution time in ticks"
+			"max": 2048
 		},
 		"period": {
-			"label": "Scheduling period",
 			"type": "int",
+			"label": "Scheduling period",
+			"tooltip": "Scheduling period in ticks",
 			"min": 0,
-			"max": 2048,
-			"tooltip": "Scheduling period in ticks"
+			"max": 2048
 		},
 		"floatingPoint": {
-			"label": "Floating point",
 			"type": "bool",
+			"label": "Floating point",
 			"tooltip": "Enable floating point for the current thread"
 		},
 		"isIdle": {
-			"label": "Is the task an idle task",
 			"type": "bool",
+			"label": "Is the task an idle task",
 			"tooltip": "Is the task an idle task"
 		},
 		"isSysJob": {
-			"label": "Is the task a sysJob wrapper",
 			"type": "bool",
+			"label": "Is the task a sysJob wrapper",
 			"tooltip": "Is the task a sysJob wrapper"
 		},
 		"stackSize": {
-			"label": "stack size of the task",
 			"type": "int",
+			"label": "stack size of the task",
+			"tooltip": "Stack size of the current task",
 			"min": 0,
-			"max": 2048,
-			"tooltip": "Stack size of the current task"
+			"max": 2048
 		},
 		"uniqueId": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"program": {
 			"type": "parentReference"
 		},
 		"lowAddress": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"highAddress": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"taskId": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		}
 	},
-
 	"elements": {}
 }

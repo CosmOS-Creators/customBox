@@ -1,5 +1,5 @@
 {
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"attributes": {
 		"referenceListType": {
 			"label": "Int Type",
@@ -40,8 +40,7 @@
 				"value": "selection_1"
 			}
 		],
-		"reference_test_1": [
-
-		]
-	}
+		"reference_test_1": []
+	},
+	"checksum": "4aa9f2f56cf759f62adb0a3268ec0178"
 }

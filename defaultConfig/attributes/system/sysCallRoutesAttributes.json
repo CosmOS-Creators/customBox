@@ -1,50 +1,56 @@
 {
-	"version": "1.0.0",
-
+	"version": "1.1.0",
+	"checksum": "9926b1ecf93ec19909a2663aaad061f8",
+	"ui_page": {
+		"sys_call_routes": {
+			"view_type": "tabbed",
+			"tab_label": "Sys Call Routes",
+			"tab_icon": "alt_route"
+		}
+	},
 	"attributes": {
 		"routedFuncName": {
-			"label": "Name of the routed function",
 			"type": "string",
-			"validation": "^[A-Za-z][A-Za-z0-9_]*$",
-			"tooltip": "Name of the routed function to the sysCall, be aware that routed function args and return type must be compliant with sysCall"
+			"label": "Name of the routed function",
+			"tooltip": "Name of the routed function to the sysCall, be aware that routed function args and return type must be compliant with sysCall",
+			"validation": "^[A-Za-z][A-Za-z0-9_]*$"
 		},
 		"apiHeader": {
-			"label": "API header with routed function definition",
 			"type": "string",
-			"validation": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z]+$",
-			"tooltip": "API header with routed function definition is included in the routes configuration"
+			"label": "API header with routed function definition",
+			"tooltip": "API header with routed function definition is included in the routes configuration",
+			"validation": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z]+$"
 		},
 		"sysCall": {
-			"label": "Name of the sysCall",
 			"type": "string",
-			"validation": "^[A-Za-z][A-Za-z0-9_]*$",
-			"tooltip": "Name of the sysCall used to interface with your routed function"
+			"label": "Name of the sysCall",
+			"tooltip": "Name of the sysCall used to interface with your routed function",
+			"validation": "^[A-Za-z][A-Za-z0-9_]*$"
 		},
 		"userVisible": {
-			"label": "Visible for application layer",
 			"type": "bool",
+			"label": "Visible for application layer",
 			"tooltip": "Should be this route generated as CosmOS API for the usage in application layer?"
 		},
 		"isMappedToEntity": {
-			"label": "Is route mapped to entity",
 			"type": "bool",
+			"label": "Is route mapped to entity",
 			"tooltip": "Is this route mapped also to entity for instance buffer"
 		},
 		"args": {
-			"label": "Function arguments",
 			"type": "stringList",
+			"label": "Function arguments",
 			"tooltip": "Arguments of the routed function in the correct order"
 		},
 		"returnType": {
-			"label": "Type of the returned value",
 			"type": "string",
-			"tooltip": "Return type of the routed function"
+			"label": "Type of the returned value",
+			"tooltip": "Return type of the routed function",
+			"validation": ""
 		}
 	},
-
 	"elements": {
-		"route_0":
-		[
+		"route_0": [
 			{
 				"target": "routedFuncName",
 				"value": "buffer_readArray"
@@ -77,8 +83,7 @@
 				"value": "CosmOS_BufferStateType"
 			}
 		],
-		"route_1":
-		[
+		"route_1": [
 			{
 				"target": "routedFuncName",
 				"value": "buffer_writeArray"
@@ -111,8 +116,7 @@
 				"value": "CosmOS_BufferStateType"
 			}
 		],
-		"route_2":
-		[
+		"route_2": [
 			{
 				"target": "routedFuncName",
 				"value": "deviceIO_togglePin"
@@ -145,8 +149,7 @@
 				"value": "void"
 			}
 		],
-		"route_3":
-		[
+		"route_3": [
 			{
 				"target": "routedFuncName",
 				"value": "osInit_init"
@@ -176,8 +179,7 @@
 				"value": "void"
 			}
 		],
-		"route_4":
-		[
+		"route_4": [
 			{
 				"target": "routedFuncName",
 				"value": "os_start"
@@ -207,8 +209,7 @@
 				"value": "void"
 			}
 		],
-		"route_5":
-		[
+		"route_5": [
 			{
 				"target": "routedFuncName",
 				"value": "schedulable_setExecutionStateToFinished"
@@ -238,8 +239,7 @@
 				"value": "void"
 			}
 		],
-		"route_6":
-		[
+		"route_6": [
 			{
 				"target": "routedFuncName",
 				"value": "sysJobs_dispatcher"

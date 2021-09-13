@@ -1,5 +1,6 @@
 import json
 import os
+import Parser.VersionHandling 	as vh
 import Parser.AttributeTypes 	as AttributeTypes
 import Parser.ConfigTypes 		as ConfigTypes
 import Parser.WorkspaceParser 	as WorkspaceParser
@@ -9,12 +10,11 @@ from typing 					import Dict, List, Union, NewType
 from Parser.LinkElement 		import Link
 
 # type definitions for better linting
-jsonConfigType 				= NewType('jsonConfigType', Dict[str, object])
 AttributeCollectionType 	= NewType('AttributeCollectionType', Dict[str, AttributeTypes.AttributeType])
 
-def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
+def processAttributes(config: Dict[str, object]) -> AttributeCollectionType:
 	attributeCollection: AttributeCollectionType = {}
-	AttributesToInherit: Dict[str, AttributeTypes.AttributeType] = {}
+	AttributesToInherit: AttributeCollectionType = {}
 	for configName in config:
 		for attribute in config[configName][const.ATTRIBUTES_KEY]:
 			currentAttribute = config[configName][const.ATTRIBUTES_KEY][attribute]
@@ -41,32 +41,20 @@ def processAttributes(config: jsonConfigType) -> AttributeCollectionType:
 
 	return attributeCollection
 
-def processConfig(config: dict, configName: str, completeConfig: ConfigTypes.Configuration, attributeCollection: AttributeCollectionType):
-	for element in config[const.ELEMENTS_KEY]:
-		currentElement = config[const.ELEMENTS_KEY][element]
-		if(completeConfig.hasSubConfig(configName)):
-			subconfig = completeConfig.getSubconfig(configName)
-		else:
-			subconfig = completeConfig.createSubconfig(configName)
-		newElement = subconfig.createElement(element)
-		if(not type(currentElement) is list):
-			raise Exception(f"In config \"{configName}\" the \"{const.ELEMENTS_KEY}\" property is required to be a list but found {type(currentElement)}")
-		for attributeInstance in currentElement:
-			newElement.createAttributeInstance(attributeInstance, attributeCollection)
-
 def linkParents(objConfigs: ConfigTypes.Configuration):
-	for subConfig in objConfigs:
+	for subConfig in objConfigs.configs.values():
 		for element in subConfig:
 			for attribInst in element:
 				if(type(attribInst) is ConfigTypes.AttributeInstance):
 					attribInst.ResolveValueLink()
+		subConfig.resolveUiAssignment()
 
 def config_file_sanity_check(config: dict):
 	for required_key in const.required_json_config_keys:
 		if(not required_key in config):
 			raise KeyError(f"Every config file must have a key named \"{required_key}\"")
 
-def discoverConfigFiles(configPath: Union[str,List[str]]) -> List[str]:
+def discoverConfigFiles(configPath: Union[str,List[str]]) -> List[Path]:
 	configPaths: List[str] = []
 	if(type(configPath) is str):
 		configPaths = [configPath]
@@ -85,13 +73,17 @@ class ConfigParser():
 		workspace.requireFolder(["config"])
 		self.__workspace 	= workspace
 
+	@property
+	def workspace(self):
+		return self.__workspace
+
 	def parse(self)  -> ConfigTypes.Configuration:
 		configFiles = discoverConfigFiles(self.__workspace.config)
-		jsonConfigs = {}
-		configFileNames = {}
+		jsonConfigs = dict()
+		configFileNames = dict()
 		for configFile in configFiles:
-			with open(configFile, "r") as currentFile:
-				configCleanName = Path(configFile).stem
+			with configFile.open("r") as currentFile:
+				configCleanName = configFile.stem
 				if(not const.configFileNameRegex.match(configCleanName)):
 					raise Exception(f"Config file names are oly allowed to contain lower case alphanumeric characters but the file \"{configFile}\" would generate a config named \"{configCleanName}\" which would violate this restriction")
 				if(configCleanName in jsonConfigs):
@@ -106,12 +98,12 @@ class ConfigParser():
 					raise KeyError(f"Error in config file \"{configFile}\": {str(e)}")
 				configFileNames[configCleanName] = configFile
 				jsonConfigs[configCleanName] = loaded_json_config
-		configuration = ConfigTypes.Configuration()
 
 		# make sure to load all attributes before loading all configs
 		self.__attributeCollection = processAttributes(jsonConfigs)
-		for config in jsonConfigs:
-			processConfig(jsonConfigs[config], config, configuration, self.__attributeCollection)
+		configuration = ConfigTypes.Configuration(self.__attributeCollection)
+		for config_name, config in jsonConfigs.items():
+			configuration.createSubconfigFromDefinition(config_name, config, configFileNames[config_name])
 		linkParents(configuration)
 		return configuration
 

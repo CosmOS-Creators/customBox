@@ -1,5 +1,6 @@
 {
-	"version": "1.0.0",
+	"version": "1.1.0",
+	"checksum": "f7c0a56b8b350a6ea6dfb426e5e103d4",
 	"attributes": {
 		"stringType": {
 			"label": "String Tpye",
@@ -40,8 +41,7 @@
 		}
 	},
 	"elements": {
-		"element_1":
-		[
+		"element_1": [
 			{
 				"target": "stringType",
 				"value": "testString"
@@ -68,7 +68,7 @@
 			},
 			{
 				"target": "hexType",
-				"value": "0x0F"
+				"value": "0xF"
 			},
 			{
 				"target": "sliderType",
@@ -79,8 +79,7 @@
 				"value": "selection_1"
 			}
 		],
-		"element_2":
-		[
+		"element_2": [
 			{
 				"target": "stringType",
 				"value": "StringTest"

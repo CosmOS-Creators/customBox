@@ -1,20 +1,26 @@
 {
-	"version": "1.0.0",
-
-	"attributes": {
-		"schedulableNum": {
-			"placeholder": true,
-			"type": "int"
-		},
-		"buffersNum": {
-			"placeholder": true,
-			"type": "int"
-		},
-		"doubleBuffersNum": {
-			"placeholder": true,
-			"type": "int"
+	"version": "1.1.0",
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"os": {
+			"view_type": "tabbed",
+			"tab_label": "OS settings",
+			"tab_icon": "laptop"
 		}
 	},
-
+	"attributes": {
+		"schedulableNum": {
+			"type": "int",
+			"placeholder": true
+		},
+		"buffersNum": {
+			"type": "int",
+			"placeholder": true
+		},
+		"doubleBuffersNum": {
+			"type": "int",
+			"placeholder": true
+		}
+	},
 	"elements": {}
 }

@@ -1,28 +1,36 @@
 {
-	"version": "1.0.0",
-
+	"version": "1.1.0",
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"mcu": {
+			"view_type": "tabbed",
+			"tab_label": "MCU settings",
+			"tab_icon": "developer_board"
+		}
+	},
 	"attributes": {
 		"mcuName": {
-			"label": "Name of the MCU",
 			"type": "string",
-			"tooltip": "Name of the integrated MCU with CosmOS"
+			"label": "Name of the MCU",
+			"tooltip": "Name of the integrated MCU with CosmOS",
+			"validation": ""
 		},
 		"cpuBitWidth": {
-			"label": "Bit width of the CPU architecture",
 			"type": "int",
+			"label": "Bit width of the CPU architecture",
 			"tooltip": "CPU bitwidth defined by datasheet"
 		},
 		"addressBitWidth": {
-			"label": "Bit width of the address bus",
 			"type": "int",
+			"label": "Bit width of the address bus",
 			"tooltip": "Address width defined by datasheet"
 		},
 		"architecture": {
-			"label": "Architecture",
 			"type": "string",
-			"tooltip": "Architecture of the MCU (must be picked from the integrated architectures list)"
+			"label": "Architecture",
+			"tooltip": "Architecture of the MCU (must be picked from the integrated architectures list)",
+			"validation": ""
 		}
 	},
-
 	"elements": {}
 }

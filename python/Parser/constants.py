@@ -24,6 +24,9 @@ baseKeys = [LABEL_KEY, TOOLTIP_KEY, HIDDEN_KEY, PLACEHOLDER_KEY, TYPE_KEY]
 ELEMENTS_KEY				= "elements"
 ATTRIBUTES_KEY				= "attributes"
 VERSION_KEY					= "version"
+CHECKSUM_KEY				= "checksum"
+UI_KEY						= "ui"
+UI_PAGE_KEY					= "ui_page"
 
 configFileNameRegex			= re.compile(r"^[A-Za-z0-9]+$")
 required_json_config_keys	= [ELEMENTS_KEY, ATTRIBUTES_KEY, VERSION_KEY]
@@ -36,4 +39,15 @@ TARGET_NAME_OVERWRITE_KEY	= "targetNameOverwrite"
 
 # workspace keys:
 ###################################################
-WORKSPACE_PLACEHOLDER 	= "workspace"
+WORKSPACE_PLACEHOLDER 		= "workspace"
+
+# user interface keys:
+###################################################
+UI_TAB_LABEL_KEY			= "tab_label"
+UI_TAB_ICON_KEY				= "tab_icon"
+UI_VIEW_TYPE_KEY			= "view_type"
+UI_USE_PAGE_KEY				= "use_page"
+UI_VIEW_TYPE_CARDED_KEY		= "carded"
+UI_VIEW_TYPE_TABBED_KEY		= "tabbed"
+
+ui_page_required_json_keys	= [UI_TAB_LABEL_KEY, UI_VIEW_TYPE_KEY]

@@ -1,50 +1,56 @@
 {
-	"version": "1.0.0",
-
+	"version": "1.1.0",
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"threads": {
+			"view_type": "tabbed",
+			"tab_label": "Threads",
+			"tab_icon": "date_range"
+		}
+	},
 	"attributes": {
 		"name": {
-			"label": "Name of the thread",
 			"type": "string",
-			"validation": "^[A-Za-z][A-Za-z0-9_]*$",
-			"tooltip": "Name of the thread, be aware that the thread name is used also as a function name"
+			"label": "Name of the thread",
+			"tooltip": "Name of the thread, be aware that the thread name is used also as a function name",
+			"validation": "^[A-Za-z][A-Za-z0-9_]*$"
 		},
 		"floatingPoint": {
-			"label": "Floating point",
 			"type": "bool",
+			"label": "Floating point",
 			"tooltip": "Enable floating point for the current thread"
 		},
 		"isIdle": {
-			"label": "Is thread idle",
 			"type": "bool",
+			"label": "Is thread idle",
 			"tooltip": "Is the thread idle"
 		},
 		"stackSize": {
-			"label": "Stack size",
 			"type": "int",
+			"label": "Stack size",
+			"tooltip": "Stack size of the current thread",
 			"min": 0,
-			"max": 2048,
-			"tooltip": "Stack size of the current thread"
+			"max": 2048
 		},
 		"uniqueId": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"program": {
 			"type": "parentReference"
 		},
 		"lowAddress": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"highAddress": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"threadId": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		}
 	},
-
 	"elements": {}
 }

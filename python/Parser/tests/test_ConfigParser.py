@@ -1,12 +1,11 @@
+from pathlib import Path
 import pytest
-from Parser import Workspace, ConfigParser, ConfigTypes
+from Parser import Workspace, ConfigParser, ConfigTypes, constants
+from Parser.tests.test_setup import test_workspace, parsed_config
+import json
+import hashlib
 
 class TestClassBasicFunctions:
-	@pytest.fixture
-	def parsed_config(self):
-		workspace = Workspace("./Cosmos/customBox/python/Parser/tests/testConfigs/workspaces/BasicConfig.json")
-		parser = ConfigParser(workspace)
-		return parser.parse()
 
 	def test_return_type(self, parsed_config):
 		assert type(parsed_config) is ConfigTypes.Configuration
@@ -64,3 +63,38 @@ class TestClassBasicFunctions:
 			}
 		for name, attribute in reference_test_0_configElement.attributes.items():
 			assert element_1_attribute_values[name] == attribute.value
+
+class TestCreatingNewElements:
+
+	def test_new_elemnt_creation(self, parsed_config: ConfigTypes.Configuration):
+		subconfig = parsed_config.getSubconfig("basicTypes")
+		assert len(subconfig.elements) == 2
+		assert "element_1" in subconfig.elements and "element_2" in subconfig.elements
+		newElement = subconfig.createElement("element_3")
+		assert len(newElement.attributes) == 0
+		assert len(subconfig.elements) == 3
+		assert "element_1" in subconfig.elements and "element_2" in subconfig.elements and "element_3" in subconfig.elements
+		newAttribInst = newElement.createAttributeInstance("stringType", "test")
+		assert len(newElement.attributes) == 1
+		with pytest.raises(AttributeError):
+			newElement.createAttributeInstance("stringType", "test")
+		with pytest.raises(ValueError):
+			newElement.createAttributeInstance("stringType", attributeName="test1")
+
+
+class TestChecksumFunctionality:
+	@pytest.fixture
+	def config_file(self, test_workspace):
+		workspace = Workspace("./Cosmos/customBox/python/Parser/tests/testConfigs/workspaces/BasicConfig.json")
+		configFolders = workspace.requireFolder("config")
+		for configFolder in configFolders:
+			basicTypesConfig = configFolder.joinpath("basicTypes.json")
+			if(basicTypesConfig.exists()):
+				return basicTypesConfig
+		return None
+
+	def test_checksum(self, parsed_config: ConfigTypes.Configuration, config_file: Path):
+		subconfig = parsed_config.getSubconfig("basicTypes")
+		assert subconfig.needs_serialization() == False
+		newElement = subconfig.createElement("element_3")
+		assert subconfig.needs_serialization() == True

@@ -2,17 +2,19 @@ import pytest
 from Parser import Link, ConfigTypes, AttributeTypes
 from unittest.mock import patch
 
+
 class TestClassLinkFunctions:
 
 	@pytest.fixture
 	def mocked_basic_config_structure(self):
+		from pathlib import Path
 		boolType = AttributeTypes.BoolType({"label": "Bool type", "type": "bool"}, "config/:attribute")
 		attribLookup = dict()
 		attribLookup["config/:attribute"] = boolType
-		configuration = ConfigTypes.Configuration()
-		subconfig = configuration.createSubconfig("config")
+		configuration = ConfigTypes.Configuration(attribLookup)
+		subconfig = configuration.createSubconfig("config", Path("test.json"))
 		configElement = subconfig.createElement("element")
-		configElement.createAttributeInstance({"target": "attribute", "value": True}, attribLookup)
+		configElement.createAttributeInstanceFromDefinition({"target": "attribute", "value": True})
 		return configuration
 
 	def test_constructor(self):
@@ -382,7 +384,7 @@ class TestClassLinkFunctions:
 			noConfigLink.resolve(mocked_basic_config_structure)
 		with pytest.raises(AttributeError):
 			justAttributeLink.resolve(mocked_basic_config_structure)
-		assert noElementLink.resolve(mocked_basic_config_structure) == [{"target": attribute, "element": element}]
+		assert noElementLink.resolve(mocked_basic_config_structure) == [(attribute, element)]
 		with pytest.raises(ValueError):
 			noConfigLink.resolveElement(mocked_basic_config_structure)
 		with pytest.raises(ValueError):

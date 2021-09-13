@@ -1,9 +1,15 @@
 {
-	"version": "1.0.0",
-
+	"version": "1.1.0",
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"scheduler_entries": {
+			"view_type": "tabbed",
+			"tab_label": "Scheduler entries",
+			"tab_icon": "more_time"
+		}
+	},
 	"attributes": {
 		"executionTick": {
-			"label": "",
 			"type": "int",
 			"min": 0,
 			"max": 2048
@@ -15,10 +21,9 @@
 			"type": "parentReference"
 		},
 		"entryId": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		}
 	},
-
 	"elements": {}
 }

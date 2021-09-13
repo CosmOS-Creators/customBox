@@ -1,60 +1,66 @@
 {
-	"version": "1.0.0",
-
+	"version": "1.1.0",
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"programs": {
+			"view_type": "tabbed",
+			"tab_label": "Programs",
+			"tab_icon": "book"
+		}
+	},
 	"attributes": {
 		"name": {
-			"label": "Name of the program",
 			"type": "string",
-			"validation": "^[A-Za-z][A-Za-z0-9_]*$",
-			"tooltip": "Please be aware that name is used also as file name in the application layer for the source and header file"
+			"label": "Name of the program",
+			"tooltip": "Please be aware that name is used also as file name in the application layer for the source and header file",
+			"validation": "^[A-Za-z][A-Za-z0-9_]*$"
 		},
 		"size": {
-			"label": "Size of the program memory",
 			"type": "int",
+			"label": "Size of the program memory",
+			"tooltip": "Size of the program data memory",
 			"min": 0,
-			"max": 2048,
-			"tooltip": "Size of the program data memory"
+			"max": 2048
 		},
 		"heapSize": {
-			"label": "Size of the program heap",
 			"type": "int",
+			"label": "Size of the program heap",
+			"tooltip": "Size of the program heap placed in the program memory",
 			"min": 0,
-			"max": 2048,
-			"tooltip": "Size of the program heap placed in the program memory"
-		},
-		"memory": {
-			"inherit": "memoriesAttributes/:memory",
-			"label": "Memory location of the Program",
-			"tooltip": "Memory location of the Program, all the program data will be stored here"
+			"max": 2048
 		},
 		"lowAddress": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"highAddress": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"core": {
 			"type": "parentReference"
 		},
 		"programId": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
 		},
 		"programThreads": {
-			"placeholder": true,
-			"type": "referenceList"
+			"type": "referenceList",
+			"placeholder": true
 		},
 		"programTasks": {
-			"placeholder": true,
-			"type": "referenceList"
+			"type": "referenceList",
+			"placeholder": true
 		},
 		"heapSpinlockId": {
-			"placeholder": true,
-			"type": "int"
+			"type": "int",
+			"placeholder": true
+		},
+		"memory": {
+			"label": "Memory location of the Program",
+			"tooltip": "Memory location of the Program, all the program data will be stored here",
+			"inherit": "memoriesAttributes/:memory"
 		}
 	},
-
 	"elements": {}
 }

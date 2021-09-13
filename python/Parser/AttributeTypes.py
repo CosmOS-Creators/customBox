@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import re
 import Parser.ConfigTypes 	as ConfigTypes
 import Parser.helpers		as helpers
@@ -22,8 +23,8 @@ class AttributeType():
 		else:
 			raise ValueError(f'An attribute link must be global but "{globalID}" was not.')
 		# internal helpers
-		self._is_inherited 			= False
-		self._attribute_definition 	= attribute_definition.copy()
+		self._inherit_from: AttributeType	= None
+		self._attribute_definition 			= attribute_definition.copy()
 
 		# check if any forbidden keys exist:
 		try:
@@ -45,8 +46,7 @@ class AttributeType():
 		# optional properties
 		self.tooltip 				= self.checkForKey(const.TOOLTIP_KEY, "")
 		self.hidden 				= self.checkForKey(const.HIDDEN_KEY, False)
-		if(const.LABEL_KEY in attribute_definition):
-			self.label 				= attribute_definition[const.LABEL_KEY]
+		self.label					= self.checkForKey(const.LABEL_KEY, "")
 
 	def __new__(cls, *args, **kwargs):
 		""" Prevent the instantiation of the base class
@@ -87,7 +87,7 @@ class AttributeType():
 
 	@property
 	def is_inherited(self) -> bool:
-		return self._is_inherited
+		return self._inherit_from is not None
 
 	@classmethod
 	def is_type(cls, type: str) -> bool:
@@ -97,13 +97,59 @@ class AttributeType():
 			return type == cls._comparison_type
 
 	def create_inheritor(self, inherit_properties: dict, globalID: str):
-		overwriteWith = inherit_properties.copy()
+		overwriteWith 				= inherit_properties.copy()
 		del overwriteWith[const.INHERIT_KEY]
-		newAttributeDefinition = self._attribute_definition.copy()
+		newAttributeDefinition 		= self._attribute_definition.copy()
 		newAttributeDefinition.update(overwriteWith)
-		newAttribute = parseAttribute(newAttributeDefinition, globalID)
-		newAttribute._is_inherited = True
+		newAttribute 				= parseAttribute(newAttributeDefinition, globalID)
+		newAttribute._inherit_from 	= self
 		return newAttribute
+
+	def _serialize_value(self, value):
+		return value
+
+	def serialize_value(self, value, context: Link = None):
+		target = str(self.globalID)
+		if(context):
+			if(context.config == self.globalID.config):
+				target = self.globalID.attribute
+		data = {
+			const.TARGET_KEY: target
+			}
+		if(not self.is_placeholder):
+			data[const.VALUE_KEY] = self._serialize_value(value)
+		return data
+
+	def _get_serialization_specifics(self):
+		return OrderedDict()
+
+	def serialize_attribute(self):
+		attributeDef = OrderedDict()
+		attributeDef[const.TYPE_KEY] = self.type
+		if(self.label):
+			attributeDef[const.LABEL_KEY] = self.label
+		if(self.tooltip):
+			attributeDef[const.TOOLTIP_KEY] = self.tooltip
+		if(self.hidden):
+			attributeDef[const.HIDDEN_KEY] = self.hidden
+		if(self.is_placeholder):
+			attributeDef[const.PLACEHOLDER_KEY] = self.is_placeholder
+
+		serialization_specifics = self._get_serialization_specifics()
+		for specific_key, specific_value in serialization_specifics.items():
+			attributeDef[specific_key] = specific_value
+
+		if(self.is_inherited):
+			non_modified_keys = list()
+			_ ,inherited_attrib_def = self._inherit_from.serialize_attribute()
+			for property_key, attrib_property in attributeDef.items():
+				if(property_key in inherited_attrib_def):
+					if(inherited_attrib_def[property_key] == attrib_property):
+						non_modified_keys.append(property_key)
+			for key in non_modified_keys:
+				del attributeDef[key]
+			attributeDef[const.INHERIT_KEY] = str(self._inherit_from.globalID)
+		return self.id, attributeDef
 
 class StringType(AttributeType):
 	_comparison_type 	= "string"
@@ -116,13 +162,13 @@ class StringType(AttributeType):
 
 	@overrides(AttributeType)
 	def checkValue(self, valueInput: str):
+		if(not type(valueInput) is str):
+			reportValidationError(f"Input value \"{valueInput}\" is not of type str but the attribute definition was expecting a string")
 		if(self.validation != ""):
 			try:
 				regex = re.compile(self.validation)
 			except Exception as e:
 				raise ValueError(f"The regex \"{self.validation}\" is not valid: \"{str(e)}\"")
-			if(not type(valueInput) is str):
-				reportValidationError(f"Input value \"{valueInput}\" is not of type str but the attribute definition was expecting a string")
 			if(not regex.match(valueInput)):
 				reportValidationError(f"\"{valueInput}\" does not match the validation regex \"{self.validation}\"")
 		return valueInput
@@ -130,6 +176,13 @@ class StringType(AttributeType):
 	@overrides(AttributeType)
 	def getDefault(self) -> str:
 		return str("")
+
+	@overrides(AttributeType)
+	def _get_serialization_specifics(self):
+		specifics = OrderedDict()
+		if(self.validation is not None):
+			specifics[const.VALIDATION_KEY] = self.validation
+		return specifics
 
 class BoolType(AttributeType):
 	_comparison_type 	= "bool"
@@ -159,7 +212,7 @@ class IntType(AttributeType):
 					reportValidationError(f"The input value ({value}) is lower than the minimum value({self.min}) for this attribute")
 			if(not self.max is None):
 				if(value > self.max):
-					reportValidationError(f"The input value ({value}) is higher than the maximum value({self.min}) for this attribute")
+					reportValidationError(f"The input value ({value}) is higher than the maximum value({self.max}) for this attribute")
 			return value
 		else:
 			reportValidationError(f"The input value ({value}) must be of type int or float but got type ({type(value)}) instead")
@@ -171,6 +224,15 @@ class IntType(AttributeType):
 	@overrides(AttributeType)
 	def getDefault(self) -> int:
 		return int(0)
+
+	@overrides(AttributeType)
+	def _get_serialization_specifics(self):
+		specifics = OrderedDict()
+		if(self.min is not None):
+			specifics[const.MIN_KEY] = self.min
+		if(self.max is not None):
+			specifics[const.MAX_KEY] = self.max
+		return specifics
 
 class FloatType(IntType):
 	_comparison_type 	= "float"
@@ -246,6 +308,22 @@ class ReferenceListType(AttributeType):
 			linkedTargets.append(targetElement)
 		attributeInstance.setValueDirect(linkedTargets)
 
+	@overrides(AttributeType)
+	def _serialize_value(self, value: List[ConfigTypes.ConfigElement]):
+		data = list()
+		for v in value:
+			data.append(str(v.link))
+		return data
+
+	@overrides(AttributeType)
+	def _get_serialization_specifics(self):
+		specifics = OrderedDict()
+		if(self.elements is not None):
+			elements_str = list()
+			for elementLink in self.elements:
+				elements_str.append(str(elementLink))
+			specifics[const.ELEMENTS_LIST_KEY] = elements_str
+		return specifics
 
 class StringListType(AttributeType):
 	_comparison_type 	= "stringList"
@@ -274,8 +352,9 @@ class SelectionType(AttributeType):
 	def __init__(self, attribute_definition: dict, globalID: str):
 		super().__init__(attribute_definition, globalID)
 		if(const.ELEMENTS_LIST_KEY in attribute_definition):
-			self.elements 			= attribute_definition[const.ELEMENTS_LIST_KEY]
-			self.resolvedElements	= None
+			self.elements: Union[str, list[str]] 			= attribute_definition[const.ELEMENTS_LIST_KEY]
+			self.resolvedElements: Union[None, ]	= None
+			self.targetedAttribute	= None
 			if(type(self.elements) is list):
 				self._needs_linking		= False
 			elif(type(self.elements) is str):
@@ -316,13 +395,31 @@ class SelectionType(AttributeType):
 					print(f"WARNING: Attribute definition \"{self.globalID}\" requested an attribute instance named \"{link.element}\" from the config \"{link.config}\" but the element \"{name}\" does not have an instance of that attribute. Skipping this element.")
 					continue
 				possibleValues.append(targetValue)
-				if(attributeInstance.value == targetValue.value):
+				if(attributeInstance.value == targetValue.value or attributeInstance.value == targetValue):
 					attributeInstance.setValueDirect(targetValue.parent)
 					foundMatch = True
+					if(self.resolvedElements is not None):
+						break
 			if(self.resolvedElements is None):
 				self.resolvedElements = possibleValues
+				self.targetedAttribute = link.attribute
 			if(foundMatch == False):
 				raise NameError(f'"{attributeInstance.value}" is not a valid choice for Attribute instances of "{self.globalID}". Valid choices are: {possibleValues}')
+
+	@overrides(AttributeType)
+	def _serialize_value(self, value: Union[ConfigTypes.ConfigElement, str]):
+		if(type(value) is str):
+			return value
+		else:
+			attr = self.targetedAttribute
+			return str(value.getAttribute(attr).value)
+
+	@overrides(AttributeType)
+	def _get_serialization_specifics(self):
+		specifics = OrderedDict()
+		if(self.elements is not None):
+			specifics[const.ELEMENTS_LIST_KEY] = self.elements
+		return specifics
 
 
 class HexType(IntType):
@@ -346,6 +443,10 @@ class HexType(IntType):
 	def getDefault(self) -> int:
 		return int(0)
 
+	@overrides(AttributeType)
+	def _serialize_value(self, value):
+		return helpers.toHex(value)
+
 class SliderType(IntType):
 	_comparison_type 	= "slider"
 	_typeSpecificKeys	= [const.MIN_KEY, const.MAX_KEY, const.STEP_KEY]
@@ -366,6 +467,17 @@ class SliderType(IntType):
 	@overrides(AttributeType)
 	def getDefault(self) -> float:
 		return float(0)
+
+	@overrides(AttributeType)
+	def _get_serialization_specifics(self):
+		specifics = OrderedDict()
+		if(self.min is not None):
+			specifics[const.MIN_KEY] = self.min
+		if(self.max is not None):
+			specifics[const.MAX_KEY] = self.max
+		if(self.step is not None):
+			specifics[const.STEP_KEY] = self.step
+		return specifics
 
 class ParentReferenceType(AttributeType):
 	_comparison_type 	= "parentReference"
@@ -399,6 +511,10 @@ class ParentReferenceType(AttributeType):
 		targetedElement = linkTarget.resolveElement(objConfig)
 		targetedElement.addReferenceObject(attributeInstance.link.config, attributeInstance.link.element, selfElement)
 		attributeInstance.setValueDirect(targetedElement)
+
+	@overrides(AttributeType)
+	def _serialize_value(self, value: ConfigTypes.ConfigElement):
+		return str(value.link)
 
 attributeTypeList = [StringType, BoolType, IntType, FloatType, ReferenceListType, StringListType, SelectionType, SelectionType, HexType, SliderType, ParentReferenceType]
 

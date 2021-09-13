@@ -1,6 +1,6 @@
 
 from __future__ 				import annotations
-from typing 					import List, Union
+from typing 					import List, Tuple, Union
 
 import Parser.ConfigTypes 		as ConfigTypes
 import Parser.AttributeTypes 	as AttributeTypes
@@ -152,13 +152,13 @@ class Link():
 		else:
 			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved. Either the config or the element part of the link are missing but they are mandatory for resolving an element.")
 
-	def resolveAttributeList(self, config: ConfigTypes.Configuration) -> List[AttributeTypes.AttributeType]:
+	def resolveAttributeList(self, config: ConfigTypes.Configuration) -> List[Tuple[ConfigTypes.AttributeInstance, ConfigTypes.ConfigElement]]:
 		if(self.__config and self.__attribute):
 			subconfig = config.getSubconfig(self)
 			attributeCollection = []
 			for element in subconfig:
 				targetAttribute = element.getAttributeInstance(self)
-				attributeCollection.append({"target": targetAttribute, "element": element})
+				attributeCollection.append((targetAttribute, element))
 			return attributeCollection
 		else:
 			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved. Either the config or the attribute part of the link are missing but they are mandatory for resolving an attribute list.")
@@ -177,7 +177,7 @@ class Link():
 		else:
 			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved. The link is missing the config part which is mandatory for resolving subconfigs.")
 
-	def resolve(self, config: ConfigTypes.Configuration) -> Union[ConfigTypes.ConfigElement, List[AttributeTypes.AttributeType], AttributeTypes.AttributeType, ConfigTypes.Subconfig]:
+	def resolve(self, config: ConfigTypes.Configuration) -> Union[ConfigTypes.ConfigElement, List[Tuple[ConfigTypes.AttributeInstance, ConfigTypes.ConfigElement]], AttributeTypes.AttributeType, ConfigTypes.Subconfig]:
 		if(self.__config is None):
 			raise AttributeError(f"For resolving a link at least the config must be set.")
 		if(self.__element and not self.__attribute): # link to an element

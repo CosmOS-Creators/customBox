@@ -1,10 +1,16 @@
 from __future__ 				import annotations
-from types 						import SimpleNamespace
-from typing 					import List, Union
+import hashlib
+from typing 					import Dict, List, Union
+from pathlib 					import Path
+import Parser
 from Parser.LinkElement 		import Link
+import Parser.Serializer 		as serializer
+import Parser.VersionHandling 	as vh
 from Parser.helpers 			import overrides
 import Parser.AttributeTypes 	as AttributeTypes
 import Parser.constants			as const
+import json
+from collections 				import OrderedDict
 
 def formatConfig(config: Configuration, indent: int = 1):
 	stringRepresentation = ""
@@ -79,11 +85,89 @@ class dynamicObject:
 		except AttributeError:
 			return self._get(name)
 
-class Configuration(dynamicObject):
+class UiViewType():
+	def __init__(self, key):
+		self.key = key
+
+	def __str__(self) -> str:
+		return self.key
+
+	def __repr__(self) -> str:
+		return f'UiViewType({self.key})'
+
+class UiViewTypes():
+	tabbed 		= UiViewType(const.UI_VIEW_TYPE_TABBED_KEY)
+	carded 		= UiViewType(const.UI_VIEW_TYPE_CARDED_KEY)
+	__allTypes 	= [tabbed, carded]
+
+	@staticmethod
+	def getViewType(type: str):
+		for t in UiViewTypes.__allTypes:
+			if(t.key == type):
+				return t
+		return None
+
+class UiPage(serializer.serializeable):
+	def __init__(self, id: str, label: str, viewType: UiViewType, origin: Subconfig, icon: str = None):
+		self.origin_subconfig 	= origin
+		self.id 				= id
+		self.label 				= label
+		self.icon 				= icon
+		self.viewType 			= viewType
+		self.assignedSubconfigs: Dict[str, Subconfig] = dict()
+
+	def assignSubconfig(self, name: str, config: Subconfig):
+		self.assignedSubconfigs[name] = config
+
+	def _serialize(self):
+		data = dict()
+		data[const.UI_VIEW_TYPE_KEY] = str(self.viewType)
+		data[const.UI_TAB_LABEL_KEY] = self.label
+		if(self.icon is not None):
+			data[const.UI_TAB_ICON_KEY] = self.icon
+		return data
+
+class UiConfiguration(dynamicObject, serializer.serializeable):
 	def __init__(self):
-		forbidden = 'Creating a subconfig with the name "{0}" is not permitted as "{0}" is a reserved keyword'
-		duplicated = 'It was requested to create a subconfig named "{0}" but a subconfig with that name already exists'
-		doesNotExist = 'Config has no subconfig named "{0}"'
+		forbidden 		= 'Creating a user interface page with the name "{0}" is not permitted as "{0}" is a reserved keyword'
+		duplicated 		= 'It was requested to create a user interface page named "{0}" but a page with that name already exists'
+		doesNotExist 	= 'Config has no UI page named "{0}"'
+		super().__init__("UiConfiguration", forbidden, duplicated, doesNotExist)
+
+	@property
+	def pages(self) -> Dict[str, UiPage]:
+		return self._getItems()
+
+	def createpage(self, id: str, pageDefinition: Dict[str,str], origin: Subconfig) -> UiPage:
+		for requiredKey in const.ui_page_required_json_keys:
+			if(requiredKey not in pageDefinition):
+				raise KeyError(f'A UI page with the name "{id}" could not be created because it\'s definition is missing the reqired "{requiredKey}" key.')
+			if(const.UI_TAB_ICON_KEY in pageDefinition):
+				icon = pageDefinition[const.UI_TAB_ICON_KEY]
+			else:
+				icon = None
+			viewType = UiViewTypes.getViewType(pageDefinition[const.UI_VIEW_TYPE_KEY])
+		return self._create(id, UiPage(id, pageDefinition[const.UI_TAB_LABEL_KEY], viewType, origin, icon))
+
+	def haspage(self, id: str):
+		return self._has(id)
+
+	def getpage(self, id: str) -> UiPage:
+		return self._get(id)
+
+	def _serialize(self):
+		data = dict()
+		for page_id, page in self.pages.items():
+			data[page_id] = serializer.serialize(page)
+		return data
+
+class Configuration(dynamicObject, serializer.serializeable):
+	def __init__(self, attribute_lookup: Dict[str, AttributeTypes.AttributeType]):
+		self.__attribute_lookup = attribute_lookup
+		self.UiConfig 	= UiConfiguration()
+		forbidden 		= 'Creating a subconfig with the name "{0}" is not permitted as "{0}" is a reserved keyword'
+		duplicated 		= 'It was requested to create a subconfig named "{0}" but a subconfig with that name already exists'
+		doesNotExist 	= 'Config has no subconfig named "{0}"'
 		super().__init__("Configuration", forbidden, duplicated, doesNotExist)
 
 	def require(self, requiredProperties : Union[List[Union[str, Link]], Union[str, Link]]):
@@ -97,12 +181,37 @@ class Configuration(dynamicObject):
 				raise AttributeError(f'The link "{link}" was listed as required but it could not be resolved: {str(e)}')
 
 	@property
-	def configs(self):
+	def configs(self) -> Dict[str, Subconfig]:
 		return self._getItems()
 
-	def createSubconfig(self, name: Union[str,Link]) -> Subconfig:
+	@property
+	def attribute_lookup(self):
+		return self.__attribute_lookup
+
+	def createSubconfigFromDefinition(self, configName: str, config: dict, source_file: Path):
+		file_version = vh.Version(config[const.VERSION_KEY])
+		if(not vh.CompatabilityManager.is_compatible(file_version)):
+			config = vh.CompatabilityManager.upgrade(config)
+		subconfig = self.createSubconfig(configName, source_file, config[const.VERSION_KEY], config[const.CHECKSUM_KEY])
+		for element in config[const.ELEMENTS_KEY]:
+			currentElement = config[const.ELEMENTS_KEY][element]
+			newElement = subconfig.createElement(element)
+			if(not type(currentElement) is list):
+				raise Exception(f'In config "{configName}" the "{const.ELEMENTS_KEY}" property is required to be a list but found {type(currentElement)}')
+			for attributeInstance in currentElement:
+				newElement.createAttributeInstanceFromDefinition(attributeInstance)
+		if(const.UI_PAGE_KEY in config):
+			for pageName, uiPage in config[const.UI_PAGE_KEY].items():
+				self.UiConfig.createpage(pageName, uiPage, subconfig)
+		if(const.UI_KEY in config):
+			if(const.UI_USE_PAGE_KEY in config[const.UI_KEY]):
+				subconfig.assignToUiPage(config[const.UI_KEY][const.UI_USE_PAGE_KEY])
+
+	def createSubconfig(self, name: Union[str,Link], source_file: Path, file_format_version: str = None, file_element_hash: int = None) -> Subconfig:
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
-		return self._create(link.config, Subconfig(link.config, self))
+		if(not file_format_version):
+			file_format_version = Parser.FILE_FORMAT_VERSION
+		return self._create(link.config, Subconfig(link.config, self, source_file, file_format_version, file_element_hash))
 
 	def hasSubConfig(self, name: Union[str,Link]):
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
@@ -112,31 +221,45 @@ class Configuration(dynamicObject):
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
 		return self._get(link.config)
 
+	def serialize(self):
+		serializer.serialize(self)
 
-class Subconfig(dynamicObject):
-	def __init__(self, name: str, parent: Configuration):
+	def clear_placeholders(self):
+		for subconfig in self.configs.values():
+			subconfig: Subconfig
+			for element in subconfig.elements.values():
+				element: ConfigElement
+				for attribute in element.attributeInstances.values():
+					attribute: AttributeInstance
+					if(attribute.attributeDefinition.is_placeholder):
+						attribute.value = attribute.attributeDefinition.getDefault()
+
+	def _serialize(self):
+		for subconfig in self.configs.values():
+			Data = serializer.serialize(subconfig)
+			with subconfig.source_file.open("w") as fp:
+				json.dump(Data, fp, indent = '\t')
+			subconfig._file_elements_hash = subconfig.elements_hash
+
+
+class Subconfig(dynamicObject, serializer.serializeable):
+	def __init__(self, name: str, parent: Configuration, source_file: Path, file_format_version: str, file_element_hash: int = None):
 		self.__link								= Link.construct(config=name)  # example: cores/
 		self.__parent: Configuration			= parent
+		self.__source_config_file: Path			= source_file
+		self.__ui_page_assignment				= None
+		self.__file_format_version				= vh.Version(file_format_version)
+		self._file_elements_hash				= file_element_hash
+		if(not vh.CompatabilityManager.is_compatible(self.__file_format_version)):
+			raise ValueError(f'The file structure of "{str(source_file)}" is specified as version "{str(file_format_version)}" but this version is not compatible with the parser which is on version {vh.CompatabilityManager.get_current_version()}')
+
 		forbidden = f'Creating an element with the name "{{0}}" in the subconfig "{self.link.config}" is not permitted as "{{0}}" is a reserved keyword'
 		duplicated = f'The creation of a new element named "{{0}}" was requested for subconfig "{self.link.config}" but an element with that name already exists for this subconfig'
 		doesNotExist = f'Tried to get element "{{0}}" from subconfig "{self.link.config}" but this subconfig has no element with that name'
 		super().__init__("Subconfig", forbidden, duplicated, doesNotExist)
 
-	def hasElement(self, name: Union[str, Link]):
-		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
-		return self._has(elementLink.element)
-
-	def createElement(self, name: Union[str, Link]) -> ConfigElement:
-		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
-		elementName = elementLink.element
-		return self._create(elementName, ConfigElement(elementName, self))
-
-	def getElement(self, name: Union[str, Link]) -> ConfigElement:
-		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
-		return self._get(elementLink.element)
-
 	@property
-	def elements(self):
+	def elements(self) -> Dict[str, ConfigElement]:
 		return self._getItems()
 
 	@property
@@ -147,7 +270,95 @@ class Subconfig(dynamicObject):
 	def parent(self):
 		return self.__parent
 
-class ConfigElement(dynamicObject):
+	@property
+	def source_file(self):
+		return self.__source_config_file
+
+	@property
+	def file_format_version(self):
+		return self.__file_format_version
+
+	@property
+	def elements_hash(self):
+		own_elements = self._serialize_elements()
+		return self.__get_dict_hash(own_elements)
+
+	@property
+	def file_elements_hash(self):
+		return self._file_elements_hash
+
+	def __get_dict_hash(self, input):
+		str			= json.dumps(input).encode('utf-8')
+		str_hash 	= hashlib.md5(str).hexdigest()
+		return str_hash
+
+	def needs_serialization(self):
+		return self.elements_hash != self._file_elements_hash
+
+	def hasElement(self, name: Union[str, Link]):
+		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
+		return self._has(elementLink.element)
+
+	def createElement(self, name: Union[str, Link], ) -> ConfigElement:
+		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
+		elementName = elementLink.element
+		return self._create(elementName, ConfigElement(elementName, self))
+
+	def getElement(self, name: Union[str, Link]) -> ConfigElement:
+		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
+		return self._get(elementLink.element)
+
+	def assignToUiPage(self, page_id: str):
+		self.__ui_page_assignment = page_id
+
+	def _serialize_elements(self):
+		data = dict()
+		for element_name, element in self.elements.items():
+			data[element_name] = serializer.serialize(element)
+		return data
+
+	def _serialize_attributes(self):
+		attributes = OrderedDict()
+		for attribute in self.parent.attribute_lookup.values():
+			attribute: AttributeTypes.AttributeType
+			if(attribute.globalID.config == self.link.config):
+				name, attributeDef = attribute.serialize_attribute()
+				attributes[name] = attributeDef
+		return attributes
+
+	@overrides(serializer.serializeable)
+	def _serialize(self):
+		data = OrderedDict()
+		serialized_elements 		= self._serialize_elements()
+		data[const.VERSION_KEY] 	= str(self.__file_format_version)
+		data[const.CHECKSUM_KEY] 	= self.__get_dict_hash(serialized_elements)
+		if(self.__ui_page_assignment is not None):
+			data[const.UI_KEY] = OrderedDict()
+			if(type(self.__ui_page_assignment) is str):
+				ui_page = self.__ui_page_assignment
+			else:
+				ui_page = self.__ui_page_assignment.id
+			data[const.UI_KEY][const.UI_USE_PAGE_KEY] = ui_page
+		ui_page_definitions = OrderedDict()
+		for ui_assignment in self.parent.UiConfig.pages.values():
+			if(ui_assignment.origin_subconfig == self):
+				ui_page_definitions[ui_assignment.id] = serializer.serialize(ui_assignment)
+		if(len(ui_page_definitions) > 0):
+			data[const.UI_PAGE_KEY] = ui_page_definitions
+		data[const.ATTRIBUTES_KEY] 	= self._serialize_attributes()
+		data[const.ELEMENTS_KEY] 	= serialized_elements
+		return data
+
+	def resolveUiAssignment(self):
+		if(self.__ui_page_assignment is not None):
+			if(type(self.__ui_page_assignment) is str):
+				if(self.parent.UiConfig.haspage(self.__ui_page_assignment)):
+					self.__ui_page_assignment = self.parent.UiConfig.getpage(self.__ui_page_assignment)
+					self.__ui_page_assignment.assignSubconfig(self.__link.config, self)
+				else:
+					raise ValueError(f'The subconfig "{self.__link}" was assigned to a UI page named "{self.__ui_page_assignment}" but a page with that name does not exist')
+
+class ConfigElement(dynamicObject, serializer.serializeable):
 	def __init__(self, name: str, parent: Subconfig):
 		self.__name 				= name
 		self.__link					= parent.link.copy()
@@ -171,11 +382,11 @@ class ConfigElement(dynamicObject):
 		return self.__parent
 
 	@property
-	def attributes(self):
+	def attributes(self) -> Dict[str, Union[ReferenceCollection, AttributeInstance]]:
 		return self._getItems()
 
 	@property
-	def attributeInstances(self):
+	def attributeInstances(self) -> Dict[str, AttributeInstance]:
 		AttributeInstances = dict()
 		items = self._getItems()
 		for name, item in items.items():
@@ -185,7 +396,7 @@ class ConfigElement(dynamicObject):
 		return AttributeInstances
 
 	@property
-	def references(self):
+	def references(self) -> Dict[str, ReferenceCollection]:
 		References = dict()
 		items = self._getItems()
 		for name, item in items.items():
@@ -194,7 +405,14 @@ class ConfigElement(dynamicObject):
 				References[name] = itemValue
 		return References
 
-	def getAttribute(self, name: str):
+	@overrides(serializer.serializeable)
+	def _serialize(self) -> Dict:
+		serialized_data = list()
+		for attribute in self.attributeInstances.values():
+			serialized_data.append(serializer.serialize(attribute))
+		return serialized_data
+
+	def getAttribute(self, name: str) -> Union[AttributeInstance, ReferenceCollection]:
 		return self._get(name)
 
 	def addReferenceObject(self, name: str, objectLinkName: str, ObjectLink):
@@ -223,30 +441,41 @@ class ConfigElement(dynamicObject):
 			raise TypeError(f'The requested reference object named "{name}" from element "{self.link}" was not of type AttributeInstance instead it was of type "{type(item)}"')
 		return item
 
-	def createAttributeInstance(self, element_definition: dict, attribute_lookup: dict[str,AttributeTypes.AttributeType]):
-		if(not const.TARGET_KEY in element_definition):
-			raise KeyError(f'Error creating an attribute instance in "{self.parent.link}", Element definition "{element_definition}" is missing the mandatory key "{const.TARGET_KEY}"')
-		targetLink = Link.force(element_definition[const.TARGET_KEY], Link.EMPHASIZE_ATTRIBUTE)
-		targetLink = self.link.merge(targetLink, Link.EMPHASIZE_ATTRIBUTE)
-		attribute_lookup_key = targetLink.getLink(Element=False)
+	def createAttributeInstance(self, target: Link, value = None, attributeName: str = None):
+		attribute_lookup 				= self.parent.parent.attribute_lookup
+		targetLink 						= Link.force(target, Link.EMPHASIZE_ATTRIBUTE)
+		targetLink 						= self.link.merge(targetLink, Link.EMPHASIZE_ATTRIBUTE)
+		attribute_lookup_key 			= targetLink.getLink(Element=False)
 		if(targetLink.attribute in self.__dict__):
 			raise KeyError(f'Creating an attribute instance named "{targetLink.attribute}" within the element "{self.link}" is not permitted as "{targetLink.attribute}" is a reserved keyword')
 		if(not attribute_lookup_key in attribute_lookup):
 			raise KeyError(f'Target attribute "{attribute_lookup_key}" could not be found')
-		targetedAttribute 							= attribute_lookup[attribute_lookup_key]
-		AttributeInstanceLink 						= self.link.copy()
-		AttributeInstanceLink.attribute 			= targetedAttribute.id
-		if(const.TARGET_NAME_OVERWRITE_KEY in element_definition):
-			AttributeInstanceLink.attribute = element_definition[const.TARGET_NAME_OVERWRITE_KEY]
+		targetedAttribute 				= attribute_lookup[attribute_lookup_key]
+		AttributeInstanceLink 			= self.link.copy()
+		AttributeInstanceLink.attribute = targetedAttribute.id
+		if(attributeName):
+			AttributeInstanceLink.attribute = attributeName
 		if(targetedAttribute.is_placeholder):
-			if(const.VALUE_KEY in element_definition):
+			if(value is not None):
 				raise Exception(f'Element "{self.link}" instantiates the attribute definition "{AttributeInstanceLink}" which is a placeholder but the value key ist also defined, which is an invalid combination for placeholder entries.')
 			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute)
-		elif(const.VALUE_KEY in element_definition): # this is a normal attribute instance
-			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute, element_definition[const.VALUE_KEY])
+		elif(value is not None):
+			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute, value)
 		else:
-			raise Exception(f'Invalid attribute instance formatting in element "{self.link}". The following element definition is missing the "{const.VALUE_KEY}" property: {element_definition}')
+			raise ValueError(f'The attribute instance for "{self.link}" could not be created because there was no value provided which is mandatory for attributes which are not placeholders')
 		return self._create(targetedAttribute.id, newAttributeInstance)
+
+	def createAttributeInstanceFromDefinition(self, element_definition: dict):
+		if(not const.TARGET_KEY in element_definition):
+			raise KeyError(f'Error creating an attribute instance in "{self.parent.link}", Element definition "{element_definition}" is missing the mandatory key "{const.TARGET_KEY}"')
+		target = element_definition[const.TARGET_KEY]
+		name_overwrite = None
+		value = None
+		if(const.TARGET_NAME_OVERWRITE_KEY in element_definition):
+			name_overwrite = element_definition[const.TARGET_NAME_OVERWRITE_KEY]
+		if(const.VALUE_KEY in element_definition):
+			value = element_definition[const.VALUE_KEY]
+		return self.createAttributeInstance(target, value, name_overwrite)
 
 	def populate(self, property_name: str, value, isPlaceholder: bool = True):
 		attributeInstance = self.getAttributeInstance(property_name)
@@ -278,7 +507,7 @@ class ConfigElement(dynamicObject):
 				error_msg = object.__getattribute__(self, '_dynamicObject__non_existant_error')
 				raise AttributeError(error_msg.format(name))
 
-class AttributeInstance(SimpleNamespace):
+class AttributeInstance(serializer.serializeable):
 	def __init__(self, name: Union[str, Link], parent: ConfigElement, attribute: AttributeTypes.AttributeType, value = None):
 		link = Link.force(name, Link.EMPHASIZE_ATTRIBUTE)
 		self.__attribute 		= attribute
@@ -304,6 +533,14 @@ class AttributeInstance(SimpleNamespace):
 		return self.__value
 
 	@property
+	def datatype(self):
+		return self.__attribute.type
+
+	@property
+	def attributeDefinition(self):
+		return self.__attribute
+
+	@property
 	def link(self):
 		return self.__link
 
@@ -314,6 +551,11 @@ class AttributeInstance(SimpleNamespace):
 	@value.setter
 	def value(self, value):
 		self.populate(value)
+
+	@overrides(serializer.serializeable)
+	def _serialize(self) -> Dict:
+		own_subconfig = self.parent.parent.link
+		return self.__attribute.serialize_value(self.value, own_subconfig)
 
 	def ResolveValueLink(self):
 		self.__attribute.link(self.__configLookup, self)

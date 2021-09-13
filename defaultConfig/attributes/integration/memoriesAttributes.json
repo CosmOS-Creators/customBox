@@ -1,37 +1,44 @@
 {
-	"version": "1.0.0",
-
+	"version": "1.1.0",
+	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
+	"ui_page": {
+		"memories": {
+			"view_type": "tabbed",
+			"tab_label": "Memories",
+			"tab_icon": "sd_card"
+		}
+	},
 	"attributes": {
 		"memory": {
-			"label": "Memory location",
 			"type": "selection",
+			"label": "Memory location",
 			"elements": "memories/:name"
 		},
 		"name": {
-			"label": "Memory name",
 			"type": "string",
-			"tooltip": "Name of the current memory consistent with the current MCU datasheet"
+			"label": "Memory name",
+			"tooltip": "Name of the current memory consistent with the current MCU datasheet",
+			"validation": ""
 		},
 		"size": {
-			"label": "Size of the memory",
 			"type": "hex",
+			"label": "Size of the memory",
 			"tooltip": "Size of the current memory consistent with the current MCU datasheet"
 		},
 		"lowAddress": {
-			"label": "Starting address of this memory",
 			"type": "hex",
+			"label": "Starting address of this memory",
 			"tooltip": "Low address of the current memory consistent with the current MCU datasheet"
 		},
 		"cores": {
-			"label": "CPU access",
 			"type": "referenceList",
+			"label": "CPU access",
 			"tooltip": "CPU access of the current memory consistent with the current MCU datasheet"
 		},
 		"freeChunks": {
-			"placeholder": true,
-			"type": "referenceList"
+			"type": "referenceList",
+			"placeholder": true
 		}
 	},
-
 	"elements": {}
 }
