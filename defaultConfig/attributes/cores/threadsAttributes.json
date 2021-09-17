@@ -32,6 +32,11 @@
 			"min": 0,
 			"max": 2048
 		},
+		"priority": {
+			"type": "int",
+			"label": "Priority",
+			"tooltip": "Priority of the current thread - must be unique across all threads under same core"
+		},
 		"uniqueId": {
 			"type": "int",
 			"placeholder": true
@@ -48,6 +53,10 @@
 			"placeholder": true
 		},
 		"threadId": {
+			"type": "int",
+			"placeholder": true
+		},
+		"alarmId": {
 			"type": "int",
 			"placeholder": true
 		}

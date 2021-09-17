@@ -108,6 +108,10 @@
 		"unmappedDataMemory": {
 			"label": "Memory location of the unmapped data",
 			"inherit": "memoriesAttributes/:memory"
+		},
+		"prioSortedThreads": {
+			"type": "referenceList",
+			"placeholder": true
 		}
 	},
 	"elements": {}

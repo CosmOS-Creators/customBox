@@ -65,6 +65,7 @@
 
 {% for item in model.cores -%}
 #define CORE_{{item.coreId}}_ID               (BitWidthType){{item.coreId}}    /* Core {{item.CoreName}}  identificator */
+#define CORE_{{item.coreId}}_TICK_TO_MS					(BitWidthType){{((item.cpu.systemTimerFrequency/item.cpu.systemTimerTickCount)/1000)|int}}		/* Core {{item.CoreName}}  msToTicks */
 #define CORE_{{item.coreId}}_STACK_MEMORY_LOW_ADDRESS               (AddressType){{item.cpu.stackMemory.lowAddress}}    /* Core {{item.CoreName}}  stack memory lowAddress */
 #define CORE_{{item.coreId}}_STACK_MEMORY_HIGH_ADDRESS               (AddressType){{item.cpu.stackMemory.lowAddress + item.cpu.stackMemory.size}}    /* Core {{item.CoreName}}  stack memory highAddress */
 #define CORE_{{item.coreId}}_CODE_MEMORY_LOW_ADDRESS               (AddressType){{item.cpu.flashMemory.lowAddress}}    /* Core {{item.CoreName}}  flash memory lowAddress */

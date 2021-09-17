@@ -64,7 +64,7 @@ IS_INITIALIZED_TO
 {
 {% for thread in item.programThreads -%}
 {{"\t\t"}}{
-        0,       /* const BitWidthType dummy                 */
+        THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_PRIORITY,       /* const BitWidthType priority                 */
     },
 {% endfor -%}
 };

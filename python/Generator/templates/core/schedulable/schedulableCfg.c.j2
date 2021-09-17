@@ -72,6 +72,7 @@ IS_INITIALIZED_TO
         TASK_{{task.taskId}}_PROGRAM_{{task.program.programId}}_CORE_{{task.program.core.coreId}}_ID,                                   /* const BitWidthType instanceId                                                */
         PROGRAM_{{task.program.programId}}_CORE_{{task.program.core.coreId}}_ID,                                          /* const BitWidthType programId                                         */
         CORE_{{task.program.core.coreId}}_ID,                                                    /* const BitWidthType coreId                                            */
+		0,                                                    /* const BitWidthType alarmId                                            */
     },
 {% endfor -%}
 };
@@ -89,7 +90,8 @@ IS_INITIALIZED_TO
         THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID,                                     /* const BitWidthType instanceId                                                    */
         PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID,                                              /* const BitWidthType programId                                             */
         CORE_{{thread.program.core.coreId}}_ID,                                                        /* const BitWidthType coreId                                                */
-    },
+		ALARM_{{thread.alarmId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID,                                                    /* const BitWidthType alarmId                                            */
+	},
 {% endfor -%}
 };
 /* @cond S */
@@ -105,7 +107,7 @@ IS_INITIALIZED_TO
 {% for task in model.tasks -%}
 {{"\t\t"}}{
         &TasksSchedulablesCfgConst[SCHEDULABLE_TASK_{{task.taskId}}_PROGRAM_{{task.program.programId}}_CORE_{{task.program.core.coreId}}_ID],       /* const CosmOS_SchedulableConfigurationType * const cfg                              */
-        SCHEDULABLE_INSTANCE_ENUM__READY,                              /* CosmOS_SchedulableStateType state                        */
+        SCHEDULABLE_STATE_ENUM__READY,                              /* CosmOS_SchedulableStateType state                        */
         STACK_TASK_{{task.taskId}}_PROGRAM_{{task.program.programId}}_CORE_{{task.program.core.coreId}}_HIGH_ADDRESS,                                        /* StackPointerType stackPointer                            */
     },
 {% endfor -%}
@@ -117,7 +119,7 @@ IS_INITIALIZED_TO
 {% for thread in model.threads -%}
 {{"\t\t"}}{
         &ThreadsSchedulablesCfgConst[SCHEDULABLE_THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],       /* const CosmOS_SchedulableConfigurationType * const cfg                              */
-        SCHEDULABLE_INSTANCE_ENUM__READY,                                /* CosmOS_SchedulableStateType state                            */
+        SCHEDULABLE_STATE_ENUM__READY,                                /* CosmOS_SchedulableStateType state                            */
         STACK_THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_HIGH_ADDRESS,                                        /* StackPointerType stackPointer                            */
     },
 {% endfor -%}

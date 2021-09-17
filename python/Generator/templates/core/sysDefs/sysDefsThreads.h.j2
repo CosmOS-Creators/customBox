@@ -66,6 +66,7 @@
 {% endfor -%}
 {{"\n"}}{% for item in model.threads -%}
 #define THREAD_{{item.threadId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_ID   (BitWidthType){{item.threadId}}    /* Thread {{item.name}} identificator */
+#define THREAD_{{item.threadId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_PRIORITY   (BitWidthType){{item.priority}}    /* Thread {{item.name}} priority */
 {% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **

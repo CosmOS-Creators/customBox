@@ -25,6 +25,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 							'cores/:coreSysJobHyperTick',
 							'cores/:corePrograms',
 							'cores/:cpu',
+							'cores/:prioSortedThreads',
 							'programs/:programId',
 							'programs/:core',
 							'programs/:programThreads',
@@ -36,6 +37,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 							'threads/:program',
 							'threads/:threadId',
 							'threads/:uniqueId',
+							'threads/:alarmId',
 							'sysJobs/:groupId',
 							'sysJobs/:core',
 							'sysJobs/:tickMultiplicator',
@@ -100,6 +102,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 			programIterativeId = 0
 			coreNumberOfThreads = 0
 			coreNumberOfTasks = 0
+			alarmIterativeId = 0
 			coreIterativeId += 1
 			for program in self.programs:
 				if program.core == core:
@@ -111,8 +114,11 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 					for thread in self.threads:
 						if thread.program == program:
 							program.programThreads.append(thread)
+							core.prioSortedThreads.append(thread)
 							thread.threadId = threadIterativeId
+							thread.alarmId = alarmIterativeId
 							threadIterativeId += 1
+							alarmIterativeId += 1
 							coreNumberOfThreads += 1
 					for task in self.tasks:
 						if task.program == program:
@@ -131,6 +137,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 					core.coreScheduler.append(scheduler)
 			core.coreNumberOfThreads = coreNumberOfThreads
 			core.coreNumberOfTasks = coreNumberOfTasks
+			core.prioSortedThreads = sorted(core.prioSortedThreads,key=lambda x: x.priority, reverse=True)
 		bufferIterativeId = 0
 		doubleBufferIterativeId = 0
 		for buffer in self.buffers:
