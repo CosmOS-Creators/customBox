@@ -52,10 +52,6 @@
 			"type": "referenceList",
 			"placeholder": true
 		},
-		"heapSpinlockId": {
-			"type": "int",
-			"placeholder": true
-		},
 		"memory": {
 			"label": "Memory location of the Program",
 			"tooltip": "Memory location of the Program, all the program data will be stored here",

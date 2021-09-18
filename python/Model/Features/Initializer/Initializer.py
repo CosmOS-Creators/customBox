@@ -30,7 +30,6 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 							'programs/:core',
 							'programs/:programThreads',
 							'programs/:programTasks',
-							'programs/:heapSpinlockId',
 							'tasks/:program',
 							'tasks/:taskId',
 							'tasks/:uniqueId',
@@ -82,7 +81,6 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 		self.assigneSysJobHypertick()
 		self.assigneSchedulerEntries()
 		self.assigneBufferSpinlocks()
-		self.assigneHeapSpinlocks()
 		self.assigneMaxTimerTick()
 
 	def assigneUniqueId(self):
@@ -190,14 +188,6 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 			else:
 				buffer.spinlockId = 0
 			buffer.isInterCore = isInterCore
-
-	def assigneHeapSpinlocks(self):
-		for program in self.programs:
-			if len(program.programThreads):
-				self.highestSpinlockId += 1
-				program.heapSpinlockId = self.highestSpinlockId
-			else:
-				program.heapSpinlockId = None
 
 	def assigneMaxTimerTick(self):
 		for scheduler in self.schedulers:

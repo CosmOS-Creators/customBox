@@ -77,13 +77,6 @@
 {% endif -%}
 {% endif -%}
 {% endfor -%}
-/* Heap Spinlock identificators */
-{{"\n"}}{% for item in model.programs -%}
-{% if item.heapSpinlockId != None -%}
-#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identificator */
-{% set ns.index = ns.index + 1 -%}
-{% endif -%}
-{% endfor -%}
 {{"\n"}}#define SPINLOCK_NUM                                    (BitWidthType){{ns.index}}    /* Number of configurated spinlocks */
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **

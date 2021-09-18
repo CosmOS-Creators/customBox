@@ -5,13 +5,13 @@
 *********************************************************************************
 **                       DOXYGEN DOCUMENTATION INFORMATION                     **
 *****************************************************************************//**
-** @file threadCfg.c
+** @file mutexCfg.c
 *********************************************************************************
-<!--                  threadCfg Unit Local Group Definition                   -->
+<!--                  mutexCfg Unit Local Group Definition                  -->
 *********************************************************************************
-** @defgroup Local_threadCfg Local
-** @ingroup threadCfg_unit
-** @brief threadCfg locals
+** @defgroup Local_mutexCfg Local
+** @ingroup mutexCfg_unit
+** @brief mutexCfg locals
 ** @details lorem
 ********************************************************************************/
 /********************************************************************************
@@ -21,8 +21,7 @@
 **                            Include Files | Start                            **
 ********************************************************************************/
 /* CORE interfaces */
-#include "threadCfg.h"
-#include "schedulableCfg.h"
+#include "mutexCfg.h"
 /********************************************************************************
 **                            Include Files | Stop                             **
 ********************************************************************************/
@@ -32,15 +31,15 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Macros_threadCfg_c Macros
-  * @ingroup Local_threadCfg
+  * @defgroup Macros_mutexCfg_c Macros
+  * @ingroup Local_mutexCfg
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Macros_threadCfg_c
+  * Macros_mutexCfg_c
 ********************************************************************************/
 /********************************************************************************
 **                          Macro Definitions | Stop                           **
@@ -51,49 +50,31 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Variables_threadCfg_c Variables
-  * @ingroup Local_threadCfg
+  * @defgroup Variables_mutexCfg_c Variables
+  * @ingroup Local_mutexCfg
   * @{
 ********************************************************************************/
+{% for item in model.cores -%}
+{% for program in item.corePrograms -%}
 /* @cond S */
-__SEC_START(__OS_CONSTS_SECTION_START)
+__SEC_START(__{{program.name.upper()}}_INIT_SECTION_START)
 /* @endcond*/
-{% for item in model.programs -%}
-const CosmOS_ThreadConfigurationType ThreadsProgram{{item.programId}}Core{{item.core.coreId}}CfgConst[THREAD_PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_NUM] __OS_CONSTS_SECTION
+CosmOS_MutexVariableType MutexForProgram{{program.programId}}HeapCore{{item.coreId}}Var __{{program.name.upper()}}_INIT_SECTION
 IS_INITIALIZED_TO
 {
-{% for thread in item.programThreads -%}
-{{"\t\t"}}{
-        THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_PRIORITY,       /* const BitWidthType priority                 */
-    },
-{% endfor -%}
+	0,			/* 	BitWidthType mutex 									*/
+	NULL,		/* 	CosmOS_SchedulableVariableType * schedulableOwner 	*/
 };
-{% endfor -%}
 /* @cond S */
-__SEC_STOP(__OS_CONSTS_SECTION_STOP)
+__SEC_STOP(__{{program.name.upper()}}_INIT_SECTION_STOP)
 /* @endcond*/
-
-/* @cond S */
-__SEC_START(__OS_VARS_SECTION_START)
-/* @endcond*/
-{% for item in model.programs -%}
-CosmOS_ThreadVariableType ThreadsProgram{{item.programId}}Core{{item.core.coreId}}Var[THREAD_PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_NUM] __OS_VARS_SECTION
-IS_INITIALIZED_TO
-{
-{% for thread in item.programThreads -%}
-{{"\t\t"}}{
-        &ThreadsProgram{{thread.program.programId}}Core{{thread.program.core.coreId}}CfgConst[THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],      /* const CosmOS_ThreadConfigurationType * const cfg                      */
-        &ThreadsSchedulablesVar[SCHEDULABLE_THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],            /* CosmOS_SchedulableVariableType * const schedulable                       */
-		NULL,		/* CosmOS_MutexVariableType *blockingMutexVar                       */
-	},
 {% endfor -%}
-};
 {% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Variables_threadCfg_c
+  * Variables_mutexCfg_c
 ********************************************************************************/
 /********************************************************************************
 **                              Variables | Stop                               **
@@ -104,47 +85,47 @@ IS_INITIALIZED_TO
 /********************************************************************************
   * DOXYGEN DEF GROUP                                                          **
   * *************************************************************************//**
-  * @defgroup Apis_threadCfg_c API's
-  * @ingroup Local_threadCfg
+  * @defgroup Apis_mutexCfg_c API's
+  * @ingroup Local_mutexCfg
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_threadCfg_c Getters
-  * @ingroup Apis_threadCfg_c
+  * @addtogroup Getters_mutexCfg_c Getters
+  * @ingroup Apis_mutexCfg_c
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Getters_threadCfg_c
+  * Getters_mutexCfg_c
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_threadCfg_c Setters
-  * @ingroup Apis_threadCfg_c
+  * @addtogroup Setters_mutexCfg_c Setters
+  * @ingroup Apis_mutexCfg_c
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Setters_threadCfg_c
+  * Setters_mutexCfg_c
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_threadCfg_c General
-  * @ingroup Apis_threadCfg_c
+  * @addtogroup General_mutexCfg_c General
+  * @ingroup Apis_mutexCfg_c
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * General_threadCfg_c
+  * General_mutexCfg_c
 ********************************************************************************/
 /********************************************************************************
 **                         Function Prototypes | Stop                          **

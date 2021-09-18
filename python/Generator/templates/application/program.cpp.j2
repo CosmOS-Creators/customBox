@@ -90,8 +90,8 @@ __SEC_STOP(__{{program.name.upper()}}_INIT_SECTION_STOP)
 /********************************************************************************
 ** Task ID macro = TASK_{{task.taskId}}_PROGRAM_{{program.programId}}_CORE_{{program.core.coreId}}_ID
 ** Program ID macro = PROGRAM_{{program.programId}}_CORE_{{program.core.coreId}}_ID
-** WCET macro = TASK_{{task.taskId}}_PROGRAM_{{program.programId}}_CORE_{{program.core.coreId}}_WCET
-** Period of task in ticks = {{task.period}}
+** WCET of the task in microseconds = {{(1000*task.wcet|float/((program.core.cpu.systemTimerFrequency|float/program.core.cpu.systemTimerTickCount|float)/1000))|float}}
+** Period of the task in milliseconds = {{(task.period|float/((program.core.cpu.systemTimerFrequency|float/program.core.cpu.systemTimerTickCount|float)/1000))|float}}
 ********************************************************************************/
 /* @cond S */
 __SEC_START(__APPLICATION_FUNC_SECTION_START_{{program.core.CoreName}})
