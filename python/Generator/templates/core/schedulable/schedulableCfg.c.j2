@@ -22,7 +22,7 @@
 ********************************************************************************/
 /* CORE interfaces */
 #include "schedulableCfg.h"
-#include "cosmosApiPrivate.h"
+#include "cosmosApiInternal.h"
 #include "stackCfg.h"
 /********************************************************************************
 **                            Include Files | Stop                             **
@@ -198,13 +198,13 @@ __SEC_START(__APPLICATION_FUNC_SECTION_START_{{item.core.CoreName}})
 __APPLICATION_FUNC_SECTION_{{item.core.CoreName}} void wrapped_{{task.name}}(void)
 {
     {% if task.isSysJob -%}
-    cosmosApiPrivate_sysJobs_dispatcher();
-    cosmosApiPrivate_schedulable_setExecutionStateToFinished();
+    cosmosApiInternal_sysJobs_dispatcher();
+    cosmosApiInternal_schedulable_setExecutionStateToFinished();
     {% elif task.isIdle -%}
     {{task.name}}();
     {% else -%}
     {{task.name}}();
-    cosmosApiPrivate_schedulable_setExecutionStateToFinished();
+    cosmosApiInternal_schedulable_setExecutionStateToFinished();
     {% endif -%}
     for(;;);
 };

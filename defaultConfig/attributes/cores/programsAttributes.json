@@ -19,15 +19,13 @@
 			"type": "int",
 			"label": "Size of the program memory",
 			"tooltip": "Size of the program data memory",
-			"min": 0,
-			"max": 2048
+			"min": 0
 		},
 		"heapSize": {
 			"type": "int",
 			"label": "Size of the program heap",
 			"tooltip": "Size of the program heap placed in the program memory",
-			"min": 0,
-			"max": 2048
+			"min": 0
 		},
 		"lowAddress": {
 			"type": "int",

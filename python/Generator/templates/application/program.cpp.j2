@@ -55,7 +55,9 @@ extern "C" void {{thread.name}}(void);
 /********************************************************************************
 **                           START OF THE SOURCE FILE                          **
 ********************************************************************************/
+/* @cond S */
 __SEC_START(__{{program.name.upper()}}_NOINIT_SECTION_START)
+/* @endcond*/
 // If your compiler does not support pragmas use __{{program.name.upper()}}_NOINIT_SECTION
 {% set section_name = program.name + '_noInit' -%}
 /********************************************************************************
@@ -67,9 +69,13 @@ __SEC_START(__{{program.name.upper()}}_NOINIT_SECTION_START)
 ** stop_name ={{section_name}}
 ** DO NOT MODIFY THIS COMMENT !                      USER SECTION | Stop       **
 ********************************************************************************/
+/* @cond S */
 __SEC_STOP(__{{program.name.upper()}}_NOINIT_SECTION_STOP)
+/* @endcond*/
 
+/* @cond S */
 __SEC_START(__{{program.name.upper()}}_INIT_SECTION_START)
+/* @endcond*/
 // If your compiler does not support pragmas use __{{program.name.upper()}}_INIT_SECTION
 {% set section_name = program.name + '_init' -%}
 /********************************************************************************
@@ -81,7 +87,9 @@ __SEC_START(__{{program.name.upper()}}_INIT_SECTION_START)
 ** stop_name ={{section_name}}
 ** DO NOT MODIFY THIS COMMENT !                      USER SECTION | Stop       **
 ********************************************************************************/
+/* @cond S */
 __SEC_STOP(__{{program.name.upper()}}_INIT_SECTION_STOP)
+/* @endcond*/
 
 {% for task in program.programTasks -%}
 {% if not task.isSysJob -%}
@@ -145,6 +153,24 @@ __SEC_STOP(__APPLICATION_FUNC_SECTION_STOP_{{program.core.CoreName}})
 {% endif -%}
 {% endfor -%}
 {% endif -%}
+
+{{"\n"}}/* @cond S */
+__SEC_START(__APPLICATION_FUNC_SECTION_START_{{program.core.CoreName}})
+/* @endcond*/
+// If your compiler does not support pragmas use __APPLICATION_FUNC_SECTION_{{program.core.CoreName}}
+{% set section_name = program.name + '_userCodeFree' -%}
+/********************************************************************************
+** DO NOT MODIFY THIS COMMENT ! Code                 USER SECTION | Start      **
+** start_name ={{section_name}}
+********************************************************************************/
+{{sections[section_name]}}
+/********************************************************************************
+** stop_name ={{section_name}}
+** DO NOT MODIFY THIS COMMENT ! Code                 USER SECTION | Stop       **
+********************************************************************************/
+/* @cond S */
+__SEC_STOP(__APPLICATION_FUNC_SECTION_STOP_{{program.core.CoreName}})
+/* @endcond*/
 /********************************************************************************
 **                           END OF THE SOURCE FILE                            **
 ********************************************************************************/
