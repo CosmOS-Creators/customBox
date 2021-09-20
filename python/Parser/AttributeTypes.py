@@ -299,13 +299,14 @@ class ReferenceListType(AttributeType):
 				for element in self.elements:
 					if(element.config == link.config):
 						linkFoundMatch = True
+						break
 				if(linkFoundMatch == False):
 					raise ValueError(f'Error for attribute definition \"{self.globalID}\": Provided link in the value list ({link.getLink()}) does not match any of the allowed links for this attributes reference list ({self.elements})')
 			try:
 				targetElement = link.resolveElement(objConfig)
 			except AttributeError as e:
 				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}")
-			linkedTargets.append(targetElement)
+			linkedTargets.append(targetElement.getObjReference(linkedTargets))
 		attributeInstance.setValueDirect(linkedTargets)
 
 	@overrides(AttributeType)
@@ -396,7 +397,7 @@ class SelectionType(AttributeType):
 					continue
 				possibleValues.append(targetValue)
 				if(attributeInstance.value == targetValue.value or attributeInstance.value == targetValue):
-					attributeInstance.setValueDirect(targetValue.parent)
+					attributeInstance.setValueDirect(targetValue.parent.getObjReference(attributeInstance))
 					foundMatch = True
 					if(self.resolvedElements is not None):
 						break
