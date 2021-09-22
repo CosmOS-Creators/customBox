@@ -37,32 +37,47 @@ class dynamicObject:
 		self.initFinished 			= True
 
 	def __repr__(self):
-		return f"{self.__class_name}({list(self.dynamic_items.values())})"
+		return f"{self.__class_name}({list(object.__getattribute__(self, 'dynamic_items').values())})"
 
 	def __iter__(self):
-		return iter(self.dynamic_items.values())
+		return iter(object.__getattribute__(self, 'dynamic_items').values())
 
 	def __len__(self):
-		return len(self.dynamic_items)
+		return len(object.__getattribute__(self, 'dynamic_items'))
 
 	def _getItems(self):
-		return self.dynamic_items
+		return object.__getattribute__(self, 'dynamic_items')
 
 	def _create(self, name: str, element):
-		if(name in self.__dict__):
+		if(name in object.__getattribute__(self, '__dict__')):
 			raise AttributeError(self.__name_clash_error.format(name))
-		if(name in self.dynamic_items):
+		dynamic_items = object.__getattribute__(self, 'dynamic_items')
+		if(name in dynamic_items):
 			raise AttributeError(self.__duplicate_error.format(name))
-		self.dynamic_items[name] = element
+		dynamic_items[name] = element
 		return element
 
 	def _has(self, name: str):
-		return name in self.dynamic_items
+		return name in object.__getattribute__(self, 'dynamic_items')
+
+	def _del(self, item):
+		items = object.__getattribute__(self, 'dynamic_items')
+		for key, value in items.items():
+			if(value == item):
+				del items[key]
+				break
 
 	def _get(self, name: str):
 		items = object.__getattribute__(self, 'dynamic_items')
 		if(name in items):
 			return items[name]
+		else:
+			raise AttributeError(self.__non_existant_error.format(name))
+
+	def _set(self, name: str, value):
+		items = object.__getattribute__(self, 'dynamic_items')
+		if(name in items):
+			items[name] = value
 		else:
 			raise AttributeError(self.__non_existant_error.format(name))
 
@@ -83,7 +98,8 @@ class dynamicObject:
 		try:
 			return object.__getattribute__(self, name)
 		except AttributeError:
-			return self._get(name)
+			get = object.__getattribute__(self, '_get')
+			return get(name)
 
 class UiViewType():
 	def __init__(self, key):
@@ -258,6 +274,10 @@ class Subconfig(dynamicObject, serializer.serializeable):
 		doesNotExist = f'Tried to get element "{{0}}" from subconfig "{self.link.config}" but this subconfig has no element with that name'
 		super().__init__("Subconfig", forbidden, duplicated, doesNotExist)
 
+	def __deleteitem__(self, item: ConfigElement):
+		item.delete()
+		self._del(item)
+
 	@property
 	def elements(self) -> Dict[str, ConfigElement]:
 		return self._getItems()
@@ -364,6 +384,8 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 		self.__link					= parent.link.copy()
 		self.__link.element			= name 				# example: cores/core_0
 		self.__parent				= parent
+		self.__referenced_in: List[Union[ConfigElement, AttributeInstance]] = list()
+
 		forbidden = f'Creating an attribute named "{{0}}" within the element "{self.link}" is not permitted as "{{0}}" is a reserved keyword'
 		duplicated = f'The creation of a new attribute named "{{0}}" was requested for element "{self.link}" but an attribute with that name already exists for this element'
 		doesNotExist = f'Tried to get attribute "{{0}}" from element "{self.link}" but this element has no attribute with that name'
@@ -372,6 +394,33 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 	@overrides(dynamicObject)
 	def __repr__(self):
 		return f"ConfigElement({self.__name})"
+
+	def delete(self):
+		for reference in self.__referenced_in:
+			if(isinstance(reference, list)):
+				reference: List[ConfigElement]
+				reference.remove(self)
+			elif(isinstance(reference, ConfigElement)):
+				reference: ConfigElement
+				if(self.link.config in reference.attributes):
+					refCol: ReferenceCollection = reference.getAttribute(self.link.config)
+					refCol._unlinkReference(self.__name)
+				else:
+					for attribute in reference.attributes.values():
+						if(attribute.value == self):
+							attribute.setValueDirect(attribute.attributeDefinition.getDefault())
+
+			elif(isinstance(reference, AttributeInstance)):
+				reference.setValueDirect(reference.attributeDefinition.getDefault())
+			else:
+				raise TypeError(f'Error while deleting element "{str(self.link)}". Tried to remove reference to this element from unsupported type "{type(reference)}"')
+		SubconfigEntry = None
+		for key, element in self.parent.elements.items():
+			if(element == self):
+				SubconfigEntry = key
+				break
+		if(SubconfigEntry is not None):
+			del self.parent.elements[SubconfigEntry]
 
 	@property
 	def link(self):
@@ -412,17 +461,21 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 			serialized_data.append(serializer.serialize(attribute))
 		return serialized_data
 
+	def getObjReference(self, referenced_in_object: Union[ConfigElement, AttributeInstance, List[ConfigElement]]):
+		self.__referenced_in.append(referenced_in_object)
+		return self
+
 	def getAttribute(self, name: str) -> Union[AttributeInstance, ReferenceCollection]:
 		return self._get(name)
 
-	def addReferenceObject(self, name: str, objectLinkName: str, ObjectLink):
+	def addReferenceObject(self, name: str, objectLinkName: str, ObjectLink: ConfigElement):
 		if(self._has(name)):
 			item = self._get(name)
 			if(not type(item) is ReferenceCollection):
 				raise AttributeError(f'The creation of a new reference object named "{name}" was requested for element "{self.link}" but an attribute instanace with that name already exists for this element')
 		else:
 			item = self._create(name, ReferenceCollection(name, self))
-		item.addReference(objectLinkName, ObjectLink)
+		item.addReference(objectLinkName, ObjectLink.getObjReference(self))
 
 	def getReferenceObject(self, name: str) -> ReferenceCollection:
 		item = self._get(name)
@@ -598,6 +651,9 @@ class ReferenceCollection(dynamicObject):
 	@property
 	def references(self):
 		return self._getItems()
+
+	def _unlinkReference(self, name: str):
+		self._set(name, None)
 
 	def hasReference(self, name: str):
 		return self._has(name)

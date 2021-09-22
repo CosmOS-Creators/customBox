@@ -64,9 +64,9 @@ class TestClassBasicFunctions:
 		for name, attribute in reference_test_0_configElement.attributes.items():
 			assert element_1_attribute_values[name] == attribute.value
 
-class TestCreatingNewElements:
+class TestCreatingElementCreationAndDeletion:
 
-	def test_new_elemnt_creation(self, parsed_config: ConfigTypes.Configuration):
+	def test_new_element_creation(self, parsed_config: ConfigTypes.Configuration):
 		subconfig = parsed_config.getSubconfig("basicTypes")
 		assert len(subconfig.elements) == 2
 		assert "element_1" in subconfig.elements and "element_2" in subconfig.elements
@@ -80,6 +80,26 @@ class TestCreatingNewElements:
 			newElement.createAttributeInstance("stringType", "test")
 		with pytest.raises(ValueError):
 			newElement.createAttributeInstance("stringType", attributeName="test1")
+
+	def test_element_deletion1(self, parsed_config: ConfigTypes.Configuration):
+		referenceTypes = parsed_config.getSubconfig("referenceTypes")
+		basicTypes = parsed_config.getSubconfig("basicTypes")
+		ref_test_0 = referenceTypes.getElement("reference_test_0")
+		element_1 = basicTypes.getElement("element_1")
+		assert element_1 in ref_test_0.getAttribute("referenceListType").value
+		assert element_1 == ref_test_0.getAttribute("parentReferenceType").value
+		element_1.delete()
+		assert element_1 not in ref_test_0.getAttribute("referenceListType").value
+		assert ref_test_0.getAttribute("parentReferenceType").value is None
+
+	def test_element_deletion2(self, parsed_config: ConfigTypes.Configuration):
+		referenceTypes = parsed_config.getSubconfig("referenceTypes")
+		basicTypes = parsed_config.getSubconfig("basicTypes")
+		ref_test_0 = referenceTypes.getElement("reference_test_0")
+		element_1 = basicTypes.getElement("element_1")
+		assert ref_test_0 in element_1.getAttribute("referenceTypes").references.values()
+		ref_test_0.delete()
+		assert ref_test_0 not in element_1.getAttribute("referenceTypes").references.values()
 
 
 class TestChecksumFunctionality:
