@@ -61,6 +61,24 @@ __APPLICATION_FUNC_SECTION_{{core.CoreName.upper()}} void userKernelPanicHook_{{
 /* @cond S */
 __SEC_STOP(__APPLICATION_FUNC_SECTION_STOP_{{core.CoreName.upper()}})
 /* @endcond*/
+
+/* @cond S */
+__SEC_START(__APPLICATION_FUNC_SECTION_START_{{core.CoreName.upper()}})
+/* @endcond*/
+// If your compiler does not support pragmas use __APPLICATION_FUNC_SECTION_{{core.CoreName.upper()}}
+{% set section_name = filename + '_userCodeFree' -%}
+/********************************************************************************
+** DO NOT MODIFY THIS COMMENT ! Code                 USER SECTION | Start      **
+** start_name ={{section_name}}
+********************************************************************************/
+{{sections[section_name]}}
+/********************************************************************************
+** stop_name ={{section_name}}
+** DO NOT MODIFY THIS COMMENT ! Code                 USER SECTION | Stop       **
+********************************************************************************/
+/* @cond S */
+__SEC_STOP(__APPLICATION_FUNC_SECTION_STOP_{{core.CoreName.upper()}})
+/* @endcond*/
 /********************************************************************************
 **                           END OF THE SOURCE FILE                            **
 ********************************************************************************/
