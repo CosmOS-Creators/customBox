@@ -6,6 +6,6 @@ def test_workspace():
 	return Workspace("./Cosmos/customBox/python/Parser/tests/testConfigs/workspaces/BasicConfig.json")
 
 @pytest.fixture
-def parsed_config(test_workspace):
-	parser = ConfigParser(test_workspace)
+def parsed_config():
+	parser = ConfigParser("./Cosmos/customBox/python/Parser/tests/testConfigs/configs/BasicConfig")
 	return parser.parse()

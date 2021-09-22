@@ -397,13 +397,19 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 
 	def delete(self):
 		for reference in self.__referenced_in:
-			if(type(reference) is list):
+			if(isinstance(reference, list)):
 				reference: List[ConfigElement]
 				reference.remove(self)
-			elif(type(reference) is ConfigElement):
+			elif(isinstance(reference, ConfigElement)):
 				reference: ConfigElement
-				refCol: ReferenceCollection = reference.getAttribute(self.link.config)
-				refCol._unlinkReference(self.__name)
+				if(self.link.config in reference.attributes):
+					refCol: ReferenceCollection = reference.getAttribute(self.link.config)
+					refCol._unlinkReference(self.__name)
+				else:
+					for attribute in reference.attributes.values():
+						if(attribute.value == self):
+							attribute.setValueDirect(attribute.attributeDefinition.getDefault())
+
 			elif(isinstance(reference, AttributeInstance)):
 				reference.setValueDirect(reference.attributeDefinition.getDefault())
 			else:

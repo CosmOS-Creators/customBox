@@ -81,7 +81,7 @@ class TestCreatingElementCreationAndDeletion:
 		with pytest.raises(ValueError):
 			newElement.createAttributeInstance("stringType", attributeName="test1")
 
-	def test_element_deletion(self, parsed_config: ConfigTypes.Configuration):
+	def test_element_deletion1(self, parsed_config: ConfigTypes.Configuration):
 		referenceTypes = parsed_config.getSubconfig("referenceTypes")
 		basicTypes = parsed_config.getSubconfig("basicTypes")
 		ref_test_0 = referenceTypes.getElement("reference_test_0")
@@ -91,6 +91,15 @@ class TestCreatingElementCreationAndDeletion:
 		element_1.delete()
 		assert element_1 not in ref_test_0.getAttribute("referenceListType").value
 		assert ref_test_0.getAttribute("parentReferenceType").value is None
+
+	def test_element_deletion2(self, parsed_config: ConfigTypes.Configuration):
+		referenceTypes = parsed_config.getSubconfig("referenceTypes")
+		basicTypes = parsed_config.getSubconfig("basicTypes")
+		ref_test_0 = referenceTypes.getElement("reference_test_0")
+		element_1 = basicTypes.getElement("element_1")
+		assert ref_test_0 in element_1.getAttribute("referenceTypes").references.values()
+		ref_test_0.delete()
+		assert ref_test_0 not in element_1.getAttribute("referenceTypes").references.values()
 
 
 class TestChecksumFunctionality:

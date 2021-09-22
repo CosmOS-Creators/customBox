@@ -69,16 +69,38 @@ def discoverConfigFiles(configPath: Union[str,List[str]]) -> List[Path]:
 	return configFiles
 
 class ConfigParser():
-	def __init__(self, workspace: WorkspaceParser.Workspace):
-		workspace.requireFolder(["config"])
-		self.__workspace 	= workspace
+	def __init__(self, workspace: Union[WorkspaceParser.Workspace, Union[Union[str, Path], List[Union[str, Path]]]]):
+		self.__configs 	= None
+		if(isinstance(workspace, WorkspaceParser.Workspace)):
+			workspace.requireFolder(["config"])
+			self.__workspace	= workspace
+			return
+		if(isinstance(workspace, str) or isinstance(workspace, Path)):
+			workspace 	= [workspace]
+		if(isinstance(workspace, list)):
+			self.__workspace 			= None
+			self.__configs: List[Path]	= list()
+			for config in workspace:
+				if(isinstance(config, str)):
+					self.__configs.append(Path(config))
+				elif(isinstance(config, Path)):
+					self.__configs.append(config)
+				else:
+					raise TypeError(f"Only supported types as a config input are List[str | Path] but got List[{type(config)}] instead.")
+		else:
+			raise TypeError(f"Only supported types as a config input are List[str | Path] but got {type(workspace)} instead.")
 
 	@property
 	def workspace(self):
 		return self.__workspace
 
 	def parse(self)  -> ConfigTypes.Configuration:
-		configFiles = discoverConfigFiles(self.__workspace.config)
+		if(self.__workspace is not None):
+			configFiles = discoverConfigFiles(self.__workspace.config)
+		elif(self.__configs is not None):
+			configFiles = discoverConfigFiles(self.__configs)
+		else:
+			raise Exception(f'Configuration was not passed to the ConfigParser correctly. Cannot proceed.')
 		jsonConfigs = dict()
 		configFileNames = dict()
 		for configFile in configFiles:

@@ -511,6 +511,7 @@ class ParentReferenceType(AttributeType):
 		selfElement 	= attributeInstance.link.resolveElement(objConfig)
 		targetedElement = linkTarget.resolveElement(objConfig)
 		targetedElement.addReferenceObject(attributeInstance.link.config, attributeInstance.link.element, selfElement)
+		targetedElement.getObjReference(attributeInstance.parent)
 		attributeInstance.setValueDirect(targetedElement)
 
 	@overrides(AttributeType)
