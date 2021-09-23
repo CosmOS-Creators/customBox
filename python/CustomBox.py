@@ -12,7 +12,7 @@ if __name__ == "__main__":
 	configGenerator = ConfigurationGenerator.configGenerator(workspace)
 	Interface 		= Configurator()
 
-	mainUI = Interface.buildMainWindow(systemModel, "CustomBox")
+	mainUI = Interface.buildMainWindow(systemModel, "CustomBox", "custombox-icon")
 	mainUI.register_generate_callback(lambda: configGenerator.generate(systemModel))
 
-	sys.exit(Interface.run())
+	sys.exit(Interface.run(mainUI))

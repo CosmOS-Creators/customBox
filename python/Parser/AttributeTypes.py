@@ -3,7 +3,7 @@ import re
 import Parser.ConfigTypes 	as ConfigTypes
 import Parser.helpers		as helpers
 import Parser.constants		as const
-from typing 				import List, Union
+from typing 				import List, Type, Union
 from Parser.helpers 		import overrides
 from Parser.LinkElement		import Link
 
@@ -516,6 +516,8 @@ class ParentReferenceType(AttributeType):
 
 	@overrides(AttributeType)
 	def _serialize_value(self, value: ConfigTypes.ConfigElement):
+		if(value is None):
+			raise ValueError(f'Serialization of attribute {self.globalID.attribute} failed as it is of type {self._comparison_type} and is not allowed to be None.')
 		return str(value.link)
 
 attributeTypeList = [StringType, BoolType, IntType, FloatType, ReferenceListType, StringListType, SelectionType, SelectionType, HexType, SliderType, ParentReferenceType]

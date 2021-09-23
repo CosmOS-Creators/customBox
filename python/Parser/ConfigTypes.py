@@ -65,7 +65,8 @@ class dynamicObject:
 		for key, value in items.items():
 			if(value == item):
 				del items[key]
-				break
+				return True
+		return False
 
 	def _get(self, name: str):
 		items = object.__getattribute__(self, 'dynamic_items')
@@ -251,10 +252,14 @@ class Configuration(dynamicObject, serializer.serializeable):
 						attribute.value = attribute.attributeDefinition.getDefault()
 
 	def _serialize(self):
+		serialized_data = dict()
 		for subconfig in self.configs.values():
 			Data = serializer.serialize(subconfig)
-			with subconfig.source_file.open("w") as fp:
-				json.dump(Data, fp, indent = '\t')
+			serialized_data[subconfig.source_file] = (subconfig, json.dumps(Data, indent = '\t'))
+		for config_file, (subconfig, data) in serialized_data.items():
+			with config_file.open("w") as fp:
+				fp.write(data)
+				# json.dump(Data, fp, indent = '\t')
 			subconfig._file_elements_hash = subconfig.elements_hash
 
 
@@ -402,15 +407,29 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 				reference.remove(self)
 			elif(isinstance(reference, ConfigElement)):
 				reference: ConfigElement
+				was_removed = False
 				if(self.link.config in reference.attributes):
-					refCol: ReferenceCollection = reference.getAttribute(self.link.config)
-					refCol._unlinkReference(self.__name)
-				else:
+					attrib: ReferenceCollection = reference.getAttribute(self.link.config)
+					if(isinstance(attrib, ReferenceCollection)):
+						attrib: ReferenceCollection
+						if(attrib._unlinkReference(self) == True):
+							was_removed = True
+					elif(isinstance(attrib, AttributeInstance)):
+						attrib: AttributeInstance
+						if(attrib.value == self):
+							attrib.setValueDirect(attrib.attributeDefinition.getDefault())
+							was_removed = True
+					else:
+						raise NotImplementedError(f'Deletion for attributes of type {type(attrib)} cannot be handeled correctly.')
+				if(was_removed == False):
 					for attribute in reference.attributes.values():
-						if(attribute.value == self):
-							attribute.setValueDirect(attribute.attributeDefinition.getDefault())
-
+						if(isinstance(attribute, AttributeInstance)):
+							if(attribute.value == self):
+								attribute.setValueDirect(attribute.attributeDefinition.getDefault())
+						elif(not isinstance(attribute, ReferenceCollection)):
+							raise NotImplementedError(f'Deletion for attributes of type {type(attribute)} cannot be handeled correctly.')
 			elif(isinstance(reference, AttributeInstance)):
+				reference: AttributeInstance
 				reference.setValueDirect(reference.attributeDefinition.getDefault())
 			else:
 				raise TypeError(f'Error while deleting element "{str(self.link)}". Tried to remove reference to this element from unsupported type "{type(reference)}"')
@@ -458,7 +477,10 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 	def _serialize(self) -> Dict:
 		serialized_data = list()
 		for attribute in self.attributeInstances.values():
-			serialized_data.append(serializer.serialize(attribute))
+			try:
+				serialized_data.append(serializer.serialize(attribute))
+			except ValueError as e:
+				raise ValueError(f'Error while serializing "{self.link.config}" subconfig: {str(e)}')
 		return serialized_data
 
 	def getObjReference(self, referenced_in_object: Union[ConfigElement, AttributeInstance, List[ConfigElement]]):
@@ -652,8 +674,8 @@ class ReferenceCollection(dynamicObject):
 	def references(self):
 		return self._getItems()
 
-	def _unlinkReference(self, name: str):
-		self._set(name, None)
+	def _unlinkReference(self, ref):
+		return self._del(ref)
 
 	def hasReference(self, name: str):
 		return self._has(name)

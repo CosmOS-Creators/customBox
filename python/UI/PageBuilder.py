@@ -1,13 +1,25 @@
 from typing import Dict, List, Tuple
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QFormLayout, QLayout, QScrollArea, QTabWidget, QWidget
-from Parser.ConfigTypes import Configuration, Subconfig, UiViewType, UiViewTypes
+from PySide6.QtWidgets import QFormLayout, QLayout, QMessageBox, QScrollArea, QTabWidget, QWidget
+from Parser.ConfigTypes import Configuration, Subconfig, ConfigElement, UiViewType, UiViewTypes
 from UI.CustomWidgets import CardWidget
 from UI.FlowLayout import FlowLayout
 from UI.InterfaceElements import create_interface_element
 
 class Page():
 	viewType: UiViewType = None
+
+	def delete_element(self, element: ConfigElement):
+		dlg = QMessageBox(self)
+		dlg.setWindowTitle(f'Delete "{str(element.link)}" element')
+		dlg.setText(f'Are you sure that you want to remove the "{str(element.link.element)}" element from the config?')
+		dlg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+		dlg.setIcon(QMessageBox.Icon.Question)
+		result = dlg.exec()
+		if(result == QMessageBox.Yes):
+			element.delete()
+			return True
+		return False
 
 class cardedPage(QScrollArea, Page):
 	viewType = UiViewTypes.carded
@@ -24,37 +36,50 @@ class cardedPage(QScrollArea, Page):
 		self.setWidget(self.page_widget)
 
 		for subconfig in subconfigs.values():
-			cards = buildPage(self, subconfig)
+			cards, elements = buildPages(self, subconfig)
 			for card_name, card in cards:
 				self.grid_layout.addWidget(CardWidget(self.page_widget, card, card_name))
+
+class ScrollingPage(QScrollArea):
+	def __init__(self, parent: QWidget, pageWidget: QWidget, mapped_element: ConfigElement):
+		super().__init__(parent)
+		self.setWidgetResizable(True)
+		self.setWidget(pageWidget)
+		self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.mapped_element = mapped_element
 
 class tabbedPage(QTabWidget, Page):
 	viewType = UiViewTypes.tabbed
 
+	def close_handler(self, index):
+		page: ScrollingPage = self.widget(index)
+		if(self.delete_element(page.mapped_element)):
+			self.removeTab(index)
+
 	def __init__(self, parent: QWidget, subconfigs: Dict[str, Subconfig], page_label: str):
 		super().__init__(parent)
 		self.setObjectName(page_label)
-
+		self.setTabsClosable(True)
+		self.tabCloseRequested.connect(self.close_handler)
 		for subconfig in subconfigs.values():
-			pages 	= buildPage(self, subconfig)
-			for page_name, page in pages:
-				scroll_area = QScrollArea(self)
-				scroll_area.setWidgetResizable(True)
-				scroll_area.setWidget(page)
-				scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-				self.addTab(scroll_area, page_name)
+			pages, elements 	= buildPages(self, subconfig)
+			for i, (page_name, page) in enumerate(pages):
+				new_tab = ScrollingPage(self, page, elements[i])
+				self.addTab(new_tab, page_name)
 
-def buildPage(parent: QWidget ,subconfig: Subconfig):
-	pages: List[Tuple[str, QWidget]] = list()
+def buildPages(parent: QWidget ,subconfig: Subconfig):
+	pages: List[Tuple[str, QWidget]] 	= list()
+	elements: List[ConfigElement] 		= list()
 	for element_name, element in subconfig.elements.items():
 		page 	= QWidget(parent)
 		layout 	= QFormLayout(page)
 		pages.append((element_name, page))
+		elements.append(element)
 		for attributeInstance in element.attributeInstances.values():
 			new_widget = create_interface_element(page, attributeInstance)
 			if(new_widget):
 				layout.addRow(*new_widget.get_Row())
-	return pages
+	return pages, elements
 
 all_page_types = [tabbedPage, cardedPage]
 
