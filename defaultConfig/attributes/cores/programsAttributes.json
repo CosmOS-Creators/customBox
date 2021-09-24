@@ -5,7 +5,8 @@
 		"programs": {
 			"view_type": "tabbed",
 			"tab_label": "Programs",
-			"tab_icon": "book"
+			"tab_icon": "book",
+			"allow_element_deletion": false
 		}
 	},
 	"attributes": {

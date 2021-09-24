@@ -5,7 +5,8 @@
 		"sys_call_routes": {
 			"view_type": "tabbed",
 			"tab_label": "Sys Call Routes",
-			"tab_icon": "alt_route"
+			"tab_icon": "alt_route",
+			"allow_element_deletion": false
 		}
 	},
 	"attributes": {

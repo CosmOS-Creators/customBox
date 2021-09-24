@@ -5,7 +5,8 @@
 		"mcu": {
 			"view_type": "tabbed",
 			"tab_label": "MCU settings",
-			"tab_icon": "developer_board"
+			"tab_icon": "developer_board",
+			"allow_element_deletion": false
 		}
 	},
 	"attributes": {

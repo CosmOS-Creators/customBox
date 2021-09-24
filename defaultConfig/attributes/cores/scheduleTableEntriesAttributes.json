@@ -5,7 +5,8 @@
 		"scheduler_entries": {
 			"view_type": "tabbed",
 			"tab_label": "Scheduler entries",
-			"tab_icon": "more_time"
+			"tab_icon": "more_time",
+			"allow_element_deletion": false
 		}
 	},
 	"attributes": {

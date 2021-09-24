@@ -5,7 +5,8 @@
 		"threads": {
 			"view_type": "tabbed",
 			"tab_label": "Threads",
-			"tab_icon": "date_range"
+			"tab_icon": "date_range",
+			"allow_element_deletion": false
 		}
 	},
 	"attributes": {

@@ -1,7 +1,7 @@
 from typing import Dict, List, Tuple
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QFormLayout, QLayout, QMessageBox, QScrollArea, QTabWidget, QWidget
-from Parser.ConfigTypes import Configuration, Subconfig, ConfigElement, UiViewType, UiViewTypes
+from Parser.ConfigTypes import Configuration, Subconfig, ConfigElement, UiPage, UiViewType, UiViewTypes
 from UI.CustomWidgets import CardWidget
 from UI.FlowLayout import FlowLayout
 from UI.InterfaceElements import create_interface_element
@@ -24,8 +24,10 @@ class Page():
 class cardedPage(QScrollArea, Page):
 	viewType = UiViewTypes.carded
 
-	def __init__(self, parent: QWidget, subconfigs: Dict[str, Subconfig], page_label: str):
+	def __init__(self, parent: QWidget, page: UiPage):
 		super().__init__(parent)
+		subconfigs: Dict[str, Subconfig] 	= page.assignedSubconfigs
+		page_label: str 					= page.label
 		self.setObjectName(page_label)
 		self.page_widget = QWidget(self)
 		self.setProperty("class", "cardContainer")
@@ -56,10 +58,13 @@ class tabbedPage(QTabWidget, Page):
 		if(self.delete_element(page.mapped_element)):
 			self.removeTab(index)
 
-	def __init__(self, parent: QWidget, subconfigs: Dict[str, Subconfig], page_label: str):
+	def __init__(self, parent: QWidget, page: UiPage):
 		super().__init__(parent)
+		subconfigs: Dict[str, Subconfig] 	= page.assignedSubconfigs
+		page_label: str 					= page.label
 		self.setObjectName(page_label)
-		self.setTabsClosable(True)
+		if(page.allowElementDeletion):
+			self.setTabsClosable(True)
 		self.tabCloseRequested.connect(self.close_handler)
 		for subconfig in subconfigs.values():
 			pages, elements 	= buildPages(self, subconfig)
@@ -88,6 +93,6 @@ def buildAllPages(parent, config: Configuration):
 	for page_id, page in config.UiConfig.pages.items():
 		for pageType in all_page_types:
 			if(pageType.viewType == page.viewType):
-				new_page = pageType(parent, page.assignedSubconfigs, page.label)
+				new_page = pageType(parent, page)
 				pages.append((new_page, page.icon))
 	return pages

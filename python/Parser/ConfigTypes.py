@@ -125,12 +125,13 @@ class UiViewTypes():
 		return None
 
 class UiPage(serializer.serializeable):
-	def __init__(self, id: str, label: str, viewType: UiViewType, origin: Subconfig, icon: str = None):
-		self.origin_subconfig 	= origin
-		self.id 				= id
-		self.label 				= label
-		self.icon 				= icon
-		self.viewType 			= viewType
+	def __init__(self, id: str, label: str, viewType: UiViewType, origin: Subconfig, icon: str = None, allow_deletion = False):
+		self.origin_subconfig 		= origin
+		self.id 					= id
+		self.label 					= label
+		self.icon 					= icon
+		self.viewType 				= viewType
+		self.allowElementDeletion	= allow_deletion
 		self.assignedSubconfigs: Dict[str, Subconfig] = dict()
 
 	def assignSubconfig(self, name: str, config: Subconfig):
@@ -142,6 +143,7 @@ class UiPage(serializer.serializeable):
 		data[const.UI_TAB_LABEL_KEY] = self.label
 		if(self.icon is not None):
 			data[const.UI_TAB_ICON_KEY] = self.icon
+		data[const.UI_ALLOW_ELEMENT_DELETION] = self.allowElementDeletion
 		return data
 
 class UiConfiguration(dynamicObject, serializer.serializeable):
@@ -164,7 +166,11 @@ class UiConfiguration(dynamicObject, serializer.serializeable):
 			else:
 				icon = None
 			viewType = UiViewTypes.getViewType(pageDefinition[const.UI_VIEW_TYPE_KEY])
-		return self._create(id, UiPage(id, pageDefinition[const.UI_TAB_LABEL_KEY], viewType, origin, icon))
+			if(const.UI_ALLOW_ELEMENT_DELETION in pageDefinition):
+				allowDeletion = pageDefinition[const.UI_ALLOW_ELEMENT_DELETION]
+			else:
+				allowDeletion = False
+		return self._create(id, UiPage(id, pageDefinition[const.UI_TAB_LABEL_KEY], viewType, origin, icon, allowDeletion))
 
 	def haspage(self, id: str):
 		return self._has(id)

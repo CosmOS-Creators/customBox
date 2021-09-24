@@ -5,7 +5,8 @@
 		"tasks": {
 			"view_type": "tabbed",
 			"tab_label": "Tasks",
-			"tab_icon": "task_alt"
+			"tab_icon": "task_alt",
+			"allow_element_deletion": false
 		}
 	},
 	"attributes": {

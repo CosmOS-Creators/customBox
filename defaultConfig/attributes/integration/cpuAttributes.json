@@ -5,7 +5,8 @@
 		"cpus": {
 			"view_type": "tabbed",
 			"tab_label": "CPUs",
-			"tab_icon": "memory"
+			"tab_icon": "memory",
+			"allow_element_deletion": false
 		}
 	},
 	"attributes": {

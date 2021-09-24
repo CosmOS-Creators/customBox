@@ -5,7 +5,8 @@
 		"cores": {
 			"view_type": "carded",
 			"tab_label": "Cores",
-			"tab_icon": "memory"
+			"tab_icon": "memory",
+			"allow_element_deletion": false
 		}
 	},
 	"attributes": {
@@ -97,6 +98,10 @@
 			"type": "int",
 			"placeholder": true
 		},
+		"prioSortedThreads": {
+			"type": "referenceList",
+			"placeholder": true
+		},
 		"userCodeMemory": {
 			"label": "Memory location of the user code - advised local core flash memory bank for improving performance",
 			"inherit": "memoriesAttributes/:memory"
@@ -108,10 +113,6 @@
 		"unmappedDataMemory": {
 			"label": "Memory location of the unmapped data",
 			"inherit": "memoriesAttributes/:memory"
-		},
-		"prioSortedThreads": {
-			"type": "referenceList",
-			"placeholder": true
 		}
 	},
 	"elements": {}
