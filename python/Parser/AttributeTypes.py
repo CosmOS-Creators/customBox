@@ -30,7 +30,7 @@ class AttributeType():
 		try:
 			self.checkForForbiddenKeys(self._typeSpecificKeys)
 		except KeyError as e:
-			raise KeyError(f'Error in attribute "{globalID}" of type "{self._comparison_type}" : {str(e)}')
+			raise KeyError(f'Error in attribute "{globalID}" of type "{self._comparison_type}" : {str(e)}') from e
 
 		# special helpers
 		self._is_placeholder 		= self.checkForKey(const.PLACEHOLDER_KEY, False)
@@ -168,7 +168,7 @@ class StringType(AttributeType):
 			try:
 				regex = re.compile(self.validation)
 			except Exception as e:
-				raise ValueError(f"The regex \"{self.validation}\" is not valid: \"{str(e)}\"")
+				raise ValueError(f"The regex \"{self.validation}\" is not valid: \"{str(e)}\"") from e
 			if(not regex.match(valueInput)):
 				reportValidationError(f"\"{valueInput}\" does not match the validation regex \"{self.validation}\"")
 		return valueInput
@@ -262,7 +262,7 @@ class ReferenceListType(AttributeType):
 				try:
 					link = Link.force(element)
 				except Exception as e:
-					raise Exception(f'Every list item of the elements property of the attribute "{self.globalID}" has to be a link but parsing of item {i} was unsuccessful: {str(e)}')
+					raise Exception(f'Every list item of the elements property of the attribute "{self.globalID}" has to be a link but parsing of item {i} was unsuccessful: {str(e)}') from e
 				elementLinks.append(link)
 			self.elements = elementLinks
 
@@ -305,7 +305,7 @@ class ReferenceListType(AttributeType):
 			try:
 				targetElement = link.resolveElement(objConfig)
 			except AttributeError as e:
-				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}")
+				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}") from e
 			linkedTargets.append(targetElement.getObjReference(linkedTargets))
 		attributeInstance.setValueDirect(linkedTargets)
 
@@ -385,7 +385,7 @@ class SelectionType(AttributeType):
 			try:
 				subconfig = link.resolveSubconfig(objConfig)
 			except AttributeError as e:
-				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}")
+				raise AttributeError(f"Error for attribute definition \"{self.globalID}\" while resolving references: {str(e)}") from e
 			for name, element in subconfig.elements.items():
 				element: ConfigTypes.ConfigElement = element
 				if(not link.hasAttribute()):

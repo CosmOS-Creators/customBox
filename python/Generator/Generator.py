@@ -95,7 +95,7 @@ class generationElement():
 			try:
 				renderedFile = jinjaTemplate.render(config)
 			except Exception as e:
-				raise Exception(f"Error while rendering template \"{str(template.name)}\" to file \"{outputFilePath}\": {str(e)}")
+				raise Exception(f'Error while rendering template "{str(template.name)}" to file "{outputFilePath}": {str(e)}') from e
 			generateFile = True
 			if(self.__postFileGenHook):
 				generateFile = self.__postFileGenHook(outputFilePath, renderedFile)
@@ -147,7 +147,7 @@ class Generator():
 			workspace.requireFolder(["config", "TemplateDir"])
 			workspace.requireFile(["GeneratorConfig"])
 		except AttributeError as e:
-			raise AttributeError(f"Workspace file is missing some required keys: {str(e)}")
+			raise AttributeError(f"Workspace file is missing some required keys: {str(e)}") from e
 		self.__workspace = workspace
 
 	def __parseGeneratorConfig(self, workspace: Parser.Workspace, SysConfig: configTypes.Configuration):
@@ -163,14 +163,14 @@ class Generator():
 			try:
 				templates = helpers.forceStrList(config[TEMPLATES_KEY])
 			except TypeError as e:
-				raise TypeError(f"Error in the generator config for values of the \"templates\" property: {str(e)}")
+				raise TypeError(f"Error in the generator config for values of the \"templates\" property: {str(e)}") from e
 			parsedTemplates = []
 			for template in templates:
 				foundMatch = False
 				try:
 					workspaceTemplateDirs = helpers.forceStrList(workspace.TemplateDir)
 				except TypeError as e:
-					raise TypeError(f"Error in the workspace config for values of the \"TemplateDir\" property: {str(e)}")
+					raise TypeError(f"Error in the workspace config for values of the \"TemplateDir\" property: {str(e)}") from e
 				for templateDir in workspaceTemplateDirs:
 					templateFileDir = Path(template).parent
 					testpath = Path.joinpath(Path(templateDir), templateFileDir)
@@ -185,7 +185,7 @@ class Generator():
 			try:
 				outputPath = Path(workspace.resolvePath(config[OUTPUT_DIR_KEY]))
 			except TypeError as e:
-				raise TypeError(f"Error in generator config: {str(e)}")
+				raise TypeError(f"Error in generator config: {str(e)}") from e
 			newElement = generationElement(outputPath, parsedTemplates)
 			newElement.registerHooks(self.__callPreFileGenerationPluginHooks, self.__callPostFileGenerationPluginHooks)
 			if(TARGET_KEY in config):
@@ -226,11 +226,11 @@ class Generator():
 				parser 			= Parser.ConfigParser(self.__workspace)
 				systemConfig 	= parser.parse()
 			except Exception as e:
-				raise Exception(f"The input config was not valid: \n{str(e)}")
+				raise Exception(f"The input config was not valid: \n{str(e)}") from e
 		try:
 			self.__genConfig = self.__parseGeneratorConfig(self.__workspace, systemConfig)
 		except Exception as e:
-			raise Exception(f"The generator config was not valid: \n{str(e)}")
+			raise Exception(f"The generator config was not valid: \n{str(e)}") from e
 		self.__callPreGenerationPluginHooks(systemConfig, self.total_num_generated_files)
 		generatedFiles = []
 		for genConf in self.__genConfig:

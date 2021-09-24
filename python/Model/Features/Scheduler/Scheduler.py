@@ -26,7 +26,7 @@ class SchedulerLogic(logicRunnerPlugin.logicRunner):
 							'schedulers/:table',
 							])
 		except Exception as e:
-			raise Exception(f"Initializer is missing required attribute, more info : {str(e)}")
+			raise Exception(f"Initializer is missing required attribute, more info : {str(e)}") from e
 
 		self.maxUniqueId = None
 

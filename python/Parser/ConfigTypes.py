@@ -201,7 +201,7 @@ class Configuration(dynamicObject, serializer.serializeable):
 			try:
 				link.resolve(self)
 			except Exception as e:
-				raise AttributeError(f'The link "{link}" was listed as required but it could not be resolved: {str(e)}')
+				raise AttributeError(f'The link "{link}" was listed as required but it could not be resolved: {str(e)}') from e
 
 	@property
 	def configs(self) -> Dict[str, Subconfig]:
@@ -486,7 +486,7 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 			try:
 				serialized_data.append(serializer.serialize(attribute))
 			except ValueError as e:
-				raise ValueError(f'Error while serializing "{self.link.config}" subconfig: {str(e)}')
+				raise ValueError(f'Error while serializing "{self.link.config}" subconfig: {str(e)}') from e
 		return serialized_data
 
 	def getObjReference(self, referenced_in_object: Union[ConfigElement, AttributeInstance, List[ConfigElement]]):
@@ -650,12 +650,12 @@ class AttributeInstance(serializer.serializeable):
 		try:
 			self.__value = self.__attribute.checkValue(value)
 		except ValueError as e:
-			raise ValueError(f"Error validating the new value for the placeholder \"{self.__link}\": {str(e)}")
+			raise ValueError(f"Error validating the new value for the placeholder \"{self.__link}\": {str(e)}") from e
 
 		try:
 			self.ResolveValueLink()
 		except Exception as e:
-			raise Exception(f'Error while linking element "{self.__link}" of type "{self.__attribute.type}": {str(e)}')
+			raise Exception(f'Error while linking element "{self.__link}" of type "{self.__attribute.type}": {str(e)}') from e
 
 class ReferenceCollection(dynamicObject):
 	def __init__(self, name: Union[str, Link], parent: ConfigElement):

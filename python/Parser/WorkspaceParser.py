@@ -38,12 +38,12 @@ class Workspace():
 					try:
 						property[i] = self.resolvePath(path)
 					except TypeError as e:
-						raise TypeError(f"Error while replacing placeholders in \"{key}\" config: {str(e)}")
+						raise TypeError(f"Error while replacing placeholders in \"{key}\" config: {str(e)}") from e
 			elif(type(property) is str):
 				try:
 					setattr(self, key, self.resolvePath(property))
 				except TypeError as e:
-					raise TypeError(f"Error while replacing placeholders in \"{key}\" config: {str(e)}")
+					raise TypeError(f"Error while replacing placeholders in \"{key}\" config: {str(e)}") from e
 			else:
 				raise TypeError(f"Format of the workspace file \"{WorkspaceFile}\" is invalid. The only supported items are list and str but found {type(property)}.")
 			self.placeholders.append(key)

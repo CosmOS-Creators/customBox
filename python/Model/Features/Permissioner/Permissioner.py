@@ -18,7 +18,7 @@ class PermissionerLogic(logicRunnerPlugin.logicRunner):
 							'os/:schedulableNum',
 							])
 		except Exception as e:
-			raise Exception(f"Permissioner is missing required attribute, more info : {str(e)}")
+			raise Exception(f"Permissioner is missing required attribute, more info : {str(e)}") from e
 
 		self.tasks = config.tasks
 		self.threads = config.threads
