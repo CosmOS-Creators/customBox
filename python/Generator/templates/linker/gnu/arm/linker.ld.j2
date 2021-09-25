@@ -21,7 +21,9 @@
 
 ENTRY(Reset_Handler)
 
+/* provided symbols for libraries */
 _estack = 0x{{'%04x' % (core.cpu.stackMemory.size + core.cpu.stackMemory.lowAddress)}};
+end = 0x{{'%04x' % (core.unmappedDataLowAddress + core.unmappedHeapSize)}};
 
 MEMORY
 {
@@ -31,12 +33,14 @@ FLASH_LOCAL (rx)      : ORIGIN = 0x{{'%04x' % core.staticDataLowAddress}}, LENGT
 {% endif -%}
 FLASH_USER_CODE_{{item.CoreName.upper()}} (rx)      : ORIGIN = 0x{{'%04x' % item.userCodeLowAddress}}, LENGTH = 0x{{'%04x' % item.userCodeSize}}
 {% endfor -%}
-UNMAPPED_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % core.unmappedDataLowAddress}}, LENGTH = 0x{{'%04x' % core.unmappedDataSize}}
+UNMAPPED_DATA_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % core.unmappedDataLowAddress}}, LENGTH = 0x{{'%04x' % (core.unmappedDataSize - core.unmappedHeapSize)}}
+UNMAPPED_HEAP_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % (core.unmappedDataLowAddress + core.unmappedHeapSize)}}, LENGTH = 0x{{'%04x' % (core.unmappedHeapSize)}}
 {% for item in model.osPartitions -%}
 OS_{{item.name.upper()}}_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % item.lowAddress}}, LENGTH = 0x{{'%04x' % item.size}}
 {% endfor -%}
 {% for item in model.programs -%}
-PROGRAM_{{item.name.upper()}}_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % item.lowAddress}}, LENGTH = 0x{{'%04x' % (item.size - item.heapSize)}}
+PROGRAM_{{item.name.upper()}}_DATA_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % item.lowAddress}}, LENGTH = 0x{{'%04x' % (item.size - item.heapSize)}}
+PROGRAM_{{item.name.upper()}}_HEAP_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % (item.lowAddress + item.heapSize)}}, LENGTH = 0x{{'%04x' % (item.heapSize)}}
 {% endfor -%}
 }
 
@@ -61,7 +65,7 @@ SECTIONS
     KEEP(*(.{{item.name}}_init));
     . = ALIGN(4);
     _e_program_{{item.name}}_section_init = .;          /* create a global symbol at section end */
-  } >PROGRAM_{{item.name.upper()}}_PARTITION_IN_{{item.memory.name.upper()}} AT> FLASH_LOCAL
+  } >PROGRAM_{{item.name.upper()}}_DATA_PARTITION_IN_{{item.memory.name.upper()}} AT> FLASH_LOCAL
 
   /* No init section */
   .program_{{item.name}}_section_noInit :
@@ -69,7 +73,7 @@ SECTIONS
     . = ALIGN(4);
     KEEP(*(.{{item.name}}_noInit));
     . = ALIGN(4);
-  } >PROGRAM_{{item.name.upper()}}_PARTITION_IN_{{item.memory.name.upper()}}
+  } >PROGRAM_{{item.name.upper()}}_DATA_PARTITION_IN_{{item.memory.name.upper()}}
 {% endfor -%}
 
 {% for item in model.osPartitions -%}
@@ -179,7 +183,7 @@ SECTIONS
 
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
-  } >UNMAPPED_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}} AT> FLASH_LOCAL
+  } >UNMAPPED_DATA_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}} AT> FLASH_LOCAL
 
 
   /* Uninitialized data section */
@@ -199,7 +203,7 @@ SECTIONS
 	_e_unprotected_align_helper = .;        /* create a helper for log2 alignment */
     . = ALIGN((0x2 << (LOG2CEIL (_e_unprotected_align_helper) - 1)));
 	_e_unprotected_section = .;          /* create a global symbol at data start */
-  } >UNMAPPED_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}}
+  } >UNMAPPED_DATA_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}}
 
   /* Remove information from the standard libraries */
   /DISCARD/ :
