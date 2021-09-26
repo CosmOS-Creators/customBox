@@ -62,6 +62,7 @@
   * @{
 ********************************************************************************/
 #define SCHEDULABLE_NUM                 (BitWidthType){{model.os.os.schedulableNum}}        /* Maximal number of configurated schedulables on one core  */
+#define SCHEDULABLE_NO_ALARM_ID			(BitWidthType)0       /* Schedulable without alarms - critical threads  */
 {{"\n"}}{% for item in model.cores -%}
 #define SCHEDULABLE_NUM_CORE_{{item.coreId}}                       (BitWidthType){{item.coreNumberOfTasks + item.coreNumberOfThreads}}        /* Number of configurated schedulables for the core {{item.CoreName}} */
 {% endfor -%}
@@ -74,9 +75,15 @@
 
 {{"\n"}}{% for item in model.tasks -%}
 #define SCHEDULABLE_{{item.uniqueId}}_UNIQUE_ID            (BitWidthType){{item.uniqueId}}   /* Schedulable {{item.name}} unique identificator */
+#define SCHEDULABLE_{{item.uniqueId}}_PERIPHERAL_ACCESS_LOW_ADDRESS            (AddressType)0x{{'%04x' % item.peripheralAccessLowAddress}}   /* Schedulable {{item.name}} peripheralAccessLowAddress */
+#define SCHEDULABLE_{{item.uniqueId}}_PERIPHERAL_ACCESS_HIGH_ADDRESS            (AddressType)0x{{'%04x' % (item.peripheralAccessLowAddress + item.peripheralAccessSize)}}   /* Schedulable {{item.name}} peripheralAccessHighAddress */
+#define SCHEDULABLE_{{item.uniqueId}}_PERIPHERAL_ACCESS_HIGH_SIZE            (BitWidthType){{item.peripheralAccessSize}}   /* Schedulable {{item.name}} peripheralAccessSize */
 {% endfor -%}
 {% for item in model.threads -%}
 #define SCHEDULABLE_{{item.uniqueId}}_UNIQUE_ID            (BitWidthType){{item.uniqueId}}   /* Schedulable {{item.name}} unique identificator */
+#define SCHEDULABLE_{{item.uniqueId}}_PERIPHERAL_ACCESS_LOW_ADDRESS            (AddressType)0x{{'%04x' %item.peripheralAccessLowAddress}}   /* Schedulable {{item.name}} peripheralAccessLowAddress */
+#define SCHEDULABLE_{{item.uniqueId}}_PERIPHERAL_ACCESS_HIGH_ADDRESS            (AddressType)0x{{'%04x' % (item.peripheralAccessLowAddress + item.peripheralAccessSize)}}   /* Schedulable {{item.name}} peripheralAccessHighAddress */
+#define SCHEDULABLE_{{item.uniqueId}}_PERIPHERAL_ACCESS_HIGH_SIZE            (BitWidthType){{item.peripheralAccessSize}}   /* Schedulable {{item.name}} peripheralAccessSize */
 {% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **

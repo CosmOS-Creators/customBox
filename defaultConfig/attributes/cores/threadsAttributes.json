@@ -37,6 +37,17 @@
 			"label": "Priority",
 			"tooltip": "Priority of the current thread - must be unique across all threads under same core"
 		},
+		"peripheralAccessLowAddress": {
+			"type": "hex",
+			"label": "Peripheral access low address",
+			"tooltip": "In the case task needs access to the peripheral memory region, the low address needs to be set"
+		},
+		"peripheralAccessSize": {
+			"type": "int",
+			"label": "Peripheral access size",
+			"tooltip": "In the case task needs access to the peripheral memory region, the size needs to be set",
+			"min": 0
+		},
 		"uniqueId": {
 			"type": "int",
 			"placeholder": true

@@ -72,7 +72,10 @@ IS_INITIALIZED_TO
         TASK_{{task.taskId}}_PROGRAM_{{task.program.programId}}_CORE_{{task.program.core.coreId}}_ID,                                   /* const BitWidthType instanceId                                                */
         PROGRAM_{{task.program.programId}}_CORE_{{task.program.core.coreId}}_ID,                                          /* const BitWidthType programId                                         */
         CORE_{{task.program.core.coreId}}_ID,                                                    /* const BitWidthType coreId                                            */
-		0,                                                    /* const BitWidthType alarmId                                            */
+		SCHEDULABLE_NO_ALARM_ID,                                                    /* const BitWidthType alarmId                                            */
+		SCHEDULABLE_{{task.uniqueId}}_PERIPHERAL_ACCESS_LOW_ADDRESS,			/* const BitWidthType peripheralAccessLowAddress                                            */
+		SCHEDULABLE_{{task.uniqueId}}_PERIPHERAL_ACCESS_HIGH_ADDRESS,			/* const BitWidthType peripheralAccessHighAddress                                            */
+		SCHEDULABLE_{{task.uniqueId}}_PERIPHERAL_ACCESS_HIGH_SIZE,					/* const BitWidthType peripheralAccessSize                                            */
     },
 {% endfor -%}
 };
@@ -91,6 +94,9 @@ IS_INITIALIZED_TO
         PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID,                                              /* const BitWidthType programId                                             */
         CORE_{{thread.program.core.coreId}}_ID,                                                        /* const BitWidthType coreId                                                */
 		ALARM_{{thread.alarmId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID,                                                    /* const BitWidthType alarmId                                            */
+		SCHEDULABLE_{{thread.uniqueId}}_PERIPHERAL_ACCESS_LOW_ADDRESS,			/* const BitWidthType peripheralAccessLowAddress                                            */
+		SCHEDULABLE_{{thread.uniqueId}}_PERIPHERAL_ACCESS_HIGH_ADDRESS,			/* const BitWidthType peripheralAccessHighAddress                                            */
+		SCHEDULABLE_{{thread.uniqueId}}_PERIPHERAL_ACCESS_HIGH_SIZE,				/* const BitWidthType peripheralAccessSize                                            */
 	},
 {% endfor -%}
 };

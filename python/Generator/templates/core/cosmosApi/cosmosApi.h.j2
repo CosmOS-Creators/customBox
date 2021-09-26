@@ -68,6 +68,23 @@
   * @ingroup Global_cosmosApi
   * @{
 ********************************************************************************/
+{% for thread in model.threads -%}
+#define {{thread.name}}_id SCHEDULABLE_{{thread.uniqueId}}_UNIQUE_ID
+{% endfor -%}
+
+{% for task in model.tasks -%}
+#define {{task.name}}_id SCHEDULABLE_{{task.uniqueId}}_UNIQUE_ID
+{% endfor -%}
+
+{% for buffer in model.buffers -%}
+{% if not buffer.isDoubleBuffer -%}
+#define {{buffer.name}}_id BUFFER_{{buffer.bufferId}}_ID
+{% endif -%}
+{% endfor -%}
+
+{% for spinlock in model.spinlocks -%}
+#define {{spinlock.name}}_id SPINLOCK_{{spinlock.spinlockId}}_ID
+{% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
