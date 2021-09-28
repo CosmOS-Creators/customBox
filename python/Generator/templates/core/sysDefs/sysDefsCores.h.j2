@@ -70,6 +70,8 @@
 #define CORE_{{item.coreId}}_STACK_MEMORY_HIGH_ADDRESS               (AddressType){{item.cpu.stackMemory.lowAddress + item.cpu.stackMemory.size}}    /* Core {{item.CoreName}}  stack memory highAddress */
 #define CORE_{{item.coreId}}_CODE_MEMORY_LOW_ADDRESS               (AddressType){{item.cpu.flashMemory.lowAddress}}    /* Core {{item.CoreName}}  flash memory lowAddress */
 #define CORE_{{item.coreId}}_CODE_MEMORY_HIGH_ADDRESS               (AddressType){{item.cpu.flashMemory.lowAddress + item.cpu.flashMemory.size}}    /* Core {{item.CoreName}}  flash memory highAddress */
+#define CORE_{{item.coreId}}_UNPROTECTED_MEMORY_LOW_ADDRESS               (AddressType){{item.unmappedDataLowAddress}}    /* Core {{item.CoreName}}  uprotected memory lowAddress */
+#define CORE_{{item.coreId}}_UNPROTECTED_MEMORY_HIGH_ADDRESS               (AddressType){{item.unmappedDataHighAddress}}    /* Core {{item.CoreName}}  uprotected memory highAddress */
 {% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **

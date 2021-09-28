@@ -23,10 +23,12 @@ ENTRY(Reset_Handler)
 
 /* provided symbols for libraries */
 _estack = 0x{{'%04x' % (core.cpu.stackMemory.size + core.cpu.stackMemory.lowAddress)}};
-end = 0x{{'%04x' % (core.unmappedDataLowAddress + core.unmappedHeapSize)}};
+end = 0x{{'%04x' % (core.unmappedDataHighAddress - core.unmappedHeapSize)}};
+_end = 0x{{'%04x' % (core.unmappedDataHighAddress - core.unmappedHeapSize)}};
 
 MEMORY
 {
+SRAM3 (xrw)      : ORIGIN = 0x30040000, LENGTH = 32K
 {% for item in model.cores -%}
 {% if item == core -%}
 FLASH_LOCAL (rx)      : ORIGIN = 0x{{'%04x' % core.staticDataLowAddress}}, LENGTH = 0x{{'%04x' % core.staticDataSize}}
@@ -34,13 +36,13 @@ FLASH_LOCAL (rx)      : ORIGIN = 0x{{'%04x' % core.staticDataLowAddress}}, LENGT
 FLASH_USER_CODE_{{item.CoreName.upper()}} (rx)      : ORIGIN = 0x{{'%04x' % item.userCodeLowAddress}}, LENGTH = 0x{{'%04x' % item.userCodeSize}}
 {% endfor -%}
 UNMAPPED_DATA_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % core.unmappedDataLowAddress}}, LENGTH = 0x{{'%04x' % (core.unmappedDataSize - core.unmappedHeapSize)}}
-UNMAPPED_HEAP_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % (core.unmappedDataLowAddress + core.unmappedHeapSize)}}, LENGTH = 0x{{'%04x' % (core.unmappedHeapSize)}}
+UNMAPPED_HEAP_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % (core.unmappedDataHighAddress - core.unmappedHeapSize)}}, LENGTH = 0x{{'%04x' % (core.unmappedHeapSize)}}
 {% for item in model.osPartitions -%}
 OS_{{item.name.upper()}}_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % item.lowAddress}}, LENGTH = 0x{{'%04x' % item.size}}
 {% endfor -%}
 {% for item in model.programs -%}
 PROGRAM_{{item.name.upper()}}_DATA_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % item.lowAddress}}, LENGTH = 0x{{'%04x' % (item.size - item.heapSize)}}
-PROGRAM_{{item.name.upper()}}_HEAP_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % (item.lowAddress + item.heapSize)}}, LENGTH = 0x{{'%04x' % (item.heapSize)}}
+PROGRAM_{{item.name.upper()}}_HEAP_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % (item.highAddress - item.heapSize)}}, LENGTH = 0x{{'%04x' % (item.heapSize)}}
 {% endfor -%}
 }
 
@@ -53,6 +55,18 @@ SECTIONS
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
   } >FLASH_LOCAL
+
+  .lwip_section :
+  {
+  . = ABSOLUTE(0x30040000);
+  *(.RxDecripSection)
+
+  . = ABSOLUTE(0x30040060);
+  *(.TxDecripSection)
+
+  . = ABSOLUTE(0x30040200);
+  *(.RxArraySection)
+  }>SRAM3
 
 {% for item in model.programs -%}
   _flash_program_{{item.name}}_section_init = LOADADDR(.program_{{item.name}}_section_init);
@@ -71,8 +85,10 @@ SECTIONS
   .program_{{item.name}}_section_noInit :
   {
     . = ALIGN(4);
+	_s_program_{{item.name}}_section_noInit = .;          /* create a global symbol at section start */
     KEEP(*(.{{item.name}}_noInit));
     . = ALIGN(4);
+	_e_program_{{item.name}}_section_noInit = .;          /* create a global symbol at section end */
   } >PROGRAM_{{item.name.upper()}}_DATA_PARTITION_IN_{{item.memory.name.upper()}}
 {% endfor -%}
 

@@ -56,6 +56,7 @@
 ********************************************************************************/
 {% for item in model.programs -%}
 extern unsigned char _s_program_{{item.name}}_section_init[];
+extern unsigned char _s_program_{{item.name}}_section_noInit[];
 {% endfor -%}
 {% for item in model.osPartitions -%}
 {% if item.boot -%}
@@ -65,6 +66,7 @@ extern unsigned char _s_os_section_{{item.name}}[];
 
 {% for item in model.programs -%}
 extern unsigned char _e_program_{{item.name}}_section_init[];
+extern unsigned char _e_program_{{item.name}}_section_noInit[];
 {% endfor -%}
 {% for item in model.osPartitions -%}
 {% if item.boot -%}
@@ -82,7 +84,21 @@ extern unsigned char _flash_os_section_{{item.name}}_start[];
 {% endfor -%}
 
 {{"\n"}}{% for item in model.cores -%}
-const CosmOS_ProgramSectionConfigurationType sectionsCore{{item.coreId}}[SECTION_NUM_CORE_{{item.coreId}}]
+const CosmOS_ProgramSectionConfigurationType clearSectionsCore{{item.coreId}}[CLEAR_SECTION_NUM_CORE_{{item.coreId}}]
+IS_INITIALIZED_TO
+{
+{% for program in item.corePrograms -%}
+{{"\t\t"}}{
+        _s_program_{{program.name}}_section_noInit,
+        _e_program_{{program.name}}_section_noInit,
+        0,
+    },
+{% endfor -%}
+};
+{{"\n"}}{% endfor -%}
+
+{{"\n"}}{% for item in model.cores -%}
+const CosmOS_ProgramSectionConfigurationType bootSectionsCore{{item.coreId}}[BOOT_SECTION_NUM_CORE_{{item.coreId}}]
 IS_INITIALIZED_TO
 {
 {% for program in item.corePrograms -%}
@@ -106,13 +122,24 @@ IS_INITIALIZED_TO
 };
 {{"\n"}}{% endfor -%}
 
+const CosmOS_BootSectionConfigurationType clearSections[CORE_NUM]
+IS_INITIALIZED_TO
+{
+{% for item in model.cores -%}
+{{"\t\t"}}{
+        clearSectionsCore{{item.coreId}},
+        CLEAR_SECTION_NUM_CORE_{{item.coreId}},
+    },
+{% endfor -%}
+};
+
 const CosmOS_BootSectionConfigurationType bootSections[CORE_NUM]
 IS_INITIALIZED_TO
 {
 {% for item in model.cores -%}
 {{"\t\t"}}{
-        sectionsCore{{item.coreId}},
-        SECTION_NUM_CORE_{{item.coreId}},
+        bootSectionsCore{{item.coreId}},
+        BOOT_SECTION_NUM_CORE_{{item.coreId}},
     },
 {% endfor -%}
 };

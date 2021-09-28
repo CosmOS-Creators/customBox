@@ -63,8 +63,15 @@
 ********************************************************************************/
 #define BOOT_ARGS_NUM    (BitWidthType)3
 #define SECTION_NUM_OS    (BitWidthType){{ model.osPartitions|length }}
+{% for item in model.osPartitions -%}
+#define OS_{{item.name.upper()}}_PARTITION_LOW_ADDRESS  (BitWidthType)0x{{'%04x' % item.lowAddress}}
+#define OS_{{item.name.upper()}}_PARTITION_HIGH_ADDRESS  (BitWidthType)0x{{'%04x' % item.highAddress}}
+{% endfor -%}
 {% for core in model.cores -%}
-#define SECTION_NUM_CORE_{{core.coreId}}    (BitWidthType){% if core.bootOs -%}{{(core.corePrograms|length) + 2}}{% else %}{{(core.corePrograms|length)}}{% endif %}
+#define CLEAR_SECTION_NUM_CORE_{{core.coreId}}    (BitWidthType){{(core.corePrograms|length)}}
+{% endfor -%}
+{% for core in model.cores -%}
+#define BOOT_SECTION_NUM_CORE_{{core.coreId}}    (BitWidthType){% if core.bootOs -%}{{(core.corePrograms|length) + model.osPartitions|length}}{% else %}{{(core.corePrograms|length)}}{% endif %}
 {% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
