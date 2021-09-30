@@ -20,7 +20,7 @@
 			"label": "Buffer size",
 			"tooltip": "Size of the current buffer in bytes",
 			"min": 0,
-			"max": 1024
+			"max": 2048
 		},
 		"isDoubleBuffer": {
 			"type": "bool",

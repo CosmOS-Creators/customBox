@@ -18,16 +18,12 @@
 		"wcet": {
 			"type": "int",
 			"label": "Worst case execution time",
-			"tooltip": "Worst case execution time in ticks",
-			"min": 0,
-			"max": 2048
+			"tooltip": "Worst case execution time in ticks"
 		},
 		"period": {
 			"type": "int",
 			"label": "Scheduling period",
-			"tooltip": "Scheduling period in ticks",
-			"min": 0,
-			"max": 2048
+			"tooltip": "Scheduling period in ticks"
 		},
 		"floatingPoint": {
 			"type": "bool",
@@ -47,9 +43,7 @@
 		"stackSize": {
 			"type": "int",
 			"label": "stack size of the task",
-			"tooltip": "Stack size of the current task",
-			"min": 0,
-			"max": 2048
+			"tooltip": "Stack size of the current task"
 		},
 		"peripheralAccessLowAddress": {
 			"type": "hex",

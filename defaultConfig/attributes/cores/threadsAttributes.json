@@ -28,9 +28,7 @@
 		"stackSize": {
 			"type": "int",
 			"label": "Stack size",
-			"tooltip": "Stack size of the current thread",
-			"min": 0,
-			"max": 2048
+			"tooltip": "Stack size of the current thread"
 		},
 		"priority": {
 			"type": "int",
