@@ -83,6 +83,18 @@ class Link():
 		return config, element, attribute
 
 	@staticmethod
+	def parse_with_context(link: str, context: Union[ConfigTypes.Subconfig, Link], emphasize: int = EMPHASIZE_ELEMENT):
+		newLink = Link(link, emphasize)
+		if(not newLink.hasConfig()):
+			if(isinstance(context, ConfigTypes.Subconfig)):
+				newLink.config = context.link.config
+			elif(isinstance(context, Link)):
+				newLink.config = context.config
+			else:
+				raise TypeError(f'Can only handle context of types Subconfig or Link but not {type(context)}')
+		return newLink
+
+	@staticmethod
 	def construct(config: str = None, element: str = None, attribute: str = None):
 		newLink = Link()
 		newLink.set(config, element, attribute)
@@ -103,7 +115,7 @@ class Link():
 		if(type(input) is Link):
 			return input
 		elif(type(input) is ConfigTypes.ConfigElement or
-			 type(input) is ConfigTypes.AttributeInstance):
+			type(input) is ConfigTypes.AttributeInstance):
 			return input.link
 		elif(type(input) is str):
 			return Link(input, emphasize)

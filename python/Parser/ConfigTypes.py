@@ -7,6 +7,7 @@ from Parser.LinkElement 		import Link
 import Parser.Serializer 		as serializer
 import Parser.VersionHandling 	as vh
 from Parser.helpers 			import overrides
+import Parser.helpers 			as helpers
 import Parser.AttributeTypes 	as AttributeTypes
 import Parser.constants			as const
 import json
@@ -184,10 +185,71 @@ class UiConfiguration(dynamicObject, serializer.serializeable):
 			data[page_id] = serializer.serialize(page)
 		return data
 
+class RestrictionConfiguration(dynamicObject, serializer.serializeable):
+	def __init__(self):
+		forbidden 		= 'Creating a restriction definition with the name "{0}" is not permitted as "{0}" is a reserved keyword'
+		duplicated 		= 'It was requested to create a restriction definition named "{0}" but a restriction with that name already exists'
+		doesNotExist 	= 'Config has no restriction definition named "{0}"'
+		super().__init__("RestrictionConfiguration", forbidden, duplicated, doesNotExist)
+
+	@property
+	def restriction_definitions(self) -> Dict[str, RestrictionDefinition]:
+		return self._getItems()
+
+	def addRestrictionsFromDefinition(self, config: dict, context: Subconfig):
+		for restriction_id, restriction in config.items():
+			newRestriction = RestrictionDefinition(restriction_id, restriction, context)
+			self._create(restriction_id, newRestriction)
+
+	def _serialize(self):
+		serialized_data = dict()
+		for restriction_id, restriction in self.restriction_definitions.items():
+			serialized_data[restriction_id] = serializer.serialize(restriction)
+		return serialized_data
+
+class RestrictionDefinition():
+	def __init__(self, id, restriction_config: dict, origin_subconfig: Subconfig):
+		self.id 					= id
+		self.restriction_config 	= restriction_config
+		self.origin_subconfig 		= origin_subconfig
+		self.requires: List[Link] 	= list()
+		self.__parse_config(self.restriction_config)
+
+
+	def __parse_config(self, restriction_config):
+		self.restriction_config = restriction_config
+		if(const.RESTRICTION_REQUIRES_KEY in self.restriction_config):
+			requirement_config = self.restriction_config[const.RESTRICTION_REQUIRES_KEY]
+			if(not isinstance(requirement_config, list)):
+				raise TypeError(f'Requirements for element restricitons must be of type list but found {type(requirement_config)} instead')
+			for requirement in self.restriction_config[const.RESTRICTION_REQUIRES_KEY]:
+				self.add_requirement(requirement)
+
+	def add_requirement(self, newRequirement: Union[Link, List[Link]]):
+		newRequirement = helpers.forceList(newRequirement)
+		for requirement in newRequirement:
+			if(isinstance(requirement, Link)):
+				self.requires.append(requirement)
+			elif(isinstance(requirement, str)):
+				self.requires.append(Link.parse_with_context(requirement, self.origin_subconfig, Link.EMPHASIZE_ELEMENT))
+			else:
+				raise TypeError(f'All requirements must be either str or Link types but "{str(requirement)}" was of type "{type(requirement)}"')
+
+	def _serialize(self):
+		serialized_data = dict()
+		if(len(self.requires) > 0):
+			requirements = list()
+			serialized_data[const.RESTRICTION_REQUIRES_KEY] = requirements
+			for requires in self.requires.values():
+				requirements.append(str(requires))
+		return serialized_data
+
+
 class Configuration(dynamicObject, serializer.serializeable):
 	def __init__(self, attribute_lookup: Dict[str, AttributeTypes.AttributeType]):
 		self.__attribute_lookup = attribute_lookup
-		self.UiConfig 	= UiConfiguration()
+		self.UiConfig 			= UiConfiguration()
+		self.RestrictionConfig 	= RestrictionConfiguration()
 		forbidden 		= 'Creating a subconfig with the name "{0}" is not permitted as "{0}" is a reserved keyword'
 		duplicated 		= 'It was requested to create a subconfig named "{0}" but a subconfig with that name already exists'
 		doesNotExist 	= 'Config has no subconfig named "{0}"'
@@ -229,6 +291,8 @@ class Configuration(dynamicObject, serializer.serializeable):
 		if(const.UI_KEY in config):
 			if(const.UI_USE_PAGE_KEY in config[const.UI_KEY]):
 				subconfig.assignToUiPage(config[const.UI_KEY][const.UI_USE_PAGE_KEY])
+		if(const.ELEMENT_RESTRICTIONS_KEY in config):
+			self.RestrictionConfig.addRestrictionsFromDefinition(config[const.ELEMENT_RESTRICTIONS_KEY], subconfig)
 
 	def createSubconfig(self, name: Union[str,Link], source_file: Path, file_format_version: str = None, file_element_hash: int = None) -> Subconfig:
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
