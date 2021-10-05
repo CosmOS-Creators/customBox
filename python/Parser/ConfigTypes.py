@@ -1,6 +1,6 @@
 from __future__ 				import annotations
 import hashlib
-from typing 					import Dict, List, Union
+from typing 					import Dict, List, Type, Union
 from pathlib 					import Path
 import Parser
 from Parser.LinkElement 		import Link
@@ -126,25 +126,27 @@ class UiViewTypes():
 		return None
 
 class UiPage(serializer.serializeable):
-	def __init__(self, id: str, label: str, viewType: UiViewType, origin: Subconfig, icon: str = None, allow_deletion = False):
+	def __init__(self, id: str, label: str, viewType: UiViewType, origin: Subconfig, icon: str = None, allow_deletion = False, allow_creation = False):
 		self.origin_subconfig 		= origin
 		self.id 					= id
 		self.label 					= label
 		self.icon 					= icon
 		self.viewType 				= viewType
 		self.allowElementDeletion	= allow_deletion
+		self.allowElementCreation	= allow_creation
 		self.assignedSubconfigs: Dict[str, Subconfig] = dict()
 
 	def assignSubconfig(self, name: str, config: Subconfig):
 		self.assignedSubconfigs[name] = config
 
 	def _serialize(self):
-		data = dict()
+		data = OrderedDict()
 		data[const.UI_VIEW_TYPE_KEY] = str(self.viewType)
 		data[const.UI_TAB_LABEL_KEY] = self.label
 		if(self.icon is not None):
 			data[const.UI_TAB_ICON_KEY] = self.icon
 		data[const.UI_ALLOW_ELEMENT_DELETION] = self.allowElementDeletion
+		data[const.UI_ALLOW_ELEMENT_CREATION] = self.allowElementCreation
 		return data
 
 class UiConfiguration(dynamicObject, serializer.serializeable):
@@ -171,7 +173,11 @@ class UiConfiguration(dynamicObject, serializer.serializeable):
 				allowDeletion = pageDefinition[const.UI_ALLOW_ELEMENT_DELETION]
 			else:
 				allowDeletion = False
-		return self._create(id, UiPage(id, pageDefinition[const.UI_TAB_LABEL_KEY], viewType, origin, icon, allowDeletion))
+			if(const.UI_ALLOW_ELEMENT_CREATION in pageDefinition):
+				allowCreation = pageDefinition[const.UI_ALLOW_ELEMENT_CREATION]
+			else:
+				allowCreation = False
+		return self._create(id, UiPage(id, pageDefinition[const.UI_TAB_LABEL_KEY], viewType, origin, icon, allowDeletion, allowCreation))
 
 	def haspage(self, id: str):
 		return self._has(id)
@@ -200,6 +206,10 @@ class RestrictionConfiguration(dynamicObject, serializer.serializeable):
 		for restriction_id, restriction in config.items():
 			newRestriction = RestrictionDefinition(restriction_id, restriction, context)
 			self._create(restriction_id, newRestriction)
+			context._restriction_definitions[restriction_id] = newRestriction
+
+	def getRestrictionById(self, restriction_id: str):
+		return self._get(restriction_id)
 
 	def _serialize(self):
 		serialized_data = dict()
@@ -214,7 +224,6 @@ class RestrictionDefinition():
 		self.origin_subconfig 		= origin_subconfig
 		self.requires: List[Link] 	= list()
 		self.__parse_config(self.restriction_config)
-
 
 	def __parse_config(self, restriction_config):
 		self.restriction_config = restriction_config
@@ -236,12 +245,15 @@ class RestrictionDefinition():
 				raise TypeError(f'All requirements must be either str or Link types but "{str(requirement)}" was of type "{type(requirement)}"')
 
 	def _serialize(self):
-		serialized_data = dict()
+		serialized_data = OrderedDict()
 		if(len(self.requires) > 0):
 			requirements = list()
 			serialized_data[const.RESTRICTION_REQUIRES_KEY] = requirements
-			for requires in self.requires.values():
-				requirements.append(str(requires))
+			for requires in self.requires:
+				if(requires.hasConfig() and requires.config == self.origin_subconfig.link.config):
+					requirements.append(requires.element)
+				else:
+					requirements.append(str(requires))
 		return serialized_data
 
 
@@ -293,6 +305,8 @@ class Configuration(dynamicObject, serializer.serializeable):
 				subconfig.assignToUiPage(config[const.UI_KEY][const.UI_USE_PAGE_KEY])
 		if(const.ELEMENT_RESTRICTIONS_KEY in config):
 			self.RestrictionConfig.addRestrictionsFromDefinition(config[const.ELEMENT_RESTRICTIONS_KEY], subconfig)
+		if(const.USE_RESTRICTION_KEY in config):
+			subconfig.assignRestriction(config[const.USE_RESTRICTION_KEY])
 
 	def createSubconfig(self, name: Union[str,Link], source_file: Path, file_format_version: str = None, file_element_hash: int = None) -> Subconfig:
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
@@ -341,6 +355,8 @@ class Subconfig(dynamicObject, serializer.serializeable):
 		self.__ui_page_assignment				= None
 		self.__file_format_version				= vh.Version(file_format_version)
 		self._file_elements_hash				= file_element_hash
+		self.__element_restrictions: str		= None
+		self._restriction_definitions: Dict[RestrictionDefinition] = OrderedDict()
 		if(not vh.CompatabilityManager.is_compatible(self.__file_format_version)):
 			raise ValueError(f'The file structure of "{str(source_file)}" is specified as version "{str(file_format_version)}" but this version is not compatible with the parser which is on version {vh.CompatabilityManager.get_current_version()}')
 
@@ -406,6 +422,11 @@ class Subconfig(dynamicObject, serializer.serializeable):
 	def assignToUiPage(self, page_id: str):
 		self.__ui_page_assignment = page_id
 
+	def assignRestriction(self, restriction: str):
+		if(self.__element_restrictions is not None):
+			raise Exception(f'Subconfig "{str(self.link)}" already has a restriction assigned. Changing restrictions during runtime is forbidden.')
+		self.__element_restrictions = restriction
+
 	def _serialize_elements(self):
 		data = dict()
 		for element_name, element in self.elements.items():
@@ -440,6 +461,13 @@ class Subconfig(dynamicObject, serializer.serializeable):
 				ui_page_definitions[ui_assignment.id] = serializer.serialize(ui_assignment)
 		if(len(ui_page_definitions) > 0):
 			data[const.UI_PAGE_KEY] = ui_page_definitions
+		if(self.__element_restrictions is not None):
+			data[const.USE_RESTRICTION_KEY] = self.__element_restrictions
+		if(len(self._restriction_definitions) > 0):
+			serialized_restriction_defs = OrderedDict()
+			data[const.ELEMENT_RESTRICTIONS_KEY] = serialized_restriction_defs
+			for restriction_id, restriction_def in self._restriction_definitions.items():
+				serialized_restriction_defs[restriction_id] = serializer.serialize(restriction_def)
 		data[const.ATTRIBUTES_KEY] 	= self._serialize_attributes()
 		data[const.ELEMENTS_KEY] 	= serialized_elements
 		return data

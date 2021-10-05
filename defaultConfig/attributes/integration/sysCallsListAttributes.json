@@ -6,7 +6,8 @@
 			"view_type": "tabbed",
 			"tab_label": "Sys Calls List",
 			"tab_icon": "call",
-			"allow_element_deletion": false
+			"allow_element_deletion": false,
+			"allow_element_creation": false
 		}
 	},
 	"attributes": {

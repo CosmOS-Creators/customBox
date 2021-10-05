@@ -6,7 +6,8 @@
 			"view_type": "tabbed",
 			"tab_label": "OS settings",
 			"tab_icon": "laptop",
-			"allow_element_deletion": false
+			"allow_element_deletion": false,
+			"allow_element_creation": false
 		}
 	},
 	"attributes": {

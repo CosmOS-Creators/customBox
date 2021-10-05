@@ -6,7 +6,8 @@
 			"view_type": "tabbed",
 			"tab_label": "Buffers",
 			"tab_icon": "inventory_2",
-			"allow_element_deletion": false
+			"allow_element_deletion": false,
+			"allow_element_creation": false
 		}
 	},
 	"attributes": {

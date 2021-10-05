@@ -6,7 +6,8 @@
 			"view_type": "tabbed",
 			"tab_label": "Spinlocks",
 			"tab_icon": "screen_lock_rotation",
-			"allow_element_deletion": false
+			"allow_element_deletion": false,
+			"allow_element_creation": false
 		}
 	},
 	"attributes": {

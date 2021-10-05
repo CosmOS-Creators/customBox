@@ -50,6 +50,7 @@ UI_USE_PAGE_KEY				= "use_page"
 UI_VIEW_TYPE_CARDED_KEY		= "carded"
 UI_VIEW_TYPE_TABBED_KEY		= "tabbed"
 UI_ALLOW_ELEMENT_DELETION	= "allow_element_deletion"
+UI_ALLOW_ELEMENT_CREATION	= "allow_element_creation"
 
 ui_page_required_json_keys	= [UI_TAB_LABEL_KEY, UI_VIEW_TYPE_KEY]
 
