@@ -1,7 +1,7 @@
 from pathlib import Path
 import pytest
 from Parser import Workspace, ConfigParser, ConfigTypes, constants
-from Parser.tests.test_setup import test_workspace, parsed_config
+from Parser.tests.test_setup import test_workspace, parsed_config, element_creation_config
 import json
 import hashlib
 
@@ -80,6 +80,15 @@ class TestCreatingElementCreationAndDeletion:
 			newElement.createAttributeInstance("stringType", "test")
 		with pytest.raises(ValueError):
 			newElement.createAttributeInstance("stringType", attributeName="test1")
+
+	def test_new_element_creation_with_requirements(self, element_creation_config):
+		subconfig = element_creation_config.getSubconfig("testConfig")
+		assert len(subconfig.elements) == 1
+		assert "element_1" in subconfig.elements and "element_2" not in subconfig.elements
+		newElement = subconfig.createElement("element_2")
+		assert len(newElement.attributes) == 2
+		assert len(subconfig.elements) == 2
+		assert "element_1" in subconfig.elements and "element_2" in subconfig.elements
 
 	def test_element_deletion1(self, parsed_config: ConfigTypes.Configuration):
 		referenceTypes = parsed_config.getSubconfig("referenceTypes")

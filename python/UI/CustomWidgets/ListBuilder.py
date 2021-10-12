@@ -107,6 +107,7 @@ class ListBuilderWidget(QWidget):
 			line_label.setObjectName("ListBuilder_LineLabel")
 			line_layout.addWidget(line_label, 1)
 			line_remove_button = QPushButton(icons.Icon("close"), "", self.list_scroll_area, clicked=lambda: self.removeSelection(label, element))
+			line_remove_button.setProperty("class", "iconButton")
 			line_remove_button.setObjectName("ListBuilder_LineRemoveButton")
 			line_layout.addWidget(line_remove_button, 0)
 			self.list_layout.addLayout(line_layout)

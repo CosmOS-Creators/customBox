@@ -9,6 +9,7 @@ from Parser.LinkElement import Link
 from UI.support import icons
 from UI.CustomWidgets import ListBuilderWidget
 
+SPIN_BOX_MAX_DEFAULT_VALUE = 2147483647
 
 class Ui_element(QWidget):
 	comparisonType = ""
@@ -78,10 +79,12 @@ class Int_element(Ui_element):
 		self.attributeDef: IntType
 		self.label 		= QLabel(self.attributeDef.label, parent)
 		self.ui_element = QSpinBox(parent)
-		if(self.attributeDef.min):
+		if(self.attributeDef.min is not None):
 			self.ui_element.setMinimum(self.attributeDef.min)
-		if(self.attributeDef.max):
+		if(self.attributeDef.max is not None):
 			self.ui_element.setMaximum(self.attributeDef.max)
+		else:
+			self.ui_element.setMaximum(SPIN_BOX_MAX_DEFAULT_VALUE)
 		self.ui_element.setSingleStep(1)
 		self.ui_element.setValue(attribute.value)
 

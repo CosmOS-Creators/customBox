@@ -88,15 +88,15 @@ QFrame[class^="cardContainer"] {{
 	background-color : transparent;
 }}
 
-#ListBuilder_LineRemoveButton {{
-	border: none;
+QPushButton[class^="iconButton"] {{
+    border: none;
 	padding: 0px;
 	margin: 0px;
 	background-color : transparent;
 }}
 
-#ListBuilder_LineRemoveButton:hover {{
-	border: none;
+QPushButton[class^="iconButton"]:hover {{
+    border: none;
 	padding: 0px;
 	margin: 0px;
 	background-color : {QTMATERIAL_SECONDARYLIGHTCOLOR};

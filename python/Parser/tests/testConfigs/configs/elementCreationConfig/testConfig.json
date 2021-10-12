@@ -1,0 +1,43 @@
+{
+	"version": "1.1.0",
+	"checksum": "f7c0a56b8b350a6ea6dfb426e5e103d4",
+	"element_restrictions": {
+		"test_restrictions": {
+			"requires": [
+				"name",
+				"on_off"
+			]
+		}
+	},
+	"use_restriction": "test_restrictions",
+	"attributes": {
+		"name": {
+			"label": "String type",
+			"type": "string"
+		},
+		"on_off": {
+			"label": "Bool type",
+			"type": "bool"
+		},
+		"optional_value": {
+			"label": "Int Type",
+			"type": "int"
+		}
+	},
+	"elements": {
+		"element_1": [
+			{
+				"target": "name",
+				"value": "Test data"
+			},
+			{
+				"target": "on_off",
+				"value": true
+			},
+			{
+				"target": "optional_value",
+				"value": 5
+			}
+		]
+	}
+}

@@ -208,7 +208,7 @@ class RestrictionConfiguration(dynamicObject, serializer.serializeable):
 			self._create(restriction_id, newRestriction)
 			context._restriction_definitions[restriction_id] = newRestriction
 
-	def getRestrictionById(self, restriction_id: str):
+	def getRestrictionById(self, restriction_id: str) -> RestrictionDefinition:
 		return self._get(restriction_id)
 
 	def _serialize(self):
@@ -222,8 +222,12 @@ class RestrictionDefinition():
 		self.id 					= id
 		self.restriction_config 	= restriction_config
 		self.origin_subconfig 		= origin_subconfig
-		self.requires: List[Link] 	= list()
+		self.__requires: List[Link] 	= list()
 		self.__parse_config(self.restriction_config)
+
+	@property
+	def required_attributes(self):
+		return self.__requires
 
 	def __parse_config(self, restriction_config):
 		self.restriction_config = restriction_config
@@ -238,20 +242,20 @@ class RestrictionDefinition():
 		newRequirement = helpers.forceList(newRequirement)
 		for requirement in newRequirement:
 			if(isinstance(requirement, Link)):
-				self.requires.append(requirement)
+				self.__requires.append(requirement)
 			elif(isinstance(requirement, str)):
-				self.requires.append(Link.parse_with_context(requirement, self.origin_subconfig, Link.EMPHASIZE_ELEMENT))
+				self.__requires.append(Link.parse_with_context(requirement, self.origin_subconfig, Link.EMPHASIZE_ATTRIBUTE))
 			else:
 				raise TypeError(f'All requirements must be either str or Link types but "{str(requirement)}" was of type "{type(requirement)}"')
 
 	def _serialize(self):
 		serialized_data = OrderedDict()
-		if(len(self.requires) > 0):
+		if(len(self.__requires) > 0):
 			requirements = list()
 			serialized_data[const.RESTRICTION_REQUIRES_KEY] = requirements
-			for requires in self.requires:
+			for requires in self.__requires:
 				if(requires.hasConfig() and requires.config == self.origin_subconfig.link.config):
-					requirements.append(requires.element)
+					requirements.append(requires.attribute)
 				else:
 					requirements.append(str(requires))
 		return serialized_data
@@ -413,7 +417,13 @@ class Subconfig(dynamicObject, serializer.serializeable):
 	def createElement(self, name: Union[str, Link], ) -> ConfigElement:
 		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
 		elementName = elementLink.element
-		return self._create(elementName, ConfigElement(elementName, self))
+		newElement = self._create(elementName, ConfigElement(elementName, self))
+		if(self.__element_restrictions is not None):
+			restriction = self.parent.RestrictionConfig.getRestrictionById(self.__element_restrictions)
+			required_attribs = restriction.required_attributes
+			for requirement in required_attribs:
+				newElement.createAttributeInstance(requirement, populate_default=True)
+		return newElement
 
 	def getElement(self, name: Union[str, Link]) -> ConfigElement:
 		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
@@ -614,7 +624,7 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 			raise TypeError(f'The requested reference object named "{name}" from element "{self.link}" was not of type AttributeInstance instead it was of type "{type(item)}"')
 		return item
 
-	def createAttributeInstance(self, target: Link, value = None, attributeName: str = None):
+	def createAttributeInstance(self, target: Link, value = None, attributeName: str = None, populate_default: bool = False):
 		attribute_lookup 				= self.parent.parent.attribute_lookup
 		targetLink 						= Link.force(target, Link.EMPHASIZE_ATTRIBUTE)
 		targetLink 						= self.link.merge(targetLink, Link.EMPHASIZE_ATTRIBUTE)
@@ -634,6 +644,10 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute)
 		elif(value is not None):
 			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute, value)
+		elif(populate_default):
+			if(value is not None):
+				raise Exception(f'Element "{self.link}" instantiates the attribute definition "{AttributeInstanceLink}" with the default value placeholder but the value attribute ist also defined, which is an invalid combination for this function call.')
+			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute, targetedAttribute.getDefault())
 		else:
 			raise ValueError(f'The attribute instance for "{self.link}" could not be created because there was no value provided which is mandatory for attributes which are not placeholders')
 		return self._create(targetedAttribute.id, newAttributeInstance)
