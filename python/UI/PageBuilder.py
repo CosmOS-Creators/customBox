@@ -33,10 +33,10 @@ class cardPage(CardWidget):
 
 	def addHandlers(self, createHandler, deleteHandler):
 		if(self.uiPage.allowElementCreation):
-			add_button = iconButton(self, "add", "Add a new element of the same type",  clicked=lambda: deleteHandler())
+			add_button = iconButton(self, "add", "Add a new element of the same type",  clicked=lambda: createHandler())
 			self.header.addWidget(add_button)
 		if(self.uiPage.allowElementDeletion):
-			delete_button = iconButton(self, "close", "Delete this element",  clicked=lambda: createHandler(self))
+			delete_button = iconButton(self, "close", "Delete this element",  clicked=lambda: deleteHandler(self))
 			self.header.addWidget(delete_button)
 
 class cardedPage(QScrollArea, ContainerPage):
