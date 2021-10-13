@@ -2,12 +2,14 @@ from typing import Dict, List, Union
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 
-from PySide6.QtWidgets import QCheckBox, QComboBox, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QWidget
+from PySide6.QtWidgets import QCheckBox, QComboBox, QFrame, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QWidget
 from Parser.AttributeTypes import BoolType, FloatType, IntType, ReferenceListType, SelectionType, StringType
 from Parser.ConfigTypes import AttributeInstance, ConfigElement
 from Parser.LinkElement import Link
 from UI.support import icons
 from UI.CustomWidgets import ListBuilderWidget
+from Parser import ValidationError
+from UI.StyleDimensions import styleExtensions
 
 SPIN_BOX_MAX_DEFAULT_VALUE = 2147483647
 
@@ -23,11 +25,16 @@ class Ui_element(QWidget):
 		self.tooltip 				= self.attributeDef.tooltip
 		self._get_current_value_func= None
 
+	def set_ui_element(self, widget: QWidget):
+		self.ui_element = widget
+		valid, msg = self.attribute.isValid()
+		self.setValidity(valid, msg)
+
 	def get_Row(self):
+		element_widget = QWidget(self)
+		element_layout = QHBoxLayout(element_widget)
+		element_layout.addWidget(self.ui_element, 1)
 		if(self.tooltip):
-			element_widget = QWidget(self)
-			element_layout = QHBoxLayout(element_widget)
-			element_layout.addWidget(self.ui_element, 1)
 			tooltip_icon = icons.Icon("help")
 			if(tooltip_icon):
 				tooltip_widget = QPushButton(element_widget)
@@ -35,15 +42,25 @@ class Ui_element(QWidget):
 				tooltip_widget.setToolTip(self.tooltip)
 				tooltip_widget.setIcon(tooltip_icon)
 				element_layout.addWidget(tooltip_widget, 0)
-			return self.label, element_widget
+		return self.label, element_widget
+
+	def setValidity(self, valid: bool, error_msg: str = None):
+		if(valid):
+			self.ui_element.setStyleSheet("")
+			self.ui_element.setToolTip(None)
 		else:
-			return self.label, self.ui_element
+			self.ui_element.setStyleSheet(f"border-color: {styleExtensions.ERROR_COLOR}")
+			self.ui_element.setToolTip(error_msg)
 
 	def saveToConfigObject(self, value = None):
-		if(self._get_current_value_func):
-			self.attribute.populate(self._get_current_value_func(), False)
-		elif(value is not None):
-			self.attribute.populate(value, False)
+		try:
+			if(self._get_current_value_func):
+				self.attribute.populate(self._get_current_value_func(), False)
+			elif(value is not None):
+				self.attribute.populate(value, False)
+			self.setValidity(True)
+		except ValidationError as e:
+			self.setValidity(False, str(e))
 
 class String_element(Ui_element):
 	comparisonType = StringType._comparison_type
@@ -51,10 +68,11 @@ class String_element(Ui_element):
 		super().__init__(parent, attribute)
 		self.attributeDef: StringType
 		self.label 		= QLabel(self.attributeDef.label, parent)
-		self.ui_element = QLineEdit(parent)
+		self.set_ui_element(QLineEdit(parent))
 		if(self.attributeDef.validation):
 			self.ui_element.setValidator(QRegularExpressionValidator(QRegularExpression(self.attributeDef.validation)))
 		self.ui_element.setText(attribute.value)
+
 
 		self._get_current_value_func = self.ui_element.text
 		self.ui_element.textChanged.connect(self.saveToConfigObject)
@@ -66,7 +84,7 @@ class Bool_element(Ui_element):
 		super().__init__(parent, attribute)
 		self.attributeDef: BoolType
 		self.label 		= QLabel(self.attributeDef.label, parent)
-		self.ui_element = QCheckBox(parent)
+		self.set_ui_element(QCheckBox(parent))
 		self.ui_element.setChecked(attribute.value)
 
 		self._get_current_value_func = self.ui_element.isChecked
@@ -78,7 +96,7 @@ class Int_element(Ui_element):
 		super().__init__(parent, attribute)
 		self.attributeDef: IntType
 		self.label 		= QLabel(self.attributeDef.label, parent)
-		self.ui_element = QSpinBox(parent)
+		self.set_ui_element(QSpinBox(parent))
 		if(self.attributeDef.min is not None):
 			self.ui_element.setMinimum(self.attributeDef.min)
 		if(self.attributeDef.max is not None):
@@ -97,7 +115,7 @@ class Float_element(Ui_element):
 		super().__init__(parent, attribute)
 		self.attributeDef: FloatType
 		self.label 		= QLabel(self.attributeDef.label, parent)
-		self.ui_element = QSpinBox(parent)
+		self.set_ui_element(QSpinBox(parent))
 		if(self.attributeDef.min):
 			self.ui_element.setMinimum(self.attributeDef.min)
 		if(self.attributeDef.max):
@@ -114,7 +132,7 @@ class Selection_element(Ui_element):
 		super().__init__(parent, attribute)
 		self.attributeDef: SelectionType
 		self.label 		= QLabel(self.attributeDef.label, parent)
-		self.ui_element = QComboBox(parent)
+		self.set_ui_element(QComboBox(parent))
 		if(type(self.attributeDef.elements) is list):
 			for selectionElement in self.attributeDef.elements:
 				self.ui_element.addItem(selectionElement, selectionElement)
@@ -123,8 +141,9 @@ class Selection_element(Ui_element):
 			for selectionElement in self.attributeDef.resolvedElements:
 				self.ui_element.addItem(selectionElement.value, selectionElement)
 			selected_element: ConfigElement = attribute.value
-			selected_attrib = selected_element.getAttribute(self.attributeDef.targetedAttribute)
-			self.ui_element.setCurrentText(selected_attrib.value)
+			if(selected_element is not None):
+				selected_attrib = selected_element.getAttribute(self.attributeDef.targetedAttribute)
+				self.ui_element.setCurrentText(selected_attrib.value)
 
 		self._get_current_value_func = self.ui_element.currentData
 		self.ui_element.currentIndexChanged.connect(self.saveToConfigObject)
@@ -158,7 +177,7 @@ class ReferenceList_element(Ui_element):
 					selectedOptions.append((selectedAttribute_str.value, selection))
 			else:
 				selectedOptions.append((str(selection.link), selection))
-		self.ui_element = ListBuilderWidget(parent, avaliableOptions, selectedOptions)
+		self.set_ui_element(ListBuilderWidget(parent, avaliableOptions, selectedOptions))
 
 		self._get_current_value_func = self.ui_element.selectedItems
 		self.ui_element.listChanged.connect(self.saveToConfigObject)

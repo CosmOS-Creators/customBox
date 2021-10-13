@@ -6,8 +6,38 @@
 			"view_type": "carded",
 			"tab_label": "Cores",
 			"tab_icon": "memory",
-			"allow_element_deletion": false,
-			"allow_element_creation": false
+			"allow_element_deletion": true,
+			"allow_element_creation": true
+		}
+	},
+	"element_restrictions": {
+		"core_restrictions": {
+			"requires": [
+				"CoreName",
+				"bootOs",
+				"isCosmos",
+				"userCodeSize",
+				"userCodeLowAddress",
+				"userCodeHighAddress",
+				"staticDataSize",
+				"staticDataLowAddress",
+				"staticDataHighAddress",
+				"unmappedDataSize",
+				"unmappedDataLowAddress",
+				"unmappedDataHighAddress",
+				"cpu",
+				"coreId",
+				"corePrograms",
+				"coreSysJobGroups",
+				"coreSysJobHyperTick",
+				"coreScheduler",
+				"coreNumberOfThreads",
+				"coreNumberOfTasks",
+				"prioSortedThreads",
+				"userCodeMemory",
+				"staticDataMemory",
+				"unmappedDataMemory"
+			]
 		}
 	},
 	"attributes": {

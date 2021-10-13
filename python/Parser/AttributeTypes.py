@@ -1,6 +1,7 @@
 from collections import OrderedDict
 import re
 import Parser.ConfigTypes 	as ConfigTypes
+from Parser.ParserExceptions import ValidationError
 import Parser.helpers		as helpers
 import Parser.constants		as const
 from typing 				import List, Type, Union
@@ -523,7 +524,7 @@ class ParentReferenceType(AttributeType):
 attributeTypeList = [StringType, BoolType, IntType, FloatType, ReferenceListType, StringListType, SelectionType, SelectionType, HexType, SliderType, ParentReferenceType]
 
 def reportValidationError(errorMsg: str):
-	raise ValueError(errorMsg)
+	raise ValidationError(errorMsg)
 
 def parseAttribute(attributeDefinition: dict, AttributeGlobalID: Union[Link, str]) -> AttributeType:
 	if(not const.TYPE_KEY in attributeDefinition):

@@ -1,9 +1,10 @@
 from typing import List, Optional, Tuple
 from PySide6.QtCore import QObject, Signal
-from PySide6.QtWidgets import QComboBox, QFrame, QHBoxLayout, QLabel, QLayout, QPushButton, QScrollArea, QSizePolicy, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QComboBox, QHBoxLayout, QLabel, QLayout, QPushButton, QScrollArea, QSizePolicy, QVBoxLayout, QWidget
 from UI import support
 from UI.support import icons
 from UI.CustomWidgets import CardWidget
+from UI.CustomWidgets.IconButton import iconButton
 
 
 class ListBuilderSignals(QObject):
@@ -106,9 +107,7 @@ class ListBuilderWidget(QWidget):
 			line_label = QLabel(label)
 			line_label.setObjectName("ListBuilder_LineLabel")
 			line_layout.addWidget(line_label, 1)
-			line_remove_button = QPushButton(icons.Icon("close"), "", self.list_scroll_area, clicked=lambda: self.removeSelection(label, element))
-			line_remove_button.setProperty("class", "iconButton")
-			line_remove_button.setObjectName("ListBuilder_LineRemoveButton")
+			line_remove_button = iconButton(self.list_scroll_area, "close", clicked=lambda: self.removeSelection(label, element))
 			line_layout.addWidget(line_remove_button, 0)
 			self.list_layout.addLayout(line_layout)
 			self.selected_elements.append((label, element))

@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QFrame, QGroupBox, QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 class CardWidget_old(QGroupBox):
 	def __init__(self, parent: QWidget, widget: QWidget, name: str = None):
@@ -10,17 +10,17 @@ class CardWidget_old(QGroupBox):
 		widget.setStyleSheet("background-color: transparent")
 		layout.addWidget(widget)
 
-class CardWidget(QGroupBox):
+class CardWidget(QFrame):
 	def __init__(self, parent: QWidget, widget: QWidget, name: str = None):
-		if(name):
-			super().__init__(name, parent)
-		else:
-			super().__init__(parent)
+		super().__init__(parent)
 		self.__layout = QVBoxLayout(self)
-		self.__header_layout = QHBoxLayout()
-		self.__layout.addLayout(self.__header_layout)
+		self.__header_widget = QWidget(self)
+		self.__header_widget.setObjectName("CardWidgetHeader")
+		self.__header_layout = QHBoxLayout(self.__header_widget)
+		self.__layout.addWidget(self.__header_widget)
 		if(name is not None):
 			heading = QLabel(name, self)
+			heading.setObjectName("CardWidgetHeaderHeading")
 			self.__header_layout.addWidget(heading)
 
 		widget.setStyleSheet("background-color: transparent")

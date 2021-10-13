@@ -1,15 +1,10 @@
 from __future__ import annotations
-from pathlib import Path
 from typing import List, Tuple
 from PySide6.QtCore import QEasingCurve, QParallelAnimationGroup, QPoint, QPropertyAnimation, Qt
-from PySide6.QtWidgets import QApplication, QLabel, QMessageBox, QPushButton, QScrollArea, QSizeGrip, QSizePolicy, QStackedLayout, QVBoxLayout, QWidget, QHBoxLayout
-from qt_material import apply_stylesheet
-import sys
+from PySide6.QtWidgets import QLabel, QMessageBox, QPushButton, QScrollArea, QSizeGrip, QSizePolicy, QStackedLayout, QVBoxLayout, QWidget, QHBoxLayout
 from Parser.ConfigTypes import Configuration
 from UI.support import SeperatorLine, icons
 from UI.StyleDimensions import styleExtensions
-import UI.PageBuilder as pageBuilder
-
 
 class sidebar(QWidget):
 	def __init__(self, parent: QWidget, page_layout: QStackedLayout):

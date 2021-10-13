@@ -1,6 +1,6 @@
 from __future__ 				import annotations
 import hashlib
-from typing 					import Dict, List, Type, Union
+from typing 					import Dict, List, Tuple, Type, Union
 from pathlib 					import Path
 import Parser
 from Parser.LinkElement 		import Link
@@ -30,7 +30,7 @@ def formatConfig(config: Configuration, indent: int = 1):
 
 class dynamicObject:
 	def __init__(self, className: str, nameClashError: str, duplicatedError: str, notExistantError: str):
-		self.dynamic_items 			= dict()
+		self.dynamic_items 			= OrderedDict()
 		self.__name_clash_error 	= nameClashError
 		self.__duplicate_error		= duplicatedError
 		self.__non_existant_error	= notExistantError
@@ -647,7 +647,7 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 		elif(populate_default):
 			if(value is not None):
 				raise Exception(f'Element "{self.link}" instantiates the attribute definition "{AttributeInstanceLink}" with the default value placeholder but the value attribute ist also defined, which is an invalid combination for this function call.')
-			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute, targetedAttribute.getDefault())
+			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute, populate_defaults = True)
 		else:
 			raise ValueError(f'The attribute instance for "{self.link}" could not be created because there was no value provided which is mandatory for attributes which are not placeholders')
 		return self._create(targetedAttribute.id, newAttributeInstance)
@@ -695,14 +695,14 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 				raise AttributeError(error_msg.format(name))
 
 class AttributeInstance(serializer.serializeable):
-	def __init__(self, name: Union[str, Link], parent: ConfigElement, attribute: AttributeTypes.AttributeType, value = None):
+	def __init__(self, name: Union[str, Link], parent: ConfigElement, attribute: AttributeTypes.AttributeType, value = None, populate_defaults = False):
 		link = Link.force(name, Link.EMPHASIZE_ATTRIBUTE)
 		self.__attribute 		= attribute
 		self.__link 			= parent.link.copy() #example: cores/core_0:name
 		self.__link.attribute	= link.attribute
 		self.__configLookup 	= parent.parent.parent
 		self.__parent			= parent
-		if(attribute.is_placeholder and value is None):
+		if((attribute.is_placeholder or populate_defaults) and value is None):
 			self.__value = attribute.getDefault()
 		elif(type(value) is AttributeInstance or type(value) is ConfigElement):
 			self.__value = value
@@ -738,6 +738,13 @@ class AttributeInstance(serializer.serializeable):
 	@value.setter
 	def value(self, value):
 		self.populate(value)
+
+	def isValid(self) -> Tuple[bool, str]:
+		try:
+			self.__attribute.checkValue(self.__value)
+			return True, ""
+		except Exception as e:
+			return False, str(e)
 
 	@overrides(serializer.serializeable)
 	def _serialize(self) -> Dict:
