@@ -247,6 +247,9 @@ class MainWindow(QWidget):
 		self.mainLayout.addWidget(self.sidebar)
 		self.mainLayout.addWidget(self.pagesWidget, 1)
 
+	def criticalError(self, title: str, msg: str):
+		return QMessageBox.critical(self, title, msg)
+
 	def addPages(self, pages: List[QWidget]):
 		for i, page in enumerate(pages):
 			self.pagesLayout.addWidget(page[0])
