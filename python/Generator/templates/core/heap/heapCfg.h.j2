@@ -5,13 +5,13 @@
 *********************************************************************************
 **                       DOXYGEN DOCUMENTATION INFORMATION                     **
 *****************************************************************************//**
-** @file sysDefsSysJobs.h
+** @file heapCfg.h
 *********************************************************************************
-<!--                   sysDefsSysJobs Unit Group Definition                   -->
+<!--                       heapCfg Unit Group Definition                      -->
 *********************************************************************************
-** @defgroup sysDefsSysJobs_unit sysDefsSysJobs Unit
-** @ingroup sysDefs_module
-** @brief sysDefsSysJobs Unit
+** @defgroup heapCfg_unit heapCfg Unit
+** @ingroup heap_module
+** @brief heapCfg Unit
 ** @details lorem
 *********************************************************************************
 <!--                           Version Information                            -->
@@ -25,18 +25,18 @@
 ** @warning Modifying code can lead to unexpected behaviour of the whole system
 ** @copyright MIT License
 *********************************************************************************
-<!--                sysDefsSysJobs Unit Global Group Definition               -->
+<!--                    heapCfg Unit Global Group Definition                  -->
 *********************************************************************************
-** @defgroup Global_sysDefsSysJobs Global
-** @ingroup sysDefsSysJobs_unit
-** @brief sysDefsSysJobs globals
+** @defgroup Global_heapCfg Global
+** @ingroup heapCfg_unit
+** @brief heapCfg globals
 ** @details lorem
 ********************************************************************************/
 /********************************************************************************
 **                           START OF THE HEADER FILE                          **
 ********************************************************************************/
-#ifndef __SYSDEFSSYSJOBS_H__
-#define __SYSDEFSSYSJOBS_H__
+#ifndef __HEAPCFG_H__
+#define __HEAPCFG_H__
 /********************************************************************************
 **                         START OF C++ SUPPORT SECTION                        **
 ********************************************************************************/
@@ -47,7 +47,9 @@
 **                            Include Files | Start                            **
 ********************************************************************************/
 /* CORE interfaces */
+#include "sysDefs.h"
 #include "cosmosTypes.h"
+#include "memoryMapping.h"
 /********************************************************************************
 **                            Include Files | Stop                             **
 ********************************************************************************/
@@ -57,23 +59,15 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Macros_sysDefsSysJobs_h Macros
-  * @ingroup Global_sysDefsSysJobs
+  * @defgroup Macros_heapCfg_h Macros
+  * @ingroup Global_heapCfg
   * @{
 ********************************************************************************/
-{% for core in model.cores -%}
-#define SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM    (BitWidthType){{core.coreSysJobGroups | length}}        /* Number of configurated sysJob groups on the core {{core.CoreName}}  */
-#define SYSJOBS_CORE_{{core.coreId}}_HYPERTICK    (BitWidthType){{core.coreSysJobHyperTick}}              /* HyperTick on the {{core.CoreName}}  */
-{% for sysJobGroup in core.coreSysJobGroups -%}
-{{"\n"}}#define SYSJOBS_HANDLERS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_NUM    (BitWidthType){{sysJobGroup.handlers | length}}        /* Number of configurated handlers in group ID {{sysJobGroup.groupId}}  */
-#define SYSJOBS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_TICK_MULTIPLICATOR    (BitWidthType){{sysJobGroup.tickMultiplicator}}        /* Tick multiplicator in group ID {{sysJobGroup.groupId}}  */
-{% endfor -%}
-{% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Macros_sysDefsSysJobs_h
+  * Macros_heapCfg_h
 ********************************************************************************/
 /********************************************************************************
 **                          Macro Definitions | Stop                           **
@@ -84,15 +78,18 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Variables_sysDefsSysJobs_h Variables
-  * @ingroup Global_sysDefsSysJobs
+  * @defgroup Variables_heapCfg_h Variables
+  * @ingroup Global_heapCfg
   * @{
 ********************************************************************************/
+{% for item in model.cores -%}
+extern const CosmOS_HeapConfigurationType HeapsCore{{item.coreId}}CfgConst[HEAP_CORE_{{item.coreId}}_NUM];
+{% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Variables_sysDefsSysJobs_h
+  * Variables_heapCfg_h
 ********************************************************************************/
 /********************************************************************************
 **                              Variables | Stop                               **
@@ -103,47 +100,47 @@
 /********************************************************************************
   * DOXYGEN DEF GROUP                                                          **
   * *************************************************************************//**
-  * @defgroup Apis_sysDefsSysJobs_h API's
-  * @ingroup Global_sysDefsSysJobs
+  * @defgroup Apis_heapCfg_h API's
+  * @ingroup Global_heapCfg
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_sysDefsSysJobs_h Getters
-  * @ingroup Apis_sysDefsSysJobs_h
+  * @addtogroup Getters_heapCfg_h Getters
+  * @ingroup Apis_heapCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Getters_sysDefsSysJobs_h
+  * Getters_heapCfg_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_sysDefsSysJobs_h Setters
-  * @ingroup Apis_sysDefsSysJobs_h
+  * @addtogroup Setters_heapCfg_h Setters
+  * @ingroup Apis_heapCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Setters_sysDefsSysJobs_h
+  * Setters_heapCfg_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_sysDefsSysJobs_h General
-  * @ingroup Apis_sysDefsSysJobs_h
+  * @addtogroup General_heapCfg_h General
+  * @ingroup Apis_heapCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * General_sysDefsSysJobs_h
+  * General_heapCfg_h
 ********************************************************************************/
 /********************************************************************************
 **                         Function Prototypes | Stop                          **
@@ -154,41 +151,41 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_sysDefsSysJobs_h Getters
-  * @ingroup Apis_sysDefsSysJobs_h
+  * @addtogroup Getters_heapCfg_h Getters
+  * @ingroup Apis_heapCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Getters_sysDefsSysJobs_h
+  * Getters_heapCfg_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_sysDefsSysJobs_h Setters
-  * @ingroup Apis_sysDefsSysJobs_h
+  * @addtogroup Setters_heapCfg_h Setters
+  * @ingroup Apis_heapCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Setters_sysDefsSysJobs_h
+  * Setters_heapCfg_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_sysDefsSysJobs_h General
-  * @ingroup Apis_sysDefsSysJobs_h
+  * @addtogroup General_heapCfg_h General
+  * @ingroup Apis_heapCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * General_sysDefsSysJobs_h
+  * General_heapCfg_h
 ********************************************************************************/
 /********************************************************************************
 **                        Function Definitions | Stop                          **

@@ -25,6 +25,7 @@
 #include "mutexCfg.h"
 #include "threadCfg.h"
 #include "taskCfg.h"
+#include "heapCfg.h"
 /********************************************************************************
 **                            Include Files | Stop                             **
 ********************************************************************************/
@@ -66,16 +67,14 @@ IS_INITIALIZED_TO
 {
 {% for program in item.corePrograms -%}
 {{"\t\t"}}{
-        CORE_{{item.coreId}}_ID,                                      /* const BitWidthType coreId                            */
-        TASK_PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_NUM,                      /* const BitWidthType numberOfTasks                     */
-        THREAD_PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_NUM,                      /* const BitWidthType numberOfThreads                     */
-        PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_SIZE,                      /* const BitWidthType programMemorySize                     */
-        PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_LOW_ADDRESS,                      /* const AddressType programMemoryLowAddress                     */
-        PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_HIGH_ADDRESS,                      /* const AddressType programMemoryHighAddress                     */
-        PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_HEAP_SIZE,                      /* const BitWidthType programHeapSize                     */
-        PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_HEAP_LOW_ADDRESS,                      /* const AddressType programHeapLowAddress                     */
-        PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_HEAP_HIGH_ADDRESS,                      /* const AddressType programHeapHighAddress                     */
-		&MutexForProgram{{program.programId}}HeapCore{{item.coreId}}Var,				/* void * const heapMutex			                     */
+    CORE_{{item.coreId}}_ID,                                      /* const BitWidthType coreId                            */
+    TASK_PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_NUM,                      /* const BitWidthType numberOfTasks                     */
+    THREAD_PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_NUM,                      /* const BitWidthType numberOfThreads                     */
+    PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_SIZE,                      /* const BitWidthType programMemorySize                     */
+    PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_LOW_ADDRESS,                      /* const AddressType programMemoryLowAddress                     */
+    PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_HIGH_ADDRESS,                      /* const AddressType programMemoryHighAddress                     */
+    &HeapsCore{{item.coreId}}CfgConst[PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_ID],     /* const CosmOS_HeapConfigurationType heap                     */
+    &MutexForProgram{{program.programId}}HeapCore{{item.coreId}}Var,				/* void * const heapMutex			                     */
 	},
 {% endfor -%}
 };
