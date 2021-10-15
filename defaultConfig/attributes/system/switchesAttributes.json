@@ -5,7 +5,9 @@
 		"switches": {
 			"view_type": "carded",
 			"tab_label": "Switches",
-			"tab_icon": "toggle_on"
+			"tab_icon": "toggle_on",
+			"allow_element_deletion": false,
+			"allow_element_creation": false
 		}
 	},
 	"attributes": {

@@ -5,7 +5,9 @@
 		"sys_jobs_list": {
 			"view_type": "tabbed",
 			"tab_label": "Sys Jobs List",
-			"tab_icon": "sort"
+			"tab_icon": "sort",
+			"allow_element_deletion": false,
+			"allow_element_creation": false
 		}
 	},
 	"attributes": {

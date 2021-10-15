@@ -10,7 +10,9 @@ from typing				import List, Union
 
 class Workspace():
 	workspace = os.getcwd()
-	def __init__(self, WorkspaceFile: str):
+	def __init__(self, WorkspaceFile: str, workspace_path: str = None):
+		if(workspace_path is not None):
+			self.workspace = workspace_path
 		self.workspaceFilePath = WorkspaceFile
 		self.placeholders = [const.WORKSPACE_PLACEHOLDER]
 
@@ -38,12 +40,12 @@ class Workspace():
 					try:
 						property[i] = self.resolvePath(path)
 					except TypeError as e:
-						raise TypeError(f"Error while replacing placeholders in \"{key}\" config: {str(e)}")
+						raise TypeError(f"Error while replacing placeholders in \"{key}\" config: {str(e)}") from e
 			elif(type(property) is str):
 				try:
 					setattr(self, key, self.resolvePath(property))
 				except TypeError as e:
-					raise TypeError(f"Error while replacing placeholders in \"{key}\" config: {str(e)}")
+					raise TypeError(f"Error while replacing placeholders in \"{key}\" config: {str(e)}") from e
 			else:
 				raise TypeError(f"Format of the workspace file \"{WorkspaceFile}\" is invalid. The only supported items are list and str but found {type(property)}.")
 			self.placeholders.append(key)
@@ -135,4 +137,5 @@ class Workspace():
 		if(Argparser is None):
 			Argparser = argparse.ArgumentParser()
 		Argparser.add_argument("WORKSPACE", help="Input workspace file path", type=str)
+		Argparser.add_argument("-w", "--workspace-root", dest="workspace_root", required=False, default=None, help="Directory to the workspace root path, if not given cwd will be used for this", type=str)
 		return Argparser

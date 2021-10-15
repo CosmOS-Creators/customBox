@@ -5,7 +5,9 @@
 		"os_partitions": {
 			"view_type": "tabbed",
 			"tab_label": "OS partitions",
-			"tab_icon": "segment"
+			"tab_icon": "segment",
+			"allow_element_deletion": false,
+			"allow_element_creation": false
 		}
 	},
 	"attributes": {

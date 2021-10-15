@@ -9,3 +9,8 @@ def test_workspace():
 def parsed_config():
 	parser = ConfigParser("./Cosmos/customBox/python/Parser/tests/testConfigs/configs/BasicConfig")
 	return parser.parse()
+
+@pytest.fixture
+def element_creation_config():
+	parser = ConfigParser("./Cosmos/customBox/python/Parser/tests/testConfigs/configs/elementCreationConfig")
+	return parser.parse()

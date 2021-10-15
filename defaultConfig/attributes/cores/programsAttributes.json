@@ -5,7 +5,24 @@
 		"programs": {
 			"view_type": "tabbed",
 			"tab_label": "Programs",
-			"tab_icon": "book"
+			"tab_icon": "book",
+			"allow_element_deletion": true,
+			"allow_element_creation": true
+		}
+	},
+	"element_restrictions": {
+		"program_restrictions": {
+			"requires": [
+				"name",
+				"size",
+				"heapSize",
+				"memory",
+				"lowAddress",
+				"highAddress",
+				"programId",
+				"programThreads",
+				"programTasks"
+			]
 		}
 	},
 	"attributes": {

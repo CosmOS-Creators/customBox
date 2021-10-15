@@ -29,3 +29,9 @@ def forceStrList(input: Union[List[str], str]):
 		if(valid == False):
 			raise TypeError(f"Allowed types are only str or List[str] but found type \"{str(type(input))}\" instead.")
 	return out
+
+def forceList(input):
+	output = input
+	if(not isinstance(input, list)):
+		output = [input]
+	return output

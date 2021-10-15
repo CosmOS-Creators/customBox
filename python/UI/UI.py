@@ -1,15 +1,10 @@
 from __future__ import annotations
-from pathlib import Path
 from typing import List, Tuple
 from PySide6.QtCore import QEasingCurve, QParallelAnimationGroup, QPoint, QPropertyAnimation, Qt
-from PySide6.QtWidgets import QApplication, QLabel, QPushButton, QScrollArea, QSizeGrip, QSizePolicy, QStackedLayout, QVBoxLayout, QWidget, QHBoxLayout
-from qt_material import apply_stylesheet
-import sys
+from PySide6.QtWidgets import QLabel, QMessageBox, QPushButton, QScrollArea, QSizeGrip, QSizePolicy, QStackedLayout, QVBoxLayout, QWidget, QHBoxLayout
 from Parser.ConfigTypes import Configuration
 from UI.support import SeperatorLine, icons
 from UI.StyleDimensions import styleExtensions
-import UI.PageBuilder as pageBuilder
-
 
 class sidebar(QWidget):
 	def __init__(self, parent: QWidget, page_layout: QStackedLayout):
@@ -152,7 +147,7 @@ class sidebar(QWidget):
 				button.setText(buttonText)
 
 class TitleBar(QWidget):
-	def __init__(self, main_window: MainWindow):
+	def __init__(self, main_window: MainWindow, titlebar_icon: str=None):
 		super().__init__(main_window)
 		self.main_window = main_window
 		self.setObjectName("TitleBar")
@@ -170,7 +165,15 @@ class TitleBar(QWidget):
 
 
 		self.title_bar_layout.setSpacing(0)
-		self.title_bar_layout.addSpacing(50) # placeholder for a potention future icon
+		if(titlebar_icon):
+			self.tile_icon = icons.Icon(titlebar_icon)
+			self.tile_icon_label = QLabel(self)
+			icon_pixmap = self.tile_icon.pixmap(styleExtensions.TITLEBAR_WINDOW_ICON_SIZE)
+			self.tile_icon_label.setPixmap(icon_pixmap)
+			self.tile_icon_label.setContentsMargins(styleExtensions.TITLEBAR_WINDOW_ICON_MARGINS)
+			self.title_bar_layout.addWidget(self.tile_icon_label)
+		else:
+			self.title_bar_layout.addSpacing(styleExtensions.TITLEBAR_WINDOW_ICON_SIZE)
 		self.title_bar_layout.addWidget(self.custom_window_title)
 		self.title_bar_layout.addStretch()
 		self.MinimizeButton = QPushButton(icons.Icon("minimize"), "", clicked=main_window.showMinimized)
@@ -219,10 +222,12 @@ class TitleBar(QWidget):
 		self.main_window.toggleMaximized()
 
 class MainWindow(QWidget):
-	def __init__(self, SystemConfig: Configuration, windowTitle: str):
+	def __init__(self, SystemConfig: Configuration, windowTitle: str, window_icon: str = None):
 		super().__init__()
 		self.maximized = False
 		self.setWindowTitle(windowTitle)
+		if(window_icon):
+			self.setWindowIcon(icons.Icon(window_icon))
 		self.setWindowFlags(Qt.FramelessWindowHint)
 		self.appLayout      = QVBoxLayout(self)
 		self.appLayout.setSpacing(0)
@@ -230,7 +235,7 @@ class MainWindow(QWidget):
 		self.mainLayout     = QHBoxLayout()
 		self.pagesWidget    = QWidget(self)
 		self.pagesLayout    = QStackedLayout(self.pagesWidget)
-		self.title_bar      = TitleBar(self)
+		self.title_bar      = TitleBar(self, window_icon)
 		self.appLayout.addWidget(self.title_bar)
 		self.appLayout.addLayout(self.mainLayout)
 		self.appLayout.addWidget(QSizeGrip(self), 0, Qt.AlignBottom | Qt.AlignRight)
@@ -241,6 +246,9 @@ class MainWindow(QWidget):
 
 		self.mainLayout.addWidget(self.sidebar)
 		self.mainLayout.addWidget(self.pagesWidget, 1)
+
+	def criticalError(self, title: str, msg: str):
+		return QMessageBox.critical(self, title, msg)
 
 	def addPages(self, pages: List[QWidget]):
 		for i, page in enumerate(pages):
@@ -259,7 +267,14 @@ class MainWindow(QWidget):
 		return self.maximized
 
 	def save_config_to_file(self):
-		self.systemConfig.serialize()
+		try:
+			self.systemConfig.serialize()
+		except Exception as e:
+			dlg = QMessageBox(self)
+			dlg.setIcon(QMessageBox.Icon.Critical)
+			dlg.setWindowTitle("Error while serializing")
+			dlg.setText(str(e))
+			dlg.exec()
 
 	def register_generate_callback(self, callback):
 		self.sidebar.generateButton.clicked.connect(callback)

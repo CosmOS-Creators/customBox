@@ -1,12 +1,13 @@
 from __future__ 				import annotations
 import hashlib
-from typing 					import Dict, List, Union
+from typing 					import Dict, List, Tuple, Type, Union
 from pathlib 					import Path
 import Parser
 from Parser.LinkElement 		import Link
 import Parser.Serializer 		as serializer
 import Parser.VersionHandling 	as vh
 from Parser.helpers 			import overrides
+import Parser.helpers 			as helpers
 import Parser.AttributeTypes 	as AttributeTypes
 import Parser.constants			as const
 import json
@@ -29,7 +30,7 @@ def formatConfig(config: Configuration, indent: int = 1):
 
 class dynamicObject:
 	def __init__(self, className: str, nameClashError: str, duplicatedError: str, notExistantError: str):
-		self.dynamic_items 			= dict()
+		self.dynamic_items 			= OrderedDict()
 		self.__name_clash_error 	= nameClashError
 		self.__duplicate_error		= duplicatedError
 		self.__non_existant_error	= notExistantError
@@ -65,7 +66,8 @@ class dynamicObject:
 		for key, value in items.items():
 			if(value == item):
 				del items[key]
-				break
+				return True
+		return False
 
 	def _get(self, name: str):
 		items = object.__getattribute__(self, 'dynamic_items')
@@ -124,23 +126,27 @@ class UiViewTypes():
 		return None
 
 class UiPage(serializer.serializeable):
-	def __init__(self, id: str, label: str, viewType: UiViewType, origin: Subconfig, icon: str = None):
-		self.origin_subconfig 	= origin
-		self.id 				= id
-		self.label 				= label
-		self.icon 				= icon
-		self.viewType 			= viewType
+	def __init__(self, id: str, label: str, viewType: UiViewType, origin: Subconfig, icon: str = None, allow_deletion = False, allow_creation = False):
+		self.origin_subconfig 		= origin
+		self.id 					= id
+		self.label 					= label
+		self.icon 					= icon
+		self.viewType 				= viewType
+		self.allowElementDeletion	= allow_deletion
+		self.allowElementCreation	= allow_creation
 		self.assignedSubconfigs: Dict[str, Subconfig] = dict()
 
 	def assignSubconfig(self, name: str, config: Subconfig):
 		self.assignedSubconfigs[name] = config
 
 	def _serialize(self):
-		data = dict()
+		data = OrderedDict()
 		data[const.UI_VIEW_TYPE_KEY] = str(self.viewType)
 		data[const.UI_TAB_LABEL_KEY] = self.label
 		if(self.icon is not None):
 			data[const.UI_TAB_ICON_KEY] = self.icon
+		data[const.UI_ALLOW_ELEMENT_DELETION] = self.allowElementDeletion
+		data[const.UI_ALLOW_ELEMENT_CREATION] = self.allowElementCreation
 		return data
 
 class UiConfiguration(dynamicObject, serializer.serializeable):
@@ -163,7 +169,15 @@ class UiConfiguration(dynamicObject, serializer.serializeable):
 			else:
 				icon = None
 			viewType = UiViewTypes.getViewType(pageDefinition[const.UI_VIEW_TYPE_KEY])
-		return self._create(id, UiPage(id, pageDefinition[const.UI_TAB_LABEL_KEY], viewType, origin, icon))
+			if(const.UI_ALLOW_ELEMENT_DELETION in pageDefinition):
+				allowDeletion = pageDefinition[const.UI_ALLOW_ELEMENT_DELETION]
+			else:
+				allowDeletion = False
+			if(const.UI_ALLOW_ELEMENT_CREATION in pageDefinition):
+				allowCreation = pageDefinition[const.UI_ALLOW_ELEMENT_CREATION]
+			else:
+				allowCreation = False
+		return self._create(id, UiPage(id, pageDefinition[const.UI_TAB_LABEL_KEY], viewType, origin, icon, allowDeletion, allowCreation))
 
 	def haspage(self, id: str):
 		return self._has(id)
@@ -177,10 +191,81 @@ class UiConfiguration(dynamicObject, serializer.serializeable):
 			data[page_id] = serializer.serialize(page)
 		return data
 
+class RestrictionConfiguration(dynamicObject, serializer.serializeable):
+	def __init__(self):
+		forbidden 		= 'Creating a restriction definition with the name "{0}" is not permitted as "{0}" is a reserved keyword'
+		duplicated 		= 'It was requested to create a restriction definition named "{0}" but a restriction with that name already exists'
+		doesNotExist 	= 'Config has no restriction definition named "{0}"'
+		super().__init__("RestrictionConfiguration", forbidden, duplicated, doesNotExist)
+
+	@property
+	def restriction_definitions(self) -> Dict[str, RestrictionDefinition]:
+		return self._getItems()
+
+	def addRestrictionsFromDefinition(self, config: dict, context: Subconfig):
+		for restriction_id, restriction in config.items():
+			newRestriction = RestrictionDefinition(restriction_id, restriction, context)
+			self._create(restriction_id, newRestriction)
+			context._restriction_definitions[restriction_id] = newRestriction
+
+	def getRestrictionById(self, restriction_id: str) -> RestrictionDefinition:
+		return self._get(restriction_id)
+
+	def _serialize(self):
+		serialized_data = dict()
+		for restriction_id, restriction in self.restriction_definitions.items():
+			serialized_data[restriction_id] = serializer.serialize(restriction)
+		return serialized_data
+
+class RestrictionDefinition():
+	def __init__(self, id, restriction_config: dict, origin_subconfig: Subconfig):
+		self.id 					= id
+		self.restriction_config 	= restriction_config
+		self.origin_subconfig 		= origin_subconfig
+		self.__requires: List[Link] 	= list()
+		self.__parse_config(self.restriction_config)
+
+	@property
+	def required_attributes(self):
+		return self.__requires
+
+	def __parse_config(self, restriction_config):
+		self.restriction_config = restriction_config
+		if(const.RESTRICTION_REQUIRES_KEY in self.restriction_config):
+			requirement_config = self.restriction_config[const.RESTRICTION_REQUIRES_KEY]
+			if(not isinstance(requirement_config, list)):
+				raise TypeError(f'Requirements for element restricitons must be of type list but found {type(requirement_config)} instead')
+			for requirement in self.restriction_config[const.RESTRICTION_REQUIRES_KEY]:
+				self.add_requirement(requirement)
+
+	def add_requirement(self, newRequirement: Union[Link, List[Link]]):
+		newRequirement = helpers.forceList(newRequirement)
+		for requirement in newRequirement:
+			if(isinstance(requirement, Link)):
+				self.__requires.append(requirement)
+			elif(isinstance(requirement, str)):
+				self.__requires.append(Link.parse_with_context(requirement, self.origin_subconfig, Link.EMPHASIZE_ATTRIBUTE))
+			else:
+				raise TypeError(f'All requirements must be either str or Link types but "{str(requirement)}" was of type "{type(requirement)}"')
+
+	def _serialize(self):
+		serialized_data = OrderedDict()
+		if(len(self.__requires) > 0):
+			requirements = list()
+			serialized_data[const.RESTRICTION_REQUIRES_KEY] = requirements
+			for requires in self.__requires:
+				if(requires.hasConfig() and requires.config == self.origin_subconfig.link.config):
+					requirements.append(requires.attribute)
+				else:
+					requirements.append(str(requires))
+		return serialized_data
+
+
 class Configuration(dynamicObject, serializer.serializeable):
 	def __init__(self, attribute_lookup: Dict[str, AttributeTypes.AttributeType]):
 		self.__attribute_lookup = attribute_lookup
-		self.UiConfig 	= UiConfiguration()
+		self.UiConfig 			= UiConfiguration()
+		self.RestrictionConfig 	= RestrictionConfiguration()
 		forbidden 		= 'Creating a subconfig with the name "{0}" is not permitted as "{0}" is a reserved keyword'
 		duplicated 		= 'It was requested to create a subconfig named "{0}" but a subconfig with that name already exists'
 		doesNotExist 	= 'Config has no subconfig named "{0}"'
@@ -194,7 +279,7 @@ class Configuration(dynamicObject, serializer.serializeable):
 			try:
 				link.resolve(self)
 			except Exception as e:
-				raise AttributeError(f'The link "{link}" was listed as required but it could not be resolved: {str(e)}')
+				raise AttributeError(f'The link "{link}" was listed as required but it could not be resolved: {str(e)}') from e
 
 	@property
 	def configs(self) -> Dict[str, Subconfig]:
@@ -222,6 +307,10 @@ class Configuration(dynamicObject, serializer.serializeable):
 		if(const.UI_KEY in config):
 			if(const.UI_USE_PAGE_KEY in config[const.UI_KEY]):
 				subconfig.assignToUiPage(config[const.UI_KEY][const.UI_USE_PAGE_KEY])
+		if(const.ELEMENT_RESTRICTIONS_KEY in config):
+			self.RestrictionConfig.addRestrictionsFromDefinition(config[const.ELEMENT_RESTRICTIONS_KEY], subconfig)
+		if(const.USE_RESTRICTION_KEY in config):
+			subconfig.assignRestriction(config[const.USE_RESTRICTION_KEY])
 
 	def createSubconfig(self, name: Union[str,Link], source_file: Path, file_format_version: str = None, file_element_hash: int = None) -> Subconfig:
 		link = Link.force(name, Link.EMPHASIZE_CONFIG)
@@ -251,10 +340,14 @@ class Configuration(dynamicObject, serializer.serializeable):
 						attribute.value = attribute.attributeDefinition.getDefault()
 
 	def _serialize(self):
+		serialized_data = dict()
 		for subconfig in self.configs.values():
 			Data = serializer.serialize(subconfig)
-			with subconfig.source_file.open("w") as fp:
-				json.dump(Data, fp, indent = '\t')
+			serialized_data[subconfig.source_file] = (subconfig, json.dumps(Data, indent = '\t'))
+		for config_file, (subconfig, data) in serialized_data.items():
+			with config_file.open("w") as fp:
+				fp.write(data)
+				# json.dump(Data, fp, indent = '\t')
 			subconfig._file_elements_hash = subconfig.elements_hash
 
 
@@ -266,6 +359,8 @@ class Subconfig(dynamicObject, serializer.serializeable):
 		self.__ui_page_assignment				= None
 		self.__file_format_version				= vh.Version(file_format_version)
 		self._file_elements_hash				= file_element_hash
+		self.__element_restrictions: str		= None
+		self._restriction_definitions: Dict[RestrictionDefinition] = OrderedDict()
 		if(not vh.CompatabilityManager.is_compatible(self.__file_format_version)):
 			raise ValueError(f'The file structure of "{str(source_file)}" is specified as version "{str(file_format_version)}" but this version is not compatible with the parser which is on version {vh.CompatabilityManager.get_current_version()}')
 
@@ -322,7 +417,13 @@ class Subconfig(dynamicObject, serializer.serializeable):
 	def createElement(self, name: Union[str, Link], ) -> ConfigElement:
 		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
 		elementName = elementLink.element
-		return self._create(elementName, ConfigElement(elementName, self))
+		newElement = self._create(elementName, ConfigElement(elementName, self))
+		if(self.__element_restrictions is not None):
+			restriction = self.parent.RestrictionConfig.getRestrictionById(self.__element_restrictions)
+			required_attribs = restriction.required_attributes
+			for requirement in required_attribs:
+				newElement.createAttributeInstance(requirement, populate_default=True)
+		return newElement
 
 	def getElement(self, name: Union[str, Link]) -> ConfigElement:
 		elementLink = Link.force(name, Link.EMPHASIZE_ELEMENT)
@@ -330,6 +431,11 @@ class Subconfig(dynamicObject, serializer.serializeable):
 
 	def assignToUiPage(self, page_id: str):
 		self.__ui_page_assignment = page_id
+
+	def assignRestriction(self, restriction: str):
+		if(self.__element_restrictions is not None):
+			raise Exception(f'Subconfig "{str(self.link)}" already has a restriction assigned. Changing restrictions during runtime is forbidden.')
+		self.__element_restrictions = restriction
 
 	def _serialize_elements(self):
 		data = dict()
@@ -365,6 +471,13 @@ class Subconfig(dynamicObject, serializer.serializeable):
 				ui_page_definitions[ui_assignment.id] = serializer.serialize(ui_assignment)
 		if(len(ui_page_definitions) > 0):
 			data[const.UI_PAGE_KEY] = ui_page_definitions
+		if(self.__element_restrictions is not None):
+			data[const.USE_RESTRICTION_KEY] = self.__element_restrictions
+		if(len(self._restriction_definitions) > 0):
+			serialized_restriction_defs = OrderedDict()
+			data[const.ELEMENT_RESTRICTIONS_KEY] = serialized_restriction_defs
+			for restriction_id, restriction_def in self._restriction_definitions.items():
+				serialized_restriction_defs[restriction_id] = serializer.serialize(restriction_def)
 		data[const.ATTRIBUTES_KEY] 	= self._serialize_attributes()
 		data[const.ELEMENTS_KEY] 	= serialized_elements
 		return data
@@ -402,15 +515,29 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 				reference.remove(self)
 			elif(isinstance(reference, ConfigElement)):
 				reference: ConfigElement
+				was_removed = False
 				if(self.link.config in reference.attributes):
-					refCol: ReferenceCollection = reference.getAttribute(self.link.config)
-					refCol._unlinkReference(self.__name)
-				else:
+					attrib: ReferenceCollection = reference.getAttribute(self.link.config)
+					if(isinstance(attrib, ReferenceCollection)):
+						attrib: ReferenceCollection
+						if(attrib._unlinkReference(self) == True):
+							was_removed = True
+					elif(isinstance(attrib, AttributeInstance)):
+						attrib: AttributeInstance
+						if(attrib.value == self):
+							attrib.setValueDirect(attrib.attributeDefinition.getDefault())
+							was_removed = True
+					else:
+						raise NotImplementedError(f'Deletion for attributes of type {type(attrib)} cannot be handeled correctly.')
+				if(was_removed == False):
 					for attribute in reference.attributes.values():
-						if(attribute.value == self):
-							attribute.setValueDirect(attribute.attributeDefinition.getDefault())
-
+						if(isinstance(attribute, AttributeInstance)):
+							if(attribute.value == self):
+								attribute.setValueDirect(attribute.attributeDefinition.getDefault())
+						elif(not isinstance(attribute, ReferenceCollection)):
+							raise NotImplementedError(f'Deletion for attributes of type {type(attribute)} cannot be handeled correctly.')
 			elif(isinstance(reference, AttributeInstance)):
+				reference: AttributeInstance
 				reference.setValueDirect(reference.attributeDefinition.getDefault())
 			else:
 				raise TypeError(f'Error while deleting element "{str(self.link)}". Tried to remove reference to this element from unsupported type "{type(reference)}"')
@@ -458,7 +585,10 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 	def _serialize(self) -> Dict:
 		serialized_data = list()
 		for attribute in self.attributeInstances.values():
-			serialized_data.append(serializer.serialize(attribute))
+			try:
+				serialized_data.append(serializer.serialize(attribute))
+			except ValueError as e:
+				raise ValueError(f'Error while serializing "{self.link.config}" subconfig: {str(e)}') from e
 		return serialized_data
 
 	def getObjReference(self, referenced_in_object: Union[ConfigElement, AttributeInstance, List[ConfigElement]]):
@@ -494,7 +624,7 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 			raise TypeError(f'The requested reference object named "{name}" from element "{self.link}" was not of type AttributeInstance instead it was of type "{type(item)}"')
 		return item
 
-	def createAttributeInstance(self, target: Link, value = None, attributeName: str = None):
+	def createAttributeInstance(self, target: Link, value = None, attributeName: str = None, populate_default: bool = False):
 		attribute_lookup 				= self.parent.parent.attribute_lookup
 		targetLink 						= Link.force(target, Link.EMPHASIZE_ATTRIBUTE)
 		targetLink 						= self.link.merge(targetLink, Link.EMPHASIZE_ATTRIBUTE)
@@ -514,6 +644,10 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute)
 		elif(value is not None):
 			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute, value)
+		elif(populate_default):
+			if(value is not None):
+				raise Exception(f'Element "{self.link}" instantiates the attribute definition "{AttributeInstanceLink}" with the default value placeholder but the value attribute ist also defined, which is an invalid combination for this function call.')
+			newAttributeInstance = AttributeInstance(AttributeInstanceLink, self, targetedAttribute, populate_defaults = True)
 		else:
 			raise ValueError(f'The attribute instance for "{self.link}" could not be created because there was no value provided which is mandatory for attributes which are not placeholders')
 		return self._create(targetedAttribute.id, newAttributeInstance)
@@ -561,14 +695,14 @@ class ConfigElement(dynamicObject, serializer.serializeable):
 				raise AttributeError(error_msg.format(name))
 
 class AttributeInstance(serializer.serializeable):
-	def __init__(self, name: Union[str, Link], parent: ConfigElement, attribute: AttributeTypes.AttributeType, value = None):
+	def __init__(self, name: Union[str, Link], parent: ConfigElement, attribute: AttributeTypes.AttributeType, value = None, populate_defaults = False):
 		link = Link.force(name, Link.EMPHASIZE_ATTRIBUTE)
 		self.__attribute 		= attribute
 		self.__link 			= parent.link.copy() #example: cores/core_0:name
 		self.__link.attribute	= link.attribute
 		self.__configLookup 	= parent.parent.parent
 		self.__parent			= parent
-		if(attribute.is_placeholder and value is None):
+		if((attribute.is_placeholder or populate_defaults) and value is None):
 			self.__value = attribute.getDefault()
 		elif(type(value) is AttributeInstance or type(value) is ConfigElement):
 			self.__value = value
@@ -605,6 +739,13 @@ class AttributeInstance(serializer.serializeable):
 	def value(self, value):
 		self.populate(value)
 
+	def isValid(self) -> Tuple[bool, str]:
+		try:
+			self.__attribute.checkValue(self.__value)
+			return True, ""
+		except Exception as e:
+			return False, str(e)
+
 	@overrides(serializer.serializeable)
 	def _serialize(self) -> Dict:
 		own_subconfig = self.parent.parent.link
@@ -622,12 +763,12 @@ class AttributeInstance(serializer.serializeable):
 		try:
 			self.__value = self.__attribute.checkValue(value)
 		except ValueError as e:
-			raise ValueError(f"Error validating the new value for the placeholder \"{self.__link}\": {str(e)}")
+			raise ValueError(f"Error validating the new value for the placeholder \"{self.__link}\": {str(e)}") from e
 
 		try:
 			self.ResolveValueLink()
 		except Exception as e:
-			raise Exception(f'Error while linking element "{self.__link}" of type "{self.__attribute.type}": {str(e)}')
+			raise Exception(f'Error while linking element "{self.__link}" of type "{self.__attribute.type}": {str(e)}') from e
 
 class ReferenceCollection(dynamicObject):
 	def __init__(self, name: Union[str, Link], parent: ConfigElement):
@@ -652,8 +793,8 @@ class ReferenceCollection(dynamicObject):
 	def references(self):
 		return self._getItems()
 
-	def _unlinkReference(self, name: str):
-		self._set(name, None)
+	def _unlinkReference(self, ref):
+		return self._del(ref)
 
 	def hasReference(self, name: str):
 		return self._has(name)

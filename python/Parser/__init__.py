@@ -4,5 +4,6 @@ from Parser.VersionHandling import Version
 from Parser.WorkspaceParser import Workspace
 import Parser.helpers as helpers
 from Parser.LinkElement import Link
+from Parser.ParserExceptions import ValidationError
 
 FILE_FORMAT_VERSION = Version("1.1.0")

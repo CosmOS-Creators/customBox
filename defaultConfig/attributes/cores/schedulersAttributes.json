@@ -5,7 +5,9 @@
 		"schedulers": {
 			"view_type": "tabbed",
 			"tab_label": "Schedulers",
-			"tab_icon": "history_toggle_off"
+			"tab_icon": "history_toggle_off",
+			"allow_element_deletion": false,
+			"allow_element_creation": false
 		}
 	},
 	"attributes": {

@@ -5,7 +5,9 @@
 		"sys_jobs": {
 			"view_type": "tabbed",
 			"tab_label": "Sys Jobs",
-			"tab_icon": "work_outline"
+			"tab_icon": "work_outline",
+			"allow_element_deletion": false,
+			"allow_element_creation": false
 		}
 	},
 	"attributes": {

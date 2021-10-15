@@ -5,7 +5,9 @@
 		"compiler": {
 			"view_type": "tabbed",
 			"tab_label": "Compiler settings",
-			"tab_icon": "fact_check"
+			"tab_icon": "fact_check",
+			"allow_element_deletion": false,
+			"allow_element_creation": false
 		}
 	},
 	"attributes": {

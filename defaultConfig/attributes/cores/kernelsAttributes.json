@@ -5,7 +5,9 @@
 		"kernels": {
 			"view_type": "tabbed",
 			"tab_label": "Kernels",
-			"tab_icon": "source"
+			"tab_icon": "source",
+			"allow_element_deletion": false,
+			"allow_element_creation": false
 		}
 	},
 	"attributes": {

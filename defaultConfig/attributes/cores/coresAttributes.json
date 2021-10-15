@@ -5,7 +5,39 @@
 		"cores": {
 			"view_type": "carded",
 			"tab_label": "Cores",
-			"tab_icon": "memory"
+			"tab_icon": "memory",
+			"allow_element_deletion": true,
+			"allow_element_creation": true
+		}
+	},
+	"element_restrictions": {
+		"core_restrictions": {
+			"requires": [
+				"CoreName",
+				"bootOs",
+				"isCosmos",
+				"userCodeSize",
+				"userCodeLowAddress",
+				"userCodeHighAddress",
+				"staticDataSize",
+				"staticDataLowAddress",
+				"staticDataHighAddress",
+				"unmappedDataSize",
+				"unmappedDataLowAddress",
+				"unmappedDataHighAddress",
+				"cpu",
+				"coreId",
+				"corePrograms",
+				"coreSysJobGroups",
+				"coreSysJobHyperTick",
+				"coreScheduler",
+				"coreNumberOfThreads",
+				"coreNumberOfTasks",
+				"prioSortedThreads",
+				"userCodeMemory",
+				"staticDataMemory",
+				"unmappedDataMemory"
+			]
 		}
 	},
 	"attributes": {
@@ -102,6 +134,10 @@
 			"type": "int",
 			"placeholder": true
 		},
+		"prioSortedThreads": {
+			"type": "referenceList",
+			"placeholder": true
+		},
 		"userCodeMemory": {
 			"label": "Memory location of the user code - advised local core flash memory bank for improving performance",
 			"inherit": "memoriesAttributes/:memory"
@@ -113,10 +149,6 @@
 		"unmappedDataMemory": {
 			"label": "Memory location of the unmapped data",
 			"inherit": "memoriesAttributes/:memory"
-		},
-		"prioSortedThreads": {
-			"type": "referenceList",
-			"placeholder": true
 		}
 	},
 	"elements": {}
