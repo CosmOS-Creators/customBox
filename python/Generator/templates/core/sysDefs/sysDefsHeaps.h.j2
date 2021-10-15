@@ -5,13 +5,13 @@
 *********************************************************************************
 **                       DOXYGEN DOCUMENTATION INFORMATION                     **
 *****************************************************************************//**
-** @file sysDefsSysJobs.h
+** @file sysDefsHeaps.h
 *********************************************************************************
-<!--                   sysDefsSysJobs Unit Group Definition                   -->
+<!--                    sysDefsHeaps Unit Group Definition                    -->
 *********************************************************************************
-** @defgroup sysDefsSysJobs_unit sysDefsSysJobs Unit
+** @defgroup sysDefsHeaps_unit sysDefsHeaps Unit
 ** @ingroup sysDefs_module
-** @brief sysDefsSysJobs Unit
+** @brief sysDefsHeaps Unit
 ** @details lorem
 *********************************************************************************
 <!--                           Version Information                            -->
@@ -25,18 +25,18 @@
 ** @warning Modifying code can lead to unexpected behaviour of the whole system
 ** @copyright MIT License
 *********************************************************************************
-<!--                sysDefsSysJobs Unit Global Group Definition               -->
+<!--                 sysDefsHeaps Unit Global Group Definition                -->
 *********************************************************************************
-** @defgroup Global_sysDefsSysJobs Global
-** @ingroup sysDefsSysJobs_unit
-** @brief sysDefsSysJobs globals
+** @defgroup Global_sysDefsHeaps Global
+** @ingroup sysDefsHeaps_unit
+** @brief sysDefsHeaps globals
 ** @details lorem
 ********************************************************************************/
 /********************************************************************************
 **                           START OF THE HEADER FILE                          **
 ********************************************************************************/
-#ifndef __SYSDEFSSYSJOBS_H__
-#define __SYSDEFSSYSJOBS_H__
+#ifndef __SYSDEFSHEAPS_H__
+#define __SYSDEFSHEAPS_H__
 /********************************************************************************
 **                         START OF C++ SUPPORT SECTION                        **
 ********************************************************************************/
@@ -57,23 +57,23 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Macros_sysDefsSysJobs_h Macros
-  * @ingroup Global_sysDefsSysJobs
+  * @defgroup Macros_sysDefsHeaps_h Macros
+  * @ingroup Global_sysDefsHeaps
   * @{
 ********************************************************************************/
-{% for core in model.cores -%}
-#define SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM    (BitWidthType){{core.coreSysJobGroups | length}}        /* Number of configurated sysJob groups on the core {{core.CoreName}}  */
-#define SYSJOBS_CORE_{{core.coreId}}_HYPERTICK    (BitWidthType){{core.coreSysJobHyperTick}}              /* HyperTick on the {{core.CoreName}}  */
-{% for sysJobGroup in core.coreSysJobGroups -%}
-{{"\n"}}#define SYSJOBS_HANDLERS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_NUM    (BitWidthType){{sysJobGroup.handlers | length}}        /* Number of configurated handlers in group ID {{sysJobGroup.groupId}}  */
-#define SYSJOBS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_TICK_MULTIPLICATOR    (BitWidthType){{sysJobGroup.tickMultiplicator}}        /* Tick multiplicator in group ID {{sysJobGroup.groupId}}  */
+{% for item in model.cores -%}
+#define HEAP_CORE_{{item.coreId}}_NUM      (BitWidthType){{item.corePrograms|length}}    /* Number of configurated heaps for core {{item.CoreName}} */
 {% endfor -%}
+{% for item in model.programs %}
+#define HEAP_PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_SIZE    (BitWidthType){{item.heapSize}}    /* Program {{item.name}} heap size */
+#define HEAP_PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_LOW_ADDRESS    (AddressType)0x{{'%04x' % (item.highAddress - item.heapSize)}}    /* Program {{item.name}} heapLowAddress */
+#define HEAP_PROGRAM_{{item.programId}}_CORE_{{item.core.coreId}}_HIGH_ADDRESS    (AddressType)0x{{'%04x' % item.highAddress}}    /* Program {{item.name}} heapHighAddress */
 {% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Macros_sysDefsSysJobs_h
+  * Macros_sysDefsHeaps_h
 ********************************************************************************/
 /********************************************************************************
 **                          Macro Definitions | Stop                           **
@@ -84,15 +84,15 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Variables_sysDefsSysJobs_h Variables
-  * @ingroup Global_sysDefsSysJobs
+  * @defgroup Variables_sysDefsHeaps_h Variables
+  * @ingroup Global_sysDefsHeaps
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Variables_sysDefsSysJobs_h
+  * Variables_sysDefsHeaps_h
 ********************************************************************************/
 /********************************************************************************
 **                              Variables | Stop                               **
@@ -103,47 +103,47 @@
 /********************************************************************************
   * DOXYGEN DEF GROUP                                                          **
   * *************************************************************************//**
-  * @defgroup Apis_sysDefsSysJobs_h API's
-  * @ingroup Global_sysDefsSysJobs
+  * @defgroup Apis_sysDefsHeaps_h API's
+  * @ingroup Global_sysDefsHeaps
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_sysDefsSysJobs_h Getters
-  * @ingroup Apis_sysDefsSysJobs_h
+  * @addtogroup Getters_sysDefsHeaps_h Getters
+  * @ingroup Apis_sysDefsHeaps_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Getters_sysDefsSysJobs_h
+  * Getters_sysDefsHeaps_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_sysDefsSysJobs_h Setters
-  * @ingroup Apis_sysDefsSysJobs_h
+  * @addtogroup Setters_sysDefsHeaps_h Setters
+  * @ingroup Apis_sysDefsHeaps_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Setters_sysDefsSysJobs_h
+  * Setters_sysDefsHeaps_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_sysDefsSysJobs_h General
-  * @ingroup Apis_sysDefsSysJobs_h
+  * @addtogroup General_sysDefsHeaps_h General
+  * @ingroup Apis_sysDefsHeaps_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * General_sysDefsSysJobs_h
+  * General_sysDefsHeaps_h
 ********************************************************************************/
 /********************************************************************************
 **                         Function Prototypes | Stop                          **
@@ -154,41 +154,41 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_sysDefsSysJobs_h Getters
-  * @ingroup Apis_sysDefsSysJobs_h
+  * @addtogroup Getters_sysDefsHeaps_h Getters
+  * @ingroup Apis_sysDefsHeaps_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Getters_sysDefsSysJobs_h
+  * Getters_sysDefsHeaps_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_sysDefsSysJobs_h Setters
-  * @ingroup Apis_sysDefsSysJobs_h
+  * @addtogroup Setters_sysDefsHeaps_h Setters
+  * @ingroup Apis_sysDefsHeaps_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * Setters_sysDefsSysJobs_h
+  * Setters_sysDefsHeaps_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_sysDefsSysJobs_h General
-  * @ingroup Apis_sysDefsSysJobs_h
+  * @addtogroup General_sysDefsHeaps_h General
+  * @ingroup Apis_sysDefsHeaps_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @}
-  * General_sysDefsSysJobs_h
+  * General_sysDefsHeaps_h
 ********************************************************************************/
 /********************************************************************************
 **                        Function Definitions | Stop                          **
