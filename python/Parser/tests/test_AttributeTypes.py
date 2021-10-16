@@ -2,6 +2,8 @@ import pytest
 from Parser import Link, ConfigTypes, AttributeTypes
 from unittest.mock import patch
 
+from Parser.ParserExceptions import ValidationError
+
 class TestClassLinkFunctions:
 
 	@pytest.fixture
@@ -155,16 +157,16 @@ class TestClassLinkFunctions:
 
 	def test_parentReference_checkValue_method(self):
 		parentReference = AttributeTypes.ParentReferenceType({"type": "parentReference"}, "programs/:core")
-		with pytest.raises(ValueError):
+		with pytest.raises(ValidationError):
 			parentReference.checkValue("programs")
-		with pytest.raises(ValueError):
+		with pytest.raises(ValidationError):
 			parentReference.checkValue("programs/:name")
-		with pytest.raises(ValueError):
+		with pytest.raises(ValidationError):
 			parentReference.checkValue("")
 		assert parentReference.checkValue("programs/program_0") == "programs/program_0"
 		link = Link("programs/program_0")
 		assert parentReference.checkValue(link) == link
-		with pytest.raises(ValueError):
+		with pytest.raises(ValidationError):
 			parentReference.checkValue(Link("programs"))
-		with pytest.raises(ValueError):
+		with pytest.raises(ValidationError):
 			parentReference.checkValue(0)
