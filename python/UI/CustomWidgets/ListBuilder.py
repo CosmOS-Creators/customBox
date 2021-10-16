@@ -1,16 +1,15 @@
 from typing import List, Optional, Tuple
-from PySide6.QtCore import QObject, Signal
-from PySide6.QtWidgets import QComboBox, QHBoxLayout, QLabel, QLayout, QPushButton, QScrollArea, QSizePolicy, QVBoxLayout, QWidget
+from PySide6.QtCore import QObject, Signal, QSize
+from PySide6.QtWidgets import QComboBox, QFrame, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy, QVBoxLayout, QWidget
 from UI import support
-from UI.support import icons
-from UI.CustomWidgets import CardWidget
 from UI.CustomWidgets.IconButton import iconButton
 
+NUM_OF_SHOWN_LIST_ELEMENTS = 5
 
 class ListBuilderSignals(QObject):
 	listChanged = Signal()
 
-class ListBuilderWidget(QWidget):
+class ListBuilderWidget(QFrame):
 	def __init__(self, parent: Optional[QWidget], selectable_elements: Optional[List[Tuple[str, object]]] = None, selected_elements: Optional[List[Tuple[str, object]]] = None):
 		super().__init__(parent)
 		self.__should_emit		= False
@@ -19,16 +18,18 @@ class ListBuilderWidget(QWidget):
 		self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		self.selected_elements: List[Tuple[str, object]] 	= list()
 		self.available_elements: List[Tuple[str, object]] 	= list()
-		self.__layout_lookup: List[Tuple[object, QLayout]] 	= list()
+		self.__layout_lookup: List[Tuple[object, QWidget]] 	= list()
 		self.widget_layout 	= QVBoxLayout(self)
 		self.add_row_layout	= QHBoxLayout()
+		self.add_row_layout.setContentsMargins(0,0,0,0)
 		self.widget_layout.addLayout(self.add_row_layout)
 		self.list_scroll_area = QScrollArea(self)
 		self.widget_layout.addWidget(self.list_scroll_area)
-		# self.widget_layout.addWidget(QSizeGrip(self), 0 , Qt.AlignBottom | Qt.AlignRight)
 		self.list_scroll_area.setWidgetResizable(True)
 		self.list_widget	= QWidget(self.list_scroll_area)
 		self.list_layout 	= QVBoxLayout(self.list_widget)
+		cm = self.list_layout.contentsMargins()
+		self.list_layout.setContentsMargins(cm.left(), 0, cm.right(), 0)
 		self.list_scroll_area.setWidget(self.list_widget)
 		self.avaliable_elements_combobox = QComboBox(self)
 
@@ -49,6 +50,24 @@ class ListBuilderWidget(QWidget):
 		data = self.avaliable_elements_combobox.itemData(index)
 		label = self.avaliable_elements_combobox.itemText(index)
 		self.addSelection(label, data)
+
+	def sizeHint(self) -> QSize:
+		frame_border = 2
+		own_width = self.width()
+		own_cm = self.widget_layout.contentsMargins()
+		add_row_geometry = self.add_row_layout.geometry()
+		height_offset = (frame_border
+						+ own_cm.top()
+						+ add_row_geometry.height()
+						+ self.widget_layout.spacing()
+						+ own_cm.bottom())
+		list_height = 0
+		for i, (_, list_layout) in enumerate(self.__layout_lookup):
+			if(i >= NUM_OF_SHOWN_LIST_ELEMENTS):
+				break
+			list_entry_geometry = list_layout.geometry()
+			list_height += list_entry_geometry.height() + self.list_layout.spacing()
+		return QSize(own_width, height_offset + list_height)
 
 	def setAvaliableElements(self, selectable_elements: List[Tuple[str, object]]):
 		self.__should_emit = False # keep the changed signal from being emitted while going through the loop
@@ -88,8 +107,9 @@ class ListBuilderWidget(QWidget):
 			found = False
 			num_layouts = self.list_layout.count()
 			for index in range(num_layouts):
-				l = self.list_layout.itemAt(index)
-				if(l == layout):
+				layout_item = self.list_layout.itemAt(index)
+				layout_to_remove = layout_item.layout()
+				if(layout_to_remove == layout):
 					self.list_layout.takeAt(index)
 					found = True
 					break
@@ -99,13 +119,15 @@ class ListBuilderWidget(QWidget):
 				del self.__layout_lookup[lookup_index]
 			self.avaliable_elements_combobox.addItem(label, element)
 			self.__notify_list_changed()
+		self.updateGeometry()
+		self.list_widget.updateGeometry()
+		self.list_scroll_area.updateGeometry()
 
 	def addSelection(self, label: str, element: object):
 		index = self.avaliable_elements_combobox.findData(element)
 		if(index != -1):
 			line_layout = QHBoxLayout()
 			line_label = QLabel(label)
-			line_label.setObjectName("ListBuilder_LineLabel")
 			line_layout.addWidget(line_label, 1)
 			line_remove_button = iconButton(self.list_scroll_area, "close", clicked=lambda: self.removeSelection(label, element))
 			line_layout.addWidget(line_remove_button, 0)
@@ -115,6 +137,8 @@ class ListBuilderWidget(QWidget):
 			self.__layout_lookup.append((element, line_layout))
 			self.list_widget.updateGeometry()
 			self.__notify_list_changed()
+		self.updateGeometry()
+		self.list_scroll_area.updateGeometry()
 
 	def selectedItems(self):
 		return [element for _, element in self.selected_elements]

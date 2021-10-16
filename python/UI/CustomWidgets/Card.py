@@ -1,14 +1,4 @@
-from PySide6.QtWidgets import QFrame, QGroupBox, QHBoxLayout, QLabel, QVBoxLayout, QWidget
-
-class CardWidget_old(QGroupBox):
-	def __init__(self, parent: QWidget, widget: QWidget, name: str = None):
-		if(name):
-			super().__init__(name, parent)
-		else:
-			super().__init__(parent)
-		layout = QVBoxLayout(self)
-		widget.setStyleSheet("background-color: transparent")
-		layout.addWidget(widget)
+from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 class CardWidget(QFrame):
 	def __init__(self, parent: QWidget, widget: QWidget, name: str = None):
