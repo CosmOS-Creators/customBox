@@ -2,10 +2,11 @@ from typing import Dict, List, Union
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 
-from PySide6.QtWidgets import QCheckBox, QComboBox, QFrame, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QWidget
-from Parser.AttributeTypes import BoolType, FloatType, IntType, ReferenceListType, SelectionType, StringType
+from PySide6.QtWidgets import QCheckBox, QComboBox, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QWidget
+from Parser.AttributeTypes import BoolType, FloatType, HexType, IntType, ReferenceListType, SelectionType, StringType
 from Parser.ConfigTypes import AttributeInstance, ConfigElement
 from Parser.LinkElement import Link
+from UI.CustomWidgets.HexInput import hexInput
 from UI.support import icons
 from UI.CustomWidgets import ListBuilderWidget
 from Parser import ValidationError
@@ -59,7 +60,7 @@ class Ui_element(QWidget):
 			elif(value is not None):
 				self.attribute.populate(value, False)
 			self.setValidity(True)
-		except ValidationError as e:
+		except (ValidationError, ValueError) as e:
 			self.setValidity(False, str(e))
 
 class String_element(Ui_element):
@@ -126,6 +127,23 @@ class Float_element(Ui_element):
 		self._get_current_value_func = self.ui_element.value
 		self.ui_element.valueChanged.connect(self.saveToConfigObject)
 
+class Hex_element(Ui_element):
+	comparisonType = HexType._comparison_type
+	def __init__(self, parent: QWidget, attribute: AttributeInstance):
+		super().__init__(parent, attribute)
+		self.attributeDef: HexType
+		self.label 		= QLabel(self.attributeDef.label, parent)
+		self.set_ui_element(hexInput(attribute.value, parent))
+		self.ui_element: hexInput
+		if(self.attributeDef.min):
+			self.ui_element.setMinimum(self.attributeDef.min)
+		if(self.attributeDef.max):
+			self.ui_element.setMaximum(self.attributeDef.max)
+		# self.ui_element.setSingleStep(0.1)
+
+		self._get_current_value_func = self.ui_element.value
+		self.ui_element.valueChanged.connect(self.saveToConfigObject)
+
 class Selection_element(Ui_element):
 	comparisonType = SelectionType._comparison_type
 	def __init__(self, parent: QWidget, attribute: AttributeInstance):
@@ -182,7 +200,7 @@ class ReferenceList_element(Ui_element):
 		self._get_current_value_func = self.ui_element.selectedItems
 		self.ui_element.listChanged.connect(self.saveToConfigObject)
 
-avaliable_ui_elements: List[Ui_element] = [String_element, Bool_element, Int_element, Float_element, Selection_element, ReferenceList_element]
+avaliable_ui_elements: List[Ui_element] = [String_element, Bool_element, Int_element, Float_element, Selection_element, ReferenceList_element, Hex_element]
 
 def create_interface_element(parent: QWidget, attributeInstance: AttributeInstance) -> Union[None, Ui_element]:
 	Attribute = attributeInstance.attributeDefinition

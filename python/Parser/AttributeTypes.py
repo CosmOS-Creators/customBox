@@ -429,15 +429,22 @@ class HexType(IntType):
 	_typeSpecificKeys	= [const.MIN_KEY, const.MAX_KEY]
 
 	@overrides(AttributeType)
-	def checkValue(self, valueInput: str):
-		convertedInput = helpers.toInt(valueInput)
+	def __init__(self, attribute_definition: dict, globalID: str):
+		super().__init__(attribute_definition, globalID)
+		self.min 			= helpers.toInt(self.min)
+		self.max 			= helpers.toInt(self.max)
+
+	@overrides(AttributeType)
+	def checkValue(self, valueInput: Union[str, int]):
+		if(isinstance(valueInput, int)):
+			convertedInput = valueInput
+		else:
+			convertedInput = helpers.toInt(valueInput)
 		if(not self.min is None):
-			convertedMin = helpers.toInt(self.min)
-			if(convertedInput < convertedMin):
+			if(convertedInput < self.min):
 				reportValidationError(f"The input value ({valueInput}) is lower than the minimum value({self.min}) for this attribute")
 		if(not self.max is None):
-			convertedMax = helpers.toInt(self.max)
-			if(convertedInput > convertedMax):
+			if(convertedInput > self.max):
 				reportValidationError(f"The input value ({valueInput}) is higher than the maximum value({self.min}) for this attribute")
 		return convertedInput
 

@@ -111,6 +111,11 @@ QPushButton[class^="iconButton"]:hover {{
 	margin: 0px, 0px, 0px, 0px;
 }}
 
+#hexInputPrefixLabel {{
+	font-size: 15px;
+	color: {QTMATERIAL_PRIMARYCOLOR};
+}}
+
 CardWidget {{
 	border-radius: 4px;
 	margin-top: 0px;
@@ -123,6 +128,6 @@ CardWidget {{
 }}
 
 #CardWidgetHeaderHeading {{
-	color: {QTMATERIAL_SECONDARYLIGHTCOLOR};
 	font-size: 20px;
+	color: {QTMATERIAL_SECONDARYLIGHTCOLOR};
 }}

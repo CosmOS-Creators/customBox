@@ -8,10 +8,19 @@ def overrides(interface_class):
     return overrider
 
 def toInt(hexValue: str):
-	return int(hexValue, 16)
+	if(hexValue is None):
+		return None
+	elif(isinstance(hexValue, int)):
+		return hexValue
+	else:
+		return int(hexValue, 16)
 
-def toHex(intValue: int):
-	return hex(intValue).upper().replace("X", "x")
+def toHex(intValue: int, prefix = True):
+	hexValue = hex(intValue).upper()
+	if(not prefix):
+		return hexValue.replace("0X", "")
+	else:
+		return hexValue.replace("X", "x")
 
 def forceStrList(input: Union[List[str], str]):
 	out = input
