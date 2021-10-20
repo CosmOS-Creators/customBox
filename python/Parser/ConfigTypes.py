@@ -759,11 +759,11 @@ class AttributeInstance(serializer.serializeable):
 			Populate any attribute with a value. If the attribute is not a placeholder isPlaceholder has to be set to False explicitly
 		"""
 		if(not self.__attribute.is_placeholder and isPlaceholder == True):
-			raise AttributeError(f"Element \"{self.__link.getLink(Attribute=False)}\" is not a placeholder but the populate method was expecting a placeholder attribute. If a non placeholder attribute should be written to on purpose call populate with isPlaceholder set to False")
+			raise AttributeError(f'Element "{self.__link.getLink(Attribute=False)}" is not a placeholder but the populate method was expecting a placeholder attribute. If a non placeholder attribute should be written to on purpose call populate with isPlaceholder set to False')
 		try:
 			self.__value = self.__attribute.checkValue(value)
 		except ValueError as e:
-			raise ValueError(f"Error validating the new value for the placeholder \"{self.__link}\": {str(e)}") from e
+			raise ValueError(f'Error validating the new value for the placeholder "{self.__link}": {str(e)}') from e
 
 		try:
 			self.ResolveValueLink()

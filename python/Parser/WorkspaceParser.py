@@ -21,7 +21,7 @@ class Workspace():
 		# first add all elements as they are
 		for key in workspaceFile:
 			if(key in self.__dict__ or key in self.placeholders):
-				raise KeyError(f"Workspace file contained the key \"{key}\" which is reserved and not permitted to be used")
+				raise KeyError(f'Workspace file contained the key "{key}" which is reserved and not permitted to be used')
 			if(type(workspaceFile[key]) is list):
 				resolvedPathsList = []
 				for path in workspaceFile[key]:
@@ -30,7 +30,7 @@ class Workspace():
 			elif(type(workspaceFile[key]) is str):
 				setattr(self, key, workspaceFile[key])
 			else:
-				raise TypeError(f"Format of the workspace file \"{WorkspaceFile}\" is invalid. The only supported items are list and str but found {type(workspaceFile[key])}.")
+				raise TypeError(f'Format of the workspace file "{WorkspaceFile}" is invalid. The only supported items are list and str but found {type(workspaceFile[key])}.')
 			self.placeholders.append(key)
 		# then do placeholder replacement
 		for key in workspaceFile:
@@ -40,14 +40,14 @@ class Workspace():
 					try:
 						property[i] = self.resolvePath(path)
 					except TypeError as e:
-						raise TypeError(f"Error while replacing placeholders in \"{key}\" config: {str(e)}") from e
+						raise TypeError(f'Error while replacing placeholders in "{key}" config: {str(e)}') from e
 			elif(type(property) is str):
 				try:
 					setattr(self, key, self.resolvePath(property))
 				except TypeError as e:
-					raise TypeError(f"Error while replacing placeholders in \"{key}\" config: {str(e)}") from e
+					raise TypeError(f'Error while replacing placeholders in "{key}" config: {str(e)}') from e
 			else:
-				raise TypeError(f"Format of the workspace file \"{WorkspaceFile}\" is invalid. The only supported items are list and str but found {type(property)}.")
+				raise TypeError(f'Format of the workspace file "{WorkspaceFile}" is invalid. The only supported items are list and str but found {type(property)}.')
 			self.placeholders.append(key)
 
 	def resolvePath(self, path: str):
@@ -59,10 +59,10 @@ class Workspace():
 				if(type(replacementValue) is str):
 					resolvedPath = resolvedPath.replace(placeholderStr, replacementValue)
 				else:
-					raise TypeError(f"Placeholder \"{placeholder}\" was requested which is of type {type(replacementValue)} but only strings can be used as placeholders.")
+					raise TypeError(f'Placeholder "{placeholder}" was requested which is of type {type(replacementValue)} but only strings can be used as placeholders.')
 		match = re.match(r"{\S+}", resolvedPath)
 		if(match):
-			raise TypeError(f"Placeholder \"{match.group(0)}\" was requested but did not find a replacement value for it.")
+			raise TypeError(f'Placeholder "{match.group(0)}" was requested but did not find a replacement value for it.')
 
 		return resolvedPath
 
@@ -77,21 +77,21 @@ class Workspace():
 			try:
 				folderPaths = getattr(self, key)
 			except AttributeError:
-				raise AttributeError(f"Workspace \"{self.workspaceFilePath}\" has no attribute \"{key}\" but it was listed as required.")
+				raise AttributeError(f'Workspace "{self.workspaceFilePath}" has no attribute "{key}" but it was listed as required.')
 			if(type(folderPaths) is str):
 				folderPaths = [folderPaths]
 			for path in folderPaths:
 				path = Path(path)
 				if(path.exists()):
 					if(not path.is_dir()):
-						raise IOError(f"The path \"{path}\" for the config \"{key}\" does not point to a directory")
+						raise IOError(f'The path "{path}" for the config "{key}" does not point to a directory')
 					else:
 						requiredFolders.append(path)
 				elif(createMissingDirs):
 					path.mkdir(parents=True)
 					requiredFolders.append(path)
 				else:
-					raise IOError(f"The path \"{path}\" for the config \"{key}\" does not exist")
+					raise IOError(f'The path "{path}" for the config "{key}" does not exist')
 		return requiredFolders
 
 	def requireFile(self, requiredKeys: Union[List[str], str], createMissingDirs: bool = False):
@@ -105,21 +105,21 @@ class Workspace():
 			try:
 				filePaths = getattr(self, key)
 			except AttributeError:
-				raise AttributeError(f"Workspace \"{self.workspaceFilePath}\" has no attribute \"{key}\" but it was listed as required.")
+				raise AttributeError(f'Workspace "{self.workspaceFilePath}" has no attribute "{key}" but it was listed as required.')
 			if(type(filePaths) is str):
 				filePaths = [filePaths]
 			for path in filePaths:
 				path = Path(path)
 				if(path.exists()):
 					if(not path.is_file()):
-						raise IOError(f"The path \"{str(path)}\" for the config \"{key}\" does not point to a file")
+						raise IOError(f'The path "{str(path)}" for the config "{key}" does not point to a file')
 					else:
 						requiredFiles.append(path)
 				elif(createMissingDirs):
 					path.parent.mkdir(parents=True)
 					requiredFiles.append(path)
 				else:
-					raise IOError(f"The path \"{path}\" for the config \"{key}\" does not exist")
+					raise IOError(f'The path "{path}" for the config "{key}" does not exist')
 		return requiredFiles
 
 	def require(self, requiredKeys: Union[List[str], str]):
@@ -130,7 +130,7 @@ class Workspace():
 			try:
 				getattr(self, key)
 			except AttributeError:
-				raise AttributeError(f"Workspace \"{self.workspaceFilePath}\" has no attribute \"{key}\" but it was listed as required.")
+				raise AttributeError(f'Workspace "{self.workspaceFilePath}" has no attribute "{key}" but it was listed as required.')
 
 	@staticmethod
 	def getReqiredArgparse(Argparser: argparse.ArgumentParser = None):

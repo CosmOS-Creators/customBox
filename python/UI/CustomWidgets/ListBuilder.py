@@ -1,6 +1,6 @@
 from typing import List, Optional, Tuple
 from PySide6.QtCore import QObject, Signal, QSize
-from PySide6.QtWidgets import QComboBox, QFrame, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QComboBox, QDialog, QFrame, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QPushButton, QScrollArea, QSizePolicy, QVBoxLayout, QWidget
 from UI import support
 from UI.CustomWidgets.IconButton import iconButton
 
@@ -10,9 +10,13 @@ class ListBuilderSignals(QObject):
 	listChanged = Signal()
 
 class ListBuilderWidget(QFrame):
-	def __init__(self, parent: Optional[QWidget], selectable_elements: Optional[List[Tuple[str, object]]] = None, selected_elements: Optional[List[Tuple[str, object]]] = None):
+	MODE_PREDEFINED_OPTIONS = 0
+	MODE_CUSTOMIZABLE_OPTIONS = 1
+
+	def __init__(self, parent: Optional[QWidget], selectable_elements: Optional[List[Tuple[str, object]]] = None, selected_elements: Optional[List[Tuple[str, object]]] = None, mode = MODE_PREDEFINED_OPTIONS):
 		super().__init__(parent)
 		self.__should_emit		= False
+		self.__mode 			= mode
 		self.__signals 			= ListBuilderSignals()
 		self.listChanged		= self.__signals.listChanged
 		self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -31,9 +35,13 @@ class ListBuilderWidget(QFrame):
 		cm = self.list_layout.contentsMargins()
 		self.list_layout.setContentsMargins(cm.left(), 0, cm.right(), 0)
 		self.list_scroll_area.setWidget(self.list_widget)
-		self.avaliable_elements_combobox = QComboBox(self)
-
-		self.add_row_layout.addWidget(self.avaliable_elements_combobox, 1)
+		if(self.__mode == self.MODE_PREDEFINED_OPTIONS):
+			self.avaliable_elements_combobox = QComboBox(self)
+			self.add_row_layout.addWidget(self.avaliable_elements_combobox, 1)
+		elif(self.__mode == self.MODE_CUSTOMIZABLE_OPTIONS):
+			self.new_item_textbox = QLineEdit(self)
+			self.add_row_layout.addWidget(self.new_item_textbox, 1)
+			self.new_item_textbox.returnPressed.connect(self.__addButtonClicked)
 		self.add_button = QPushButton("Add to list", self, clicked=self.__addButtonClicked)
 		self.add_row_layout.addWidget(self.add_button, 0)
 
@@ -46,9 +54,23 @@ class ListBuilderWidget(QFrame):
 		self.__should_emit = True
 
 	def __addButtonClicked(self):
-		index = self.avaliable_elements_combobox.currentIndex()
-		data = self.avaliable_elements_combobox.itemData(index)
-		label = self.avaliable_elements_combobox.itemText(index)
+		if(self.__mode == self.MODE_PREDEFINED_OPTIONS):
+			index = self.avaliable_elements_combobox.currentIndex()
+			data = self.avaliable_elements_combobox.itemData(index)
+			label = self.avaliable_elements_combobox.itemText(index)
+		elif(self.__mode == self.MODE_CUSTOMIZABLE_OPTIONS):
+			new_item = self.new_item_textbox.text()
+			if(new_item):
+				sameItems = [obj for _, obj in self.selected_elements if obj == new_item]
+				if(len(sameItems) == 0):
+					label = data = new_item
+					self.new_item_textbox.clear()
+				else:
+					QMessageBox.critical(self, "Error adding item", "This exact item already exists in the list")
+					return
+			else:
+				QMessageBox.critical(self, "Error adding item", "Adding an empty item is not allowed")
+				return
 		self.addSelection(label, data)
 
 	def sizeHint(self) -> QSize:
@@ -76,15 +98,16 @@ class ListBuilderWidget(QFrame):
 		for _, selected_item in self.selected_elements:
 			self.removeSelection(selected_item)
 
-		#remove all selections from the combobox:
-		self.avaliable_elements_combobox.clear()
-		for avaliable_element_label, avaliable_element in self.available_elements:
-			already_selected = False
-			for selected_element_label, selected_element in self.selected_elements:
-				if(selected_element == avaliable_element and selected_element_label == avaliable_element_label):
-					already_selected = True
-			if(not already_selected):
-				self.avaliable_elements_combobox.addItem(avaliable_element_label, avaliable_element)
+		if(self.__mode == self.MODE_PREDEFINED_OPTIONS):
+			#remove all selections from the combobox:
+			self.avaliable_elements_combobox.clear()
+			for avaliable_element_label, avaliable_element in self.available_elements:
+				already_selected = False
+				for selected_element_label, selected_element in self.selected_elements:
+					if(selected_element == avaliable_element and selected_element_label == avaliable_element_label):
+						already_selected = True
+				if(not already_selected):
+					self.avaliable_elements_combobox.addItem(avaliable_element_label, avaliable_element)
 		self.setSelectedElements(self.selected_elements)
 		self.__should_emit = True
 
@@ -102,6 +125,7 @@ class ListBuilderWidget(QFrame):
 
 	def removeSelection(self, label: str, element: object):
 		matchedLayout = [(layout, i) for i, (object, layout) in enumerate(self.__layout_lookup) if object == element]
+		self.selected_elements.remove((label, element))
 		if(len(matchedLayout) == 1):
 			layout, lookup_index = matchedLayout[0]
 			found = False
@@ -117,14 +141,16 @@ class ListBuilderWidget(QFrame):
 			if(found):
 				layout.deleteLater()
 				del self.__layout_lookup[lookup_index]
-			self.avaliable_elements_combobox.addItem(label, element)
+			if(self.__mode == self.MODE_PREDEFINED_OPTIONS):
+				self.avaliable_elements_combobox.addItem(label, element)
 			self.__notify_list_changed()
-		self.updateGeometry()
-		self.list_widget.updateGeometry()
 		self.list_scroll_area.updateGeometry()
 
 	def addSelection(self, label: str, element: object):
-		index = self.avaliable_elements_combobox.findData(element)
+		if(self.__mode == self.MODE_PREDEFINED_OPTIONS):
+			index = self.avaliable_elements_combobox.findData(element)
+		elif(self.__mode == self.MODE_CUSTOMIZABLE_OPTIONS):
+			index = 0
 		if(index != -1):
 			line_layout = QHBoxLayout()
 			line_label = QLabel(label)
@@ -133,11 +159,10 @@ class ListBuilderWidget(QFrame):
 			line_layout.addWidget(line_remove_button, 0)
 			self.list_layout.addLayout(line_layout)
 			self.selected_elements.append((label, element))
-			self.avaliable_elements_combobox.removeItem(index)
+			if(self.__mode == self.MODE_PREDEFINED_OPTIONS):
+				self.avaliable_elements_combobox.removeItem(index)
 			self.__layout_lookup.append((element, line_layout))
-			self.list_widget.updateGeometry()
 			self.__notify_list_changed()
-		self.updateGeometry()
 		self.list_scroll_area.updateGeometry()
 
 	def selectedItems(self):

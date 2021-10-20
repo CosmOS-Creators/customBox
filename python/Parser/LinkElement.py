@@ -162,7 +162,7 @@ class Link():
 			subconfig = config.getSubconfig(self)
 			return subconfig.getElement(self)
 		else:
-			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved. Either the config or the element part of the link are missing but they are mandatory for resolving an element.")
+			raise ValueError(f'The link "{self.getLink()}" cannot be resolved. Either the config or the element part of the link are missing but they are mandatory for resolving an element.')
 
 	def resolveAttributeList(self, config: ConfigTypes.Configuration) -> List[Tuple[ConfigTypes.AttributeInstance, ConfigTypes.ConfigElement]]:
 		if(self.__config and self.__attribute):
@@ -173,7 +173,7 @@ class Link():
 				attributeCollection.append((targetAttribute, element))
 			return attributeCollection
 		else:
-			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved. Either the config or the attribute part of the link are missing but they are mandatory for resolving an attribute list.")
+			raise ValueError(f'The link "{self.getLink()}" cannot be resolved. Either the config or the attribute part of the link are missing but they are mandatory for resolving an attribute list.')
 
 	def resolveAttribute(self, config: ConfigTypes.Configuration) -> AttributeTypes.AttributeType:
 		if(self.__config and self.__attribute and self.__element):
@@ -181,17 +181,17 @@ class Link():
 			element = subconfig.getElement(self)
 			return element.getAttributeInstance(self)
 		else:
-			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved as it is missing at least one part. All three parts of the link are mandatory for resolving an attribute value.")
+			raise ValueError(f'The link "{self.getLink()}" cannot be resolved as it is missing at least one part. All three parts of the link are mandatory for resolving an attribute value.')
 
 	def resolveSubconfig(self, config: ConfigTypes.Configuration) -> ConfigTypes.Subconfig:
 		if(self.__config):
 			return config.getSubconfig(self)
 		else:
-			raise ValueError(f"The link \"{self.getLink()}\" cannot be resolved. The link is missing the config part which is mandatory for resolving subconfigs.")
+			raise ValueError(f'The link "{self.getLink()}" cannot be resolved. The link is missing the config part which is mandatory for resolving subconfigs.')
 
 	def resolve(self, config: ConfigTypes.Configuration) -> Union[ConfigTypes.ConfigElement, List[Tuple[ConfigTypes.AttributeInstance, ConfigTypes.ConfigElement]], AttributeTypes.AttributeType, ConfigTypes.Subconfig]:
 		if(self.__config is None):
-			raise AttributeError(f"For resolving a link at least the config must be set.")
+			raise AttributeError(f'For resolving a link at least the config must be set.')
 		if(self.__element and not self.__attribute): # link to an element
 			return self.resolveElement(config)
 		elif(not self.__element and self.__attribute): # link to list of attributes of all elements in config
@@ -256,7 +256,7 @@ class Link():
 		if(self.__config):
 			return self.__config
 		else:
-			raise ValueError(f"The config part of the link {self} was requested but that part is empty. Make sure that the link is in the correct format.")
+			raise ValueError(f'The config part of the link {self} was requested but that part is empty. Make sure that the link is in the correct format.')
 
 	@config.setter
 	def config(self, value):
@@ -270,7 +270,7 @@ class Link():
 		if(self.__element):
 			return self.__element
 		else:
-			raise ValueError(f"The element part of the link {self} was requested but that part is empty. Make sure that the link is in the correct format.")
+			raise ValueError(f'The element part of the link {self} was requested but that part is empty. Make sure that the link is in the correct format.')
 
 	@element.setter
 	def element(self, value):
@@ -284,7 +284,7 @@ class Link():
 		if(self.__attribute):
 			return self.__attribute
 		else:
-			raise ValueError(f"The attribute part of the link {self} was requested but that part is empty. Make sure that the link is in the correct format.")
+			raise ValueError(f'The attribute part of the link {self} was requested but that part is empty. Make sure that the link is in the correct format.')
 
 	@attribute.setter
 	def attribute(self, value):
