@@ -60,10 +60,9 @@
 __SEC_START(__{{program.name.upper()}}_INIT_SECTION_START)
 /* @endcond*/
 CosmOS_MutexVariableType MutexForProgram{{program.programId}}HeapCore{{item.coreId}}Var __{{program.name.upper()}}_INIT_SECTION
-IS_INITIALIZED_TO
-{
-	0,			/* 	BitWidthType mutex 									*/
-	NULL,		/* 	CosmOS_SchedulableVariableType * schedulableOwner 	*/
+IS_INITIALIZED_TO{
+    0,    /* BitWidthType mutex */
+    NULL,    /* CosmOS_SchedulableVariableType * schedulableOwner */
 };
 /* @cond S */
 __SEC_STOP(__{{program.name.upper()}}_INIT_SECTION_STOP)

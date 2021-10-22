@@ -65,7 +65,7 @@ const CosmOS_GenericVoidType RoutesFuncConst[ROUTES_FUNC_NUM] __OS_CONSTS_SECTIO
 IS_INITIALIZED_TO
 {
 {% for item in model.sysCallRoutes -%}
-{{"\t\t"}}(CosmOS_GenericVoidType){{item.routedFuncName}},
+{{"    "}}(CosmOS_GenericVoidType){{item.routedFuncName}},
 {% endfor -%}
 };
 
@@ -73,44 +73,45 @@ const BitWidthType RoutesIdToFuncConst[ROUTES_ID_TO_FUNC_NUM] __OS_CONSTS_SECTIO
 IS_INITIALIZED_TO
 {
 {% for item in model.spinlocks -%}
-{{"\t\t"}}SPINLOCK_GETSPINLOCK,
-{{"\t\t"}}SPINLOCK_TRYSPINLOCK,
-{{"\t\t"}}SPINLOCK_RELEASESPINLOCK,
+{{"    "}}SPINLOCK_GETSPINLOCK,
+{{"    "}}SPINLOCK_TRYSPINLOCK,
+{{"    "}}SPINLOCK_RELEASESPINLOCK,
 {% endfor -%}
 {% for item in model.buffers -%}
-{{"\t\t"}}BUFFER_READARRAY,
-{{"\t\t"}}BUFFER_WRITEARRAY,
+{{"    "}}BUFFER_READARRAY,
+{{"    "}}BUFFER_WRITEARRAY,
 {% if item.isDoubleBuffer -%}
-{{"\t\t"}}BUFFER_READARRAY,
-{{"\t\t"}}BUFFER_WRITEARRAY,
+{{"    "}}BUFFER_READARRAY,
+{{"    "}}BUFFER_WRITEARRAY,
 {% endif -%}
 {% endfor -%}
 {% for item in model.sysCallRoutes -%}
 {% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" and item.routedFuncName != "spinlock_getSpinlock" and item.routedFuncName != "spinlock_trySpinlock" and item.routedFuncName != "spinlock_releaseSpinlock" -%}
-{{"\t\t"}}{{item.routedFuncName.upper()}},
+{{"    "}}{{item.routedFuncName.upper()}},
 {% endif -%}
 {% endfor -%}
 };
 
-const BitWidthType RoutesIdToEntityConst[ROUTES_ID_TO_ENTITY_NUM] __OS_CONSTS_SECTION
+const BitWidthType
+    RoutesIdToEntityConst[ROUTES_ID_TO_ENTITY_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 {% for item in model.spinlocks -%}
-{{"\t\t"}}SPINLOCK_{{item.spinlockId}}_ID,
-{{"\t\t"}}SPINLOCK_{{item.spinlockId}}_ID,
-{{"\t\t"}}SPINLOCK_{{item.spinlockId}}_ID,
+{{"    "}}SPINLOCK_{{item.spinlockId}}_ID,
+{{"    "}}SPINLOCK_{{item.spinlockId}}_ID,
+{{"    "}}SPINLOCK_{{item.spinlockId}}_ID,
 {% endfor -%}
 {% for item in model.buffers -%}
-{{"\t\t"}}BUFFER_{{item.bufferId}}_ID,
-{{"\t\t"}}BUFFER_{{item.bufferId}}_ID,
+{{"    "}}BUFFER_{{item.bufferId}}_ID,
+{{"    "}}BUFFER_{{item.bufferId}}_ID,
 {% if item.isDoubleBuffer -%}
-{{"\t\t"}}BUFFER_{{item.bufferId+1}}_ID,
-{{"\t\t"}}BUFFER_{{item.bufferId+1}}_ID,
+{{"    "}}BUFFER_{{item.bufferId+1}}_ID,
+{{"    "}}BUFFER_{{item.bufferId+1}}_ID,
 {% endif -%}
 {% endfor -%}
 {% for item in model.sysCallRoutes -%}
 {% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" and item.routedFuncName != "spinlock_getSpinlock" and item.routedFuncName != "spinlock_trySpinlock" and item.routedFuncName != "spinlock_releaseSpinlock" -%}
-{{"\t\t"}}ROUTES_ID_TO_ENTITY_DUMMY,
+{{"    "}}ROUTES_ID_TO_ENTITY_DUMMY,
 {% endif -%}
 {% endfor -%}
 };
@@ -118,9 +119,9 @@ IS_INITIALIZED_TO
 const CosmOS_RoutesConfigurationType RoutesConstCfg __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
-    RoutesFuncConst,        /* const CosmOS_GenericVoidType * routeFunc               */
-    RoutesIdToFuncConst,    /* const BitWidthType * routeIdToFunc                  */
-    RoutesIdToEntityConst,  /* const BitWidthType * routeIdToEntity                */
+    RoutesFuncConst,    /* const CosmOS_GenericVoidType * routeFunc */
+    RoutesIdToFuncConst,    /* const BitWidthType * routeIdToFunc */
+    RoutesIdToEntityConst,    /* const BitWidthType * routeIdToEntity */
 };
 /* @cond S */
 __SEC_STOP(__OS_CONSTS_SECTION_STOP)

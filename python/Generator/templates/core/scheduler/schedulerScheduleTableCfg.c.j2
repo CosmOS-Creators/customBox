@@ -59,14 +59,14 @@
 __SEC_START(__OS_CONSTS_SECTION_START)
 /* @endcond*/
 {% for item in model.cores -%}
-const CosmOS_ScheduleTableConfigurationType ScheduleTableScheduler{{item.coreId}}CfgConst[SCHEDULETABLE_SCHEDULER_{{item.coreId}}_ELEMENT_NUM] __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
+const CosmOS_ScheduleTableConfigurationType
+    ScheduleTableScheduler{{item.coreId}}CfgConst[SCHEDULETABLE_SCHEDULER_{{item.coreId}}_ELEMENT_NUM] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
 {% for scheduler in item.coreScheduler -%}
 {% for element in scheduler.table -%}
-{{"\t\t"}}{                                                           /* ScheduleTableScheduler{{item.coreId}}CfgConst element {{element.entryId}}        */
-        TASK_{{element.task.taskId}}_SCHEDULER_{{item.coreId}}_EXECUTION_TICK_{{element.entryId}},                    /* const bitWidth startTime                         */
-        &TasksProgram{{element.task.program.programId}}Core{{item.coreId}}Var[TASK_{{element.task.taskId}}_PROGRAM_{{element.task.program.programId}}_CORE_{{item.coreId}}_ID],     /* CosmOS_TaskVariableType * taskVar                */
+{{"    "}}{                                                           /* ScheduleTableScheduler{{item.coreId}}CfgConst element {{element.entryId}} */
+        TASK_{{element.task.taskId}}_SCHEDULER_{{item.coreId}}_EXECUTION_TICK_{{element.entryId}},    /* const bitWidth startTime */
+        &TasksProgram{{element.task.program.programId}}Core{{item.coreId}}Var[TASK_{{element.task.taskId}}_PROGRAM_{{element.task.program.programId}}_CORE_{{item.coreId}}_ID],    /* CosmOS_TaskVariableType * taskVar */
     },
 {% endfor -%}
 {% endfor -%}

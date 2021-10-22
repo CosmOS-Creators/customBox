@@ -58,24 +58,23 @@
 __SEC_START(__OS_VARS_SECTION_START)
 /* @endcond*/
 CosmOS_SpinlockVariableType SpinlocksVar[SPINLOCK_NUM] __OS_VARS_SECTION
-IS_INITIALIZED_TO
-{
+IS_INITIALIZED_TO{
 {% for item in model.spinlocks -%}
-{{"\t"}}{
-        SPINLOCK_STATE_ENUM__RELEASED,		/* BitWidthType spinlock                                  */
-        NULL,									/* CosmOS_SchedulableVariableType * schedulableOwner                                  */
+{{"    "}}{
+        SPINLOCK_STATE_ENUM__RELEASED,    /* BitWidthType spinlock */
+        NULL,    /* CosmOS_SchedulableVariableType * schedulableOwner */
     },
 {% endfor -%}
 {% for item in model.buffers -%}
 {% if item.isInterCore -%}
-{{"\t"}}{
-        SPINLOCK_STATE_ENUM__RELEASED,		/* BitWidthType spinlock                                  */
-        NULL,									/* CosmOS_SchedulableVariableType * schedulableOwner                                  */
+{{"    "}}{
+        SPINLOCK_STATE_ENUM__RELEASED,    /* BitWidthType spinlock */
+        NULL,    /* CosmOS_SchedulableVariableType * schedulableOwner */
     },
 {% if item.isDoubleBuffer -%}
-{{"\t"}}{
-        SPINLOCK_STATE_ENUM__RELEASED,		/* BitWidthType spinlock                                  */
-        NULL,									/* CosmOS_SchedulableVariableType * schedulableOwner                                  */
+{{"    "}}{
+        SPINLOCK_STATE_ENUM__RELEASED,    /* BitWidthType spinlock */
+        NULL,    /* CosmOS_SchedulableVariableType * schedulableOwner */
     },
 {% endif -%}
 {% endif -%}

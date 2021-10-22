@@ -41,7 +41,7 @@
 **                         START OF C++ SUPPORT SECTION                        **
 ********************************************************************************/
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 /********************************************************************************
 **                            Include Files | Start                            **
@@ -82,14 +82,19 @@
   * @ingroup Global_permissionCfg
   * @{
 ********************************************************************************/
-extern const unsigned char SchedulableIdToBitLock[((SCHEDULABLE_NUM/(sizeof(BitWidthType)*8)) + 1)*(sizeof(BitWidthType)*8)];
+extern const unsigned char
+    SchedulableIdToBitLock[((SCHEDULABLE_NUM/(sizeof(BitWidthType)*8)) + 1)*(sizeof(BitWidthType)*8)];
 
 {% for item in model.buffers -%}
-extern const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}ReadCfgConst;
-extern const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}WriteCfgConst;
+extern const CosmOS_PermissionsConfigurationType
+    PermissionsBuffer{{item.bufferId}}ReadCfgConst;
+extern const CosmOS_PermissionsConfigurationType
+    PermissionsBuffer{{item.bufferId}}WriteCfgConst;
 {% if item.isDoubleBuffer -%}
-extern const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId+1}}ReadCfgConst;
-extern const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId+1}}WriteCfgConst;
+extern const CosmOS_PermissionsConfigurationType
+    PermissionsBuffer{{item.bufferId+1}}ReadCfgConst;
+extern const CosmOS_PermissionsConfigurationType
+    PermissionsBuffer{{item.bufferId+1}}WriteCfgConst;
 {% endif -%}
 {% endfor -%}
 /********************************************************************************

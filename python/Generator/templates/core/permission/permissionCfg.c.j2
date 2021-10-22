@@ -75,26 +75,26 @@
 /* @cond S */
 __SEC_START(__OS_CONSTS_SECTION_START)
 /* @endcond*/
-const unsigned char SchedulableIdToBitLock[((SCHEDULABLE_NUM/(sizeof(BitWidthType)*8)) + 1)*(sizeof(BitWidthType)*8)] __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
+const unsigned char
+    SchedulableIdToBitLock[((SCHEDULABLE_NUM/(sizeof(BitWidthType)*8)) + 1)*(sizeof(BitWidthType)*8)] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
 {% for iterator in range((model.os.os.schedulableNum/model.mcu.MCU.cpuBitWidth)|int +1) -%}
 {{"\t"}}BITLOCK_ID_PLACEMENT_{{model.mcu.MCU.cpuBitWidth}}BIT({{iterator}})
 {% endfor -%}
 };
 {{"\n"}}
 {% for item in model.buffers -%}
-const BitWidthType BitLockBuffer{{item.bufferId}}ReadCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
+const BitWidthType
+    BitLockBuffer{{item.bufferId}}ReadCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
 {% for compressedPermission in item.compressedReadPermission -%}
 {{"\t"}}0b{{compressedPermission}},
 {% endfor -%}
 };
 {% if item.isDoubleBuffer -%}
-const BitWidthType BitLockBuffer{{item.bufferId+1}}ReadCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
+const BitWidthType
+    BitLockBuffer{{item.bufferId+1}}ReadCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
 {% for compressedPermission in item.compressedReadPermission -%}
 {{"\t"}}0b{{compressedPermission}},
 {% endfor -%}
@@ -103,17 +103,17 @@ IS_INITIALIZED_TO
 {% endfor -%}
 {{"\n"}}
 {% for item in model.buffers -%}
-const BitWidthType BitLockBuffer{{item.bufferId}}WriteCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
+const BitWidthType
+    BitLockBuffer{{item.bufferId}}WriteCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
 {% for compressedPermission in item.compressedWritePermission -%}
 {{"\t"}}0b{{compressedPermission}},
 {% endfor -%}
 };
 {% if item.isDoubleBuffer -%}
-const BitWidthType BitLockBuffer{{item.bufferId+1}}WriteCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
+const BitWidthType
+    BitLockBuffer{{item.bufferId+1}}WriteCfgConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
 {% for compressedPermission in item.compressedWritePermission -%}
 {{"\t"}}0b{{compressedPermission}},
 {% endfor -%}
@@ -122,17 +122,17 @@ IS_INITIALIZED_TO
 {% endfor -%}
 {{"\n"}}
 {% for item in model.buffers -%}
-const BitWidthType BitLockBuffer{{item.bufferId}}ReadCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
+const BitWidthType
+    BitLockBuffer{{item.bufferId}}ReadCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
 {% for compressedPermission in item.compressedReadPermissionInverted -%}
 {{"\t"}}0b{{compressedPermission}},
 {% endfor -%}
 };
 {% if item.isDoubleBuffer -%}
-const BitWidthType BitLockBuffer{{item.bufferId+1}}ReadCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
+const BitWidthType
+    BitLockBuffer{{item.bufferId+1}}ReadCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
 {% for compressedPermission in item.compressedReadPermissionInverted -%}
 {{"\t"}}0b{{compressedPermission}},
 {% endfor -%}
@@ -141,7 +141,8 @@ IS_INITIALIZED_TO
 {% endfor -%}
 {{"\n"}}
 {% for item in model.buffers -%}
-const BitWidthType BitLockBuffer{{item.bufferId}}WriteCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONSTS_SECTION
+const BitWidthType
+    BitLockBuffer{{item.bufferId}}WriteCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in item.compressedWritePermissionInverted -%}
@@ -149,7 +150,8 @@ IS_INITIALIZED_TO
 {% endfor -%}
 };
 {% if item.isDoubleBuffer -%}
-const BitWidthType BitLockBuffer{{item.bufferId+1}}WriteCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONSTS_SECTION
+const BitWidthType
+    BitLockBuffer{{item.bufferId+1}}WriteCfgInvertedConst[BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 {% for compressedPermission in item.compressedWritePermissionInverted -%}
@@ -160,35 +162,35 @@ IS_INITIALIZED_TO
 {% endfor -%}
 {{"\n"}}
 {% for item in model.buffers -%}
-const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}ReadCfgConst __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
-	BitLockBuffer{{item.bufferId}}ReadCfgConst,
-	BitLockBuffer{{item.bufferId}}ReadCfgInvertedConst,
+const CosmOS_PermissionsConfigurationType
+    PermissionsBuffer{{item.bufferId}}ReadCfgConst __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
+    BitLockBuffer{{item.bufferId}}ReadCfgConst,
+    BitLockBuffer{{item.bufferId}}ReadCfgInvertedConst,
 };
 {% if item.isDoubleBuffer -%}
-const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId+1}}ReadCfgConst __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
-	BitLockBuffer{{item.bufferId+1}}ReadCfgConst,
-	BitLockBuffer{{item.bufferId+1}}ReadCfgInvertedConst,
+const CosmOS_PermissionsConfigurationType
+    PermissionsBuffer{{item.bufferId+1}}ReadCfgConst __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
+    BitLockBuffer{{item.bufferId+1}}ReadCfgConst,
+    BitLockBuffer{{item.bufferId+1}}ReadCfgInvertedConst,
 };
 {% endif -%}
 {% endfor %}
 {{"\n"}}
 {% for item in model.buffers -%}
-const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId}}WriteCfgConst __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
-	BitLockBuffer{{item.bufferId}}WriteCfgConst,
-	BitLockBuffer{{item.bufferId}}WriteCfgInvertedConst,
+const CosmOS_PermissionsConfigurationType
+    PermissionsBuffer{{item.bufferId}}WriteCfgConst __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
+    BitLockBuffer{{item.bufferId}}WriteCfgConst,
+    BitLockBuffer{{item.bufferId}}WriteCfgInvertedConst,
 };
 {% if item.isDoubleBuffer -%}
-const CosmOS_PermissionsConfigurationType PermissionsBuffer{{item.bufferId+1}}WriteCfgConst __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
-	BitLockBuffer{{item.bufferId+1}}WriteCfgConst,
-	BitLockBuffer{{item.bufferId+1}}WriteCfgInvertedConst,
+const CosmOS_PermissionsConfigurationType
+    PermissionsBuffer{{item.bufferId+1}}WriteCfgConst __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
+    BitLockBuffer{{item.bufferId+1}}WriteCfgConst,
+    BitLockBuffer{{item.bufferId+1}}WriteCfgInvertedConst,
 };
 {% endif -%}
 {% endfor -%}

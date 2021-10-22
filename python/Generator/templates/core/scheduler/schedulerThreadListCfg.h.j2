@@ -41,7 +41,7 @@
 **                         START OF C++ SUPPORT SECTION                        **
 ********************************************************************************/
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 /********************************************************************************
 **                            Include Files | Start                            **
@@ -83,7 +83,8 @@
   * @{
 ********************************************************************************/
 {% for core in model.cores -%}
-extern const CosmOS_ThreadListConfigurationType SchedulerThreadListScheduler{{core.coreId}}CfgConst[SCHEDULERTHREADLIST_SCHEDULER_{{core.coreId}}_ELEMENT_NUM];
+extern const CosmOS_ThreadListConfigurationType
+    SchedulerThreadListScheduler{{core.coreId}}CfgConst[SCHEDULERTHREADLIST_SCHEDULER_{{core.coreId}}_ELEMENT_NUM];
 {% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **

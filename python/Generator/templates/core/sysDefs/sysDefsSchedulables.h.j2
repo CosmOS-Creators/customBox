@@ -62,7 +62,7 @@
   * @{
 ********************************************************************************/
 #define SCHEDULABLE_NUM                 (BitWidthType){{model.os.os.schedulableNum}}        /* Maximal number of configurated schedulables on one core  */
-#define SCHEDULABLE_NO_ALARM_ID			(BitWidthType)0       /* Schedulable without alarms - critical threads  */
+#define SCHEDULABLE_NO_ALARM_ID     (BitWidthType)0       /* Schedulable without alarms - critical threads  */
 {{"\n"}}{% for item in model.cores -%}
 #define SCHEDULABLE_NUM_CORE_{{item.coreId}}                       (BitWidthType){{item.coreNumberOfTasks + item.coreNumberOfThreads}}        /* Number of configurated schedulables for the core {{item.CoreName}} */
 {% endfor -%}
