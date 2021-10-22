@@ -55,7 +55,8 @@
 /* @cond S */
 __SEC_START(__APPLICATION_FUNC_SECTION_START_{{core.CoreName.upper()}})
 /* @endcond*/
-__APPLICATION_FUNC_SECTION_{{core.CoreName.upper()}} void userKernelPanicHook_{{core.CoreName}}(void)
+__APPLICATION_FUNC_SECTION_{{core.CoreName.upper()}} void
+userKernelPanicHook_{{core.CoreName}}( void )
 {
 {% set section_name = filename + 'func'-%}
 /********************************************************************************

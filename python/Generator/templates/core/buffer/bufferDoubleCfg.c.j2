@@ -60,27 +60,28 @@ __SEC_START(__OS_CONSTS_SECTION_START)
 /* @endcond*/
 {% for buffer in model.buffers -%}
 {% if buffer.isDoubleBuffer -%}
-const CosmOS_BufferDoublePairConfigurationType BuffersDoublePair{{buffer.doubleBufferId}}Cfg[BUFFER_PAIR_NUM] __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
-{{"\t\t"}}{
-{{"\t\t\t\t"}}&BuffersVar[BUFFER_{{buffer.bufferId}}_ID],
-{{"\t\t"}}},
-{{"\t\t"}}{
-{{"\t\t\t\t"}}&BuffersVar[BUFFER_{{buffer.bufferId+1}}_ID],
-{{"\t\t"}}},
+const CosmOS_BufferDoublePairConfigurationType
+    BuffersDoublePair{{buffer.doubleBufferId}}Cfg[BUFFER_PAIR_NUM] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
+{{"    "}}{
+{{"        "}}&BuffersVar[BUFFER_{{buffer.bufferId}}_ID],
+{{"    "}}},
+{{"    "}}{
+{{"        "}}&BuffersVar[BUFFER_{{buffer.bufferId+1}}_ID],
+{{"    "}}},
 };
 {% endif -%}
 {% endfor -%}
 
-{{"\n"}}const CosmOS_BufferDoubleConfigurationType BuffersDoubleCfg[BUFFER_DOUBLE_NUM] __OS_CONSTS_SECTION
+{{"\n"}}const CosmOS_BufferDoubleConfigurationType
+    BuffersDoubleCfg[BUFFER_DOUBLE_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 {% for buffer in model.buffers -%}
 {% if buffer.isDoubleBuffer -%}
-{{"\t\t"}}{
-{{"\t\t\t\t"}}BuffersDoublePair{{buffer.doubleBufferId}}Cfg,
-{{"\t\t"}}},
+{{"    "}}{
+{{"        "}}BuffersDoublePair{{buffer.doubleBufferId}}Cfg,
+{{"    "}}},
 {% endif -%}
 {% endfor -%}
 };
@@ -91,16 +92,17 @@ __SEC_STOP(__OS_CONSTS_SECTION_STOP)
 /* @cond S */
 __SEC_START(__OS_VARS_SECTION_START)
 /* @endcond*/
-CosmOS_BufferDoubleVariableType BuffersDoubleVar[BUFFER_DOUBLE_NUM] __OS_VARS_SECTION
+CosmOS_BufferDoubleVariableType
+    BuffersDoubleVar[BUFFER_DOUBLE_NUM] __OS_VARS_SECTION
 IS_INITIALIZED_TO
 {
 {% for buffer in model.buffers -%}
 {% if buffer.isDoubleBuffer -%}
-{{"\t\t"}}{
-{{"\t\t\t\t"}}&BuffersDoubleCfg[BUFFER_DOUBLE_{{buffer.doubleBufferId}}_ID],
-{{"\t\t\t\t"}}BUFFER_PAIR_BUFFER_0_ID,
-{{"\t\t\t\t"}}BUFFER_PAIR_BUFFER_1_ID,
-{{"\t\t"}}},
+{{"    "}}{
+{{"        "}}&BuffersDoubleCfg[BUFFER_DOUBLE_{{buffer.doubleBufferId}}_ID],
+{{"        "}}BUFFER_PAIR_BUFFER_0_ID,
+{{"        "}}BUFFER_PAIR_BUFFER_1_ID,
+{{"    "}}},
 {% endif -%}
 {% endfor -%}
 };

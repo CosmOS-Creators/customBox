@@ -28,211 +28,211 @@ _end = 0x{{'%04x' % (core.unmappedDataHighAddress - core.unmappedHeapSize)}};
 
 MEMORY
 {
-	SRAM3 (xrw)      : ORIGIN = 0x30040000, LENGTH = 32K
-	{% for item in model.cores -%}
-	{% if item == core -%}
-	FLASH_LOCAL (rx)      : ORIGIN = 0x{{'%04x' % core.staticDataLowAddress}}, LENGTH = 0x{{'%04x' % core.staticDataSize}}
-	{% endif -%}
-	FLASH_USER_CODE_{{item.CoreName.upper()}} (rx)      : ORIGIN = 0x{{'%04x' % item.userCodeLowAddress}}, LENGTH = 0x{{'%04x' % item.userCodeSize}}
-	{% endfor -%}
-	UNMAPPED_DATA_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % core.unmappedDataLowAddress}}, LENGTH = 0x{{'%04x' % (core.unmappedDataSize - core.unmappedHeapSize)}}
-	UNMAPPED_HEAP_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % (core.unmappedDataHighAddress - core.unmappedHeapSize)}}, LENGTH = 0x{{'%04x' % (core.unmappedHeapSize)}}
-	{% for item in model.osPartitions -%}
-	OS_{{item.name.upper()}}_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % item.lowAddress}}, LENGTH = 0x{{'%04x' % item.size}}
-	{% endfor -%}
-	{% for item in model.programs -%}
-	PROGRAM_{{item.name.upper()}}_DATA_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % item.lowAddress}}, LENGTH = 0x{{'%04x' % (item.size - item.heapSize)}}
-	PROGRAM_{{item.name.upper()}}_HEAP_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % (item.highAddress - item.heapSize)}}, LENGTH = 0x{{'%04x' % (item.heapSize)}}
-	{% endfor -%}
+    SRAM3 (xrw)      : ORIGIN = 0x30040000, LENGTH = 32K
+    {% for item in model.cores -%}
+    {% if item == core -%}
+    FLASH_LOCAL (rx)      : ORIGIN = 0x{{'%04x' % core.staticDataLowAddress}}, LENGTH = 0x{{'%04x' % core.staticDataSize}}
+    {% endif -%}
+    FLASH_USER_CODE_{{item.CoreName.upper()}} (rx)      : ORIGIN = 0x{{'%04x' % item.userCodeLowAddress}}, LENGTH = 0x{{'%04x' % item.userCodeSize}}
+    {% endfor -%}
+    UNMAPPED_DATA_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % core.unmappedDataLowAddress}}, LENGTH = 0x{{'%04x' % (core.unmappedDataSize - core.unmappedHeapSize)}}
+    UNMAPPED_HEAP_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % (core.unmappedDataHighAddress - core.unmappedHeapSize)}}, LENGTH = 0x{{'%04x' % (core.unmappedHeapSize)}}
+    {% for item in model.osPartitions -%}
+    OS_{{item.name.upper()}}_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % item.lowAddress}}, LENGTH = 0x{{'%04x' % item.size}}
+    {% endfor -%}
+    {% for item in model.programs -%}
+    PROGRAM_{{item.name.upper()}}_DATA_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % item.lowAddress}}, LENGTH = 0x{{'%04x' % (item.size - item.heapSize)}}
+    PROGRAM_{{item.name.upper()}}_HEAP_PARTITION_IN_{{item.memory.name.upper()}} (xrw)     : ORIGIN = 0x{{'%04x' % (item.highAddress - item.heapSize)}}, LENGTH = 0x{{'%04x' % (item.heapSize)}}
+    {% endfor -%}
 }
 
 SECTIONS
 {
-	/* The startup code goes first into FLASH */
-	.isr_vector :
-	{
-		. = ALIGN(4);
-		KEEP(*(.isr_vector)) /* Startup code */
-		. = ALIGN(4);
-	} >FLASH_LOCAL
+    /* The startup code goes first into FLASH */
+    .isr_vector :
+    {
+        . = ALIGN(4);
+        KEEP(*(.isr_vector)) /* Startup code */
+        . = ALIGN(4);
+    } >FLASH_LOCAL
 
-	.lwip_section :
-	{
-		. = ABSOLUTE(0x30040000);
-		*(.RxDecripSection)
-		. = ABSOLUTE(0x30040060);
-		*(.TxDecripSection)
-		. = ABSOLUTE(0x30040200);
-		*(.RxArraySection)
-	} > SRAM3
+    .lwip_section :
+    {
+        . = ABSOLUTE(0x30040000);
+        *(.RxDecripSection)
+        . = ABSOLUTE(0x30040060);
+        *(.TxDecripSection)
+        . = ABSOLUTE(0x30040200);
+        *(.RxArraySection)
+    } > SRAM3
 
-	{% for item in model.programs -%}
-	_flash_program_{{item.name}}_section_init = LOADADDR(.program_{{item.name}}_section_init);
+    {% for item in model.programs -%}
+    _flash_program_{{item.name}}_section_init = LOADADDR(.program_{{item.name}}_section_init);
 
-	/* Init section */
-	.program_{{item.name}}_section_init :
-	{
-		. = ALIGN(4);
-		_s_program_{{item.name}}_section_init = .;          /* create a global symbol at section start */
-		KEEP(*(.{{item.name}}_init));
-		. = ALIGN(4);
-		_e_program_{{item.name}}_section_init = .;          /* create a global symbol at section end */
-	} >PROGRAM_{{item.name.upper()}}_DATA_PARTITION_IN_{{item.memory.name.upper()}} AT> FLASH_LOCAL
+    /* Init section */
+    .program_{{item.name}}_section_init :
+    {
+        . = ALIGN(4);
+        _s_program_{{item.name}}_section_init = .;          /* create a global symbol at section start */
+        KEEP(*(.{{item.name}}_init));
+        . = ALIGN(4);
+        _e_program_{{item.name}}_section_init = .;          /* create a global symbol at section end */
+    } >PROGRAM_{{item.name.upper()}}_DATA_PARTITION_IN_{{item.memory.name.upper()}} AT> FLASH_LOCAL
 
-	/* No init section */
-	.program_{{item.name}}_section_noInit :
-	{
-		. = ALIGN(4);
-		_s_program_{{item.name}}_section_noInit = .;          /* create a global symbol at section start */
-		KEEP(*(.{{item.name}}_noInit));
-		. = ALIGN(4);
-		_e_program_{{item.name}}_section_noInit = .;          /* create a global symbol at section end */
-	} >PROGRAM_{{item.name.upper()}}_DATA_PARTITION_IN_{{item.memory.name.upper()}}
-	{% endfor -%}
+    /* No init section */
+    .program_{{item.name}}_section_noInit :
+    {
+        . = ALIGN(4);
+        _s_program_{{item.name}}_section_noInit = .;          /* create a global symbol at section start */
+        KEEP(*(.{{item.name}}_noInit));
+        . = ALIGN(4);
+        _e_program_{{item.name}}_section_noInit = .;          /* create a global symbol at section end */
+    } >PROGRAM_{{item.name.upper()}}_DATA_PARTITION_IN_{{item.memory.name.upper()}}
+    {% endfor -%}
 
-	{% for item in model.osPartitions -%}
-	_flash_os_section_{{item.name}}_start = LOADADDR(.os_section_{{item.name}});
+    {% for item in model.osPartitions -%}
+    _flash_os_section_{{item.name}}_start = LOADADDR(.os_section_{{item.name}});
 
-	/* Initialized data sections goes into RAM, load LMA copy after code */
-	.os_section_{{item.name}} :
-	{
-		. = ALIGN(4);
-		_s_os_section_{{item.name}} = .;          /* create a global symbol at data start */
-		KEEP (*(SORT(.os_{{item.name}}.*)));
-		KEEP (*(.os_{{item.name}}*));
-		_e_{{item.name}}_align_helper = .;        /* create a helper for log2 alignment */
-		. = ALIGN((0x2 << (LOG2CEIL (_e_{{item.name}}_align_helper) - 1)));
-		_e_os_section_{{item.name}} = .;          /* create a global symbol at data end */
-	} >OS_{{item.name.upper()}}_PARTITION_IN_{{item.memory.name.upper()}} {% if item.boot -%} AT> FLASH_LOCAL {% endif %}
-	{% endfor -%}
+    /* Initialized data sections goes into RAM, load LMA copy after code */
+    .os_section_{{item.name}} :
+    {
+        . = ALIGN(4);
+        _s_os_section_{{item.name}} = .;          /* create a global symbol at data start */
+        KEEP (*(SORT(.os_{{item.name}}.*)));
+        KEEP (*(.os_{{item.name}}*));
+        _e_{{item.name}}_align_helper = .;        /* create a helper for log2 alignment */
+        . = ALIGN((0x2 << (LOG2CEIL (_e_{{item.name}}_align_helper) - 1)));
+        _e_os_section_{{item.name}} = .;          /* create a global symbol at data end */
+    } >OS_{{item.name.upper()}}_PARTITION_IN_{{item.memory.name.upper()}} {% if item.boot -%} AT> FLASH_LOCAL {% endif %}
+    {% endfor -%}
 
-	/* The os code goes into FLASH */
-	.os_section_funcs :
-	{
-		. = ALIGN(4);
-		_s_os_section_funcs = .;          /* create a global symbol at data start */
-		KEEP (*(SORT(.os_funcs.*)));
-		KEEP (*(.os_funcs*));
-		_e_funcs_align_helper = .;        /* create a helper for log2 alignment */
-		. = ALIGN((0x2 << (LOG2CEIL (_e_funcs_align_helper) - 1)));
-		_e_os_section_funcs = .;          /* create a global symbol at data end */
-	} >FLASH_LOCAL
+    /* The os code goes into FLASH */
+    .os_section_funcs :
+    {
+        . = ALIGN(4);
+        _s_os_section_funcs = .;          /* create a global symbol at data start */
+        KEEP (*(SORT(.os_funcs.*)));
+        KEEP (*(.os_funcs*));
+        _e_funcs_align_helper = .;        /* create a helper for log2 alignment */
+        . = ALIGN((0x2 << (LOG2CEIL (_e_funcs_align_helper) - 1)));
+        _e_os_section_funcs = .;          /* create a global symbol at data end */
+    } >FLASH_LOCAL
 
-	{% for item in model.cores -%}
-	/* FLASH_USER_CODE_{{item.CoreName.upper()}} */
-	.application_section_funcs_{{item.CoreName}} :
-	{
-		. = ALIGN(4);
-		KEEP (*(SORT(.application_funcs_{{item.CoreName}}.*)));
-		KEEP(*(.application_funcs_{{item.CoreName}}));
-		. = ALIGN(4);
-	} > FLASH_USER_CODE_{{item.CoreName.upper()}}
-	{% endfor -%}
+    {% for item in model.cores -%}
+    /* FLASH_USER_CODE_{{item.CoreName.upper()}} */
+    .application_section_funcs_{{item.CoreName}} :
+    {
+        . = ALIGN(4);
+        KEEP (*(SORT(.application_funcs_{{item.CoreName}}.*)));
+        KEEP(*(.application_funcs_{{item.CoreName}}));
+        . = ALIGN(4);
+    } > FLASH_USER_CODE_{{item.CoreName.upper()}}
+    {% endfor -%}
 
-	/* The program code and other data goes into FLASH */
-	.text :
-	{
-		. = ALIGN(4);
-		*(.text)           /* .text sections (code) */
-		*(.text*)          /* .text* sections (code) */
-		*(.glue_7)         /* glue arm to thumb code */
-		*(.glue_7t)        /* glue thumb to arm code */
-		*(.eh_frame)
-		KEEP (*(.init))
-		KEEP (*(.fini))
-		. = ALIGN(4);
-		_etext = .;        /* define a global symbols at end of code */
-	} >FLASH_LOCAL
+    /* The program code and other data goes into FLASH */
+    .text :
+    {
+        . = ALIGN(4);
+        *(.text)           /* .text sections (code) */
+        *(.text*)          /* .text* sections (code) */
+        *(.glue_7)         /* glue arm to thumb code */
+        *(.glue_7t)        /* glue thumb to arm code */
+        *(.eh_frame)
+        KEEP (*(.init))
+        KEEP (*(.fini))
+        . = ALIGN(4);
+        _etext = .;        /* define a global symbols at end of code */
+    } >FLASH_LOCAL
 
-	/* Constant data goes into FLASH */
-	.rodata :
-	{
-		. = ALIGN(4);
-		*(.rodata)         /* .rodata sections (constants, strings, etc.) */
-		*(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
-		. = ALIGN(4);
-	} >FLASH_LOCAL
+    /* Constant data goes into FLASH */
+    .rodata :
+    {
+        . = ALIGN(4);
+        *(.rodata)         /* .rodata sections (constants, strings, etc.) */
+        *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
+        . = ALIGN(4);
+    } >FLASH_LOCAL
 
-	.ARM.extab   : { *(.ARM.extab* .gnu.linkonce.armextab.*) } >FLASH_LOCAL
-	.ARM : {
-		__exidx_start = .;
-		*(.ARM.exidx*)
-		__exidx_end = .;
-	} >FLASH_LOCAL
+    .ARM.extab   : { *(.ARM.extab* .gnu.linkonce.armextab.*) } >FLASH_LOCAL
+    .ARM : {
+        __exidx_start = .;
+        *(.ARM.exidx*)
+        __exidx_end = .;
+    } >FLASH_LOCAL
 
-	.preinit_array     :
-	{
-		PROVIDE_HIDDEN (__preinit_array_start = .);
-		KEEP (*(.preinit_array*))
-		PROVIDE_HIDDEN (__preinit_array_end = .);
-	} >FLASH_LOCAL
-	.init_array :
-	{
-		PROVIDE_HIDDEN (__init_array_start = .);
-		KEEP (*(SORT(.init_array.*)))
-		KEEP (*(.init_array*))
-		PROVIDE_HIDDEN (__init_array_end = .);
-	} >FLASH_LOCAL
-	.fini_array :
-	{
-		PROVIDE_HIDDEN (__fini_array_start = .);
-		KEEP (*(SORT(.fini_array.*)))
-		KEEP (*(.fini_array*))
-		PROVIDE_HIDDEN (__fini_array_end = .);
-	} >FLASH_LOCAL
+    .preinit_array     :
+    {
+        PROVIDE_HIDDEN (__preinit_array_start = .);
+        KEEP (*(.preinit_array*))
+        PROVIDE_HIDDEN (__preinit_array_end = .);
+    } >FLASH_LOCAL
+    .init_array :
+    {
+        PROVIDE_HIDDEN (__init_array_start = .);
+        KEEP (*(SORT(.init_array.*)))
+        KEEP (*(.init_array*))
+        PROVIDE_HIDDEN (__init_array_end = .);
+    } >FLASH_LOCAL
+    .fini_array :
+    {
+        PROVIDE_HIDDEN (__fini_array_start = .);
+        KEEP (*(SORT(.fini_array.*)))
+        KEEP (*(.fini_array*))
+        PROVIDE_HIDDEN (__fini_array_end = .);
+    } >FLASH_LOCAL
 
-	/* used by the startup to initialize data */
-	_sidata = LOADADDR(.data);
+    /* used by the startup to initialize data */
+    _sidata = LOADADDR(.data);
 
-	/* Initialized data sections goes into RAM, load LMA copy after code */
-	.data :
-	{
-		. = ALIGN(4);
-		_s_unprotected_section = .;          /* create a global symbol at data start */
-		_sdata = .;        /* create a global symbol at data start */
-		*(.data)           /* .data sections */
-		*(.data*)          /* .data* sections */
-		. = ALIGN(4);
-		_edata = .;        /* define a global symbol at data end */
-	} >UNMAPPED_DATA_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}} AT> FLASH_LOCAL
+    /* Initialized data sections goes into RAM, load LMA copy after code */
+    .data :
+    {
+        . = ALIGN(4);
+        _s_unprotected_section = .;          /* create a global symbol at data start */
+        _sdata = .;        /* create a global symbol at data start */
+        *(.data)           /* .data sections */
+        *(.data*)          /* .data* sections */
+        . = ALIGN(4);
+        _edata = .;        /* define a global symbol at data end */
+    } >UNMAPPED_DATA_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}} AT> FLASH_LOCAL
 
 
-	/* Uninitialized data section */
-	. = ALIGN(4);
-	.bss :
-	{
-		/* This is used by the startup in order to initialize the .bss secion */
-		_sbss = .;         /* define a global symbol at bss start */
-		__bss_start__ = _sbss;
-		*(.bss)
-		*(.bss*)
-		*(COMMON)
-		. = ALIGN(4);
-		_ebss = .;         /* define a global symbol at bss end */
-		__bss_end__ = _ebss;
-		_e_unprotected_align_helper = .;        /* create a helper for log2 alignment */
-		. = ALIGN((0x2 << (LOG2CEIL (_e_unprotected_align_helper) - 1)));
-		_e_unprotected_section = .;          /* create a global symbol at data start */
-	} >UNMAPPED_DATA_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}}
+    /* Uninitialized data section */
+    . = ALIGN(4);
+    .bss :
+    {
+        /* This is used by the startup in order to initialize the .bss secion */
+        _sbss = .;         /* define a global symbol at bss start */
+        __bss_start__ = _sbss;
+        *(.bss)
+        *(.bss*)
+        *(COMMON)
+        . = ALIGN(4);
+        _ebss = .;         /* define a global symbol at bss end */
+        __bss_end__ = _ebss;
+        _e_unprotected_align_helper = .;        /* create a helper for log2 alignment */
+        . = ALIGN((0x2 << (LOG2CEIL (_e_unprotected_align_helper) - 1)));
+        _e_unprotected_section = .;          /* create a global symbol at data start */
+    } >UNMAPPED_DATA_PARTITION_IN_{{core.unmappedDataMemory.name.upper()}}
 
-	/* Remove information from the standard libraries */
-	/DISCARD/ :
-	{
-		libc.a ( * )
-		libm.a ( * )
-		libgcc.a ( * )
-		{% for item in model.programs -%}
-		{% if item.core != core -%}
-		*(.program_{{item.name}}_section_init*)
-		*(.program_{{item.name}}_section_noInit*)
-		{% endif -%}
-		{% endfor -%}
-		{% for item in model.cores -%}
-		{% if item != core -%}
-		*(.application_section_funcs_{{item.CoreName}}*)
-		{% endif -%}
-		{% endfor -%}
-	}
+    /* Remove information from the standard libraries */
+    /DISCARD/ :
+    {
+        libc.a ( * )
+        libm.a ( * )
+        libgcc.a ( * )
+        {% for item in model.programs -%}
+        {% if item.core != core -%}
+        *(.program_{{item.name}}_section_init*)
+        *(.program_{{item.name}}_section_noInit*)
+        {% endif -%}
+        {% endfor -%}
+        {% for item in model.cores -%}
+        {% if item != core -%}
+        *(.application_section_funcs_{{item.CoreName}}*)
+        {% endif -%}
+        {% endfor -%}
+    }
 
-	.ARM.attributes 0 : { *(.ARM.attributes) }
+    .ARM.attributes 0 : { *(.ARM.attributes) }
 }

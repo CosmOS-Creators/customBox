@@ -55,8 +55,10 @@
   * @{
 ********************************************************************************/
 {% for item in model.programs -%}
-extern unsigned char _s_program_{{item.name}}_section_init[];
-extern unsigned char _s_program_{{item.name}}_section_noInit[];
+extern unsigned char
+    _s_program_{{item.name}}_section_init[];
+extern unsigned char
+    _s_program_{{item.name}}_section_noInit[];
 {% endfor -%}
 {% for item in model.osPartitions -%}
 {% if item.boot -%}
@@ -65,30 +67,35 @@ extern unsigned char _s_os_section_{{item.name}}[];
 {% endfor -%}
 
 {% for item in model.programs -%}
-extern unsigned char _e_program_{{item.name}}_section_init[];
-extern unsigned char _e_program_{{item.name}}_section_noInit[];
+extern unsigned char
+    _e_program_{{item.name}}_section_init[];
+extern unsigned char
+    _e_program_{{item.name}}_section_noInit[];
 {% endfor -%}
 {% for item in model.osPartitions -%}
 {% if item.boot -%}
-extern unsigned char _e_os_section_{{item.name}}[];
+extern unsigned char
+    _e_os_section_{{item.name}}[];
 {% endif -%}
 {% endfor -%}
 
 {% for item in model.programs -%}
-extern unsigned char _flash_program_{{item.name}}_section_init[];
+extern unsigned char
+    _flash_program_{{item.name}}_section_init[];
 {% endfor -%}
 {% for item in model.osPartitions -%}
 {% if item.boot -%}
-extern unsigned char _flash_os_section_{{item.name}}_start[];
+extern unsigned char
+    _flash_os_section_{{item.name}}_start[];
 {% endif -%}
 {% endfor -%}
 
 {{"\n"}}{% for item in model.cores -%}
-const CosmOS_ProgramSectionConfigurationType clearSectionsCore{{item.coreId}}[CLEAR_SECTION_NUM_CORE_{{item.coreId}}]
-IS_INITIALIZED_TO
-{
+const CosmOS_ProgramSectionConfigurationType
+    clearSectionsCore{{item.coreId}}[CLEAR_SECTION_NUM_CORE_{{item.coreId}}]
+IS_INITIALIZED_TO{
 {% for program in item.corePrograms -%}
-{{"\t\t"}}{
+{{"    "}}{
         _s_program_{{program.name}}_section_noInit,
         _e_program_{{program.name}}_section_noInit,
         0,
@@ -98,11 +105,11 @@ IS_INITIALIZED_TO
 {{"\n"}}{% endfor -%}
 
 {{"\n"}}{% for item in model.cores -%}
-const CosmOS_ProgramSectionConfigurationType bootSectionsCore{{item.coreId}}[BOOT_SECTION_NUM_CORE_{{item.coreId}}]
-IS_INITIALIZED_TO
-{
+const CosmOS_ProgramSectionConfigurationType
+    bootSectionsCore{{item.coreId}}[BOOT_SECTION_NUM_CORE_{{item.coreId}}]
+IS_INITIALIZED_TO{
 {% for program in item.corePrograms -%}
-{{"\t\t"}}{
+{{"    "}}{
         _s_program_{{program.name}}_section_init,
         _e_program_{{program.name}}_section_init,
         _flash_program_{{program.name}}_section_init,
@@ -111,7 +118,7 @@ IS_INITIALIZED_TO
 {% if item.bootOs -%}
 {% for osPartition in model.osPartitions -%}
 {% if osPartition.boot -%}
-{{"\t\t"}}{
+{{"    "}}{
         _s_os_section_{{osPartition.name}},
         _e_os_section_{{osPartition.name}},
         _flash_os_section_{{osPartition.name}}_start,
@@ -126,7 +133,7 @@ const CosmOS_BootSectionConfigurationType clearSections[CORE_NUM]
 IS_INITIALIZED_TO
 {
 {% for item in model.cores -%}
-{{"\t\t"}}{
+{{"    "}}{
         clearSectionsCore{{item.coreId}},
         CLEAR_SECTION_NUM_CORE_{{item.coreId}},
     },
@@ -137,7 +144,7 @@ const CosmOS_BootSectionConfigurationType bootSections[CORE_NUM]
 IS_INITIALIZED_TO
 {
 {% for item in model.cores -%}
-{{"\t\t"}}{
+{{"    "}}{
         bootSectionsCore{{item.coreId}},
         BOOT_SECTION_NUM_CORE_{{item.coreId}},
     },

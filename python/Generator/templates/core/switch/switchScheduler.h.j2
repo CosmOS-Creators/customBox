@@ -41,7 +41,7 @@
 **                         START OF C++ SUPPORT SECTION                        **
 ********************************************************************************/
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 /********************************************************************************
 **                            Include Files | Start                            **
@@ -63,9 +63,9 @@
   * @{
 ********************************************************************************/
 {% if model.switches.performanceScheduling.state -%}
-    #define SCHEDULER_PERFORMANCE_SCHEDULING ON
+#define SCHEDULER_PERFORMANCE_SCHEDULING ON
 {% else -%}
-    #define SCHEDULER_PERFORMANCE_SCHEDULING OFF
+#define SCHEDULER_PERFORMANCE_SCHEDULING OFF
 {% endif -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
@@ -185,7 +185,12 @@
 /********************************************************************************
   * DOXYGEN DOCUMENTATION INFORMATION                                          **
   * *************************************************************************//**
-  * @fn switchScheduler_classicScheduling(schedulerVar,schedulableVar,stackPointerRetVal,timerTicks,startTick,currentTick)
+  * @fn switchScheduler_classicScheduling(schedulerVar,
+  * schedulableVar,
+  * stackPointerRetVal,
+  * timerTicks,
+  * startTick,
+  * currentTick)
   *
   * @brief Classic scheduling function. DEMO
   *
@@ -199,17 +204,38 @@
   * @return none
 ********************************************************************************/
 #if ( SCHEDULER_PERFORMANCE_SCHEDULING IS_EQUAL_TO OFF )
-    #define switchScheduler_classicScheduling(schedulerVar,schedulableVar,stackPointerRetVal,timerTicks,startTick,currentTick) \
-    scheduler_classicScheduling(schedulerVar,schedulableVar,stackPointerRetVal,timerTicks,startTick,currentTick)
+#define switchScheduler_classicScheduling(\
+    schedulerVar,\
+    schedulableVar,\
+    stackPointerRetVal,\
+    timerTicks,\
+    startTick,\
+    currentTick) \
+    scheduler_classicScheduling(\
+    schedulerVar,\
+    schedulableVar,\
+    stackPointerRetVal,\
+    timerTicks,\
+    startTick,\
+    currentTick)
 #else
-    #define switchScheduler_classicScheduling(schedulerVar,schedulableVar,stackPointerRetVal,timerTicks,startTick,currentTick)
+#define switchScheduler_classicScheduling(\
+    schedulerVar,\
+    schedulableVar,\
+    stackPointerRetVal,\
+    timerTicks,\
+    startTick,\
+    currentTick)
 #endif
 
 /********************************************************************************
   * DOXYGEN DOCUMENTATION INFORMATION                                          **
   * *************************************************************************//**
-  * @fn  scheduler_performanceScheduling(CosmOS_SchedulerVariableType * schedulerVar, CosmOS_SchedulableVariableType ** schedulableVar,\
-  * StackPointerType * stackPointerRetVal,BitWidthType * timerTicks)
+  * @fn  scheduler_performanceScheduling(
+  * CosmOS_SchedulerVariableType * schedulerVar,
+  * CosmOS_SchedulableVariableType ** schedulableVar,
+  * StackPointerType * stackPointerRetVal,
+  * BitWidthType * timerTicks)
   *
   * @brief Performance scheduling function. DEMO
   *
@@ -221,16 +247,33 @@
   * @return none
 ********************************************************************************/
 #if ( SCHEDULER_PERFORMANCE_SCHEDULING IS_EQUAL_TO ON )
-    #define switchScheduler_performanceScheduling(schedulerVar,schedulableVar,stackPointerRetVal,timerTicks) \
-    scheduler_performanceScheduling(schedulerVar,schedulableVar,stackPointerRetVal,timerTicks)
+#define switchScheduler_performanceScheduling(\
+    schedulerVar,\
+    schedulableVar,\
+    stackPointerRetVal,\
+    timerTicks) \
+    scheduler_performanceScheduling(\
+    schedulerVar,\
+    schedulableVar,\
+    stackPointerRetVal,\
+    timerTicks)
 #else
-    #define switchScheduler_performanceScheduling(schedulerVar,schedulableVar,stackPointerRetVal,timerTicks)
+#define switchScheduler_performanceScheduling(\
+    schedulerVar,\
+    schedulableVar,\
+    stackPointerRetVal,\
+    timerTicks)
 #endif
 
 /********************************************************************************
   * DOXYGEN DOCUMENTATION INFORMATION                                          **
   * *************************************************************************//**
-  * @fn switchScheduler_schedulable_setStackPointer(schedulerVar,schedulableVar,stackPointerRetVal,timerTicks,startTick,currentTick)
+  * @fn switchScheduler_schedulable_setStackPointer(schedulerVar,
+  * schedulableVar,
+  * stackPointerRetVal,
+  * timerTicks,
+  * startTick,
+  * currentTick)
   *
   * @brief Set schedulable stackPointer.
   *
@@ -240,16 +283,24 @@
   * @return none
 ********************************************************************************/
 #if ( SCHEDULER_PERFORMANCE_SCHEDULING IS_EQUAL_TO ON )
-    #define switchScheduler_schedulable_setStackPointer(priorSchedulableVar, stackPointer) \
-    schedulable_setStackPointer(priorSchedulableVar, stackPointer)
+#define switchScheduler_schedulable_setStackPointer(\
+    priorSchedulableVar,\
+    stackPointer) \
+    schedulable_setStackPointer(\
+    priorSchedulableVar,\
+    stackPointer)
 #else
-    #define switchScheduler_schedulable_setStackPointer(priorSchedulableVar, stackPointer)
+#define switchScheduler_schedulable_setStackPointer(\
+    priorSchedulableVar,\
+    stackPointer)
 #endif
 
 /********************************************************************************
   * DOXYGEN DOCUMENTATION INFORMATION                                          **
   * *************************************************************************//**
-  * @fn  switchScheduler_updateAlarms(CosmOS_CoreVariableType * coreVar, BitWidthType currentTick, BitWidthType hyperTick)
+  * @fn  switchScheduler_updateAlarms(CosmOS_CoreVariableType * coreVar,
+  * BitWidthType currentTick,
+  * BitWidthType hyperTick)
   *
   * @brief Update alarms DEMO.
   *
@@ -260,10 +311,16 @@
   * @return none
 ********************************************************************************/
 #if ( SCHEDULER_PERFORMANCE_SCHEDULING IS_EQUAL_TO ON )
-    #define switchScheduler_updateAlarms(coreVar, priorTickStep) \
-    scheduler_updateAlarms(coreVar, priorTickStep)
+#define switchScheduler_updateAlarms(\
+    coreVar,\
+    priorTickStep) \
+    scheduler_updateAlarms(\
+    coreVar,\
+    priorTickStep)
 #else
-    #define switchScheduler_updateAlarms(coreVar, priorTickStep)
+#define switchScheduler_updateAlarms(\
+    coreVar,\
+    priorTickStep)
 #endif
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **

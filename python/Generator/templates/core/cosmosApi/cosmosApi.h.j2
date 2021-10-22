@@ -47,7 +47,7 @@
 **                         START OF C++ SUPPORT SECTION                        **
 ********************************************************************************/
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 /********************************************************************************
 **                            Include Files | Start                            **
@@ -202,27 +202,72 @@
 ********************************************************************************/
 {% for item in model.sysCallRoutes -%}
 {% if item.userVisible and item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" and item.routedFuncName != "spinlock_getSpinlock" and item.routedFuncName != "spinlock_trySpinlock" and item.routedFuncName != "spinlock_releaseSpinlock"  -%}
-#define cosmosApi_{{item.routedFuncName}}({% for arg in item.args -%}{% if loop.index > 1 -%} ,{% endif -%}{{arg}}{% endfor -%}) ({{item.returnType}}){{item.sysCall}}(SYSCALL_{{item.routedFuncName.upper()}}{% for arg in item.args -%},{{arg}}{% endfor -%})
+#define cosmosApi_{{item.routedFuncName}}({% for arg in item.args -%}{% if loop.index > 1 -%} ,{% endif -%}{{arg}}{% endfor -%}) \
+({{item.returnType}}){{item.sysCall}}(\
+    SYSCALL_{{item.routedFuncName.upper()}}\
+    {% for arg in item.args -%}
+    ,{{arg}}\
+    {% endfor -%}
+    )
 {% endif -%}
 {% endfor -%}
 #define cosmosApi_boot() osBoot_boot()
 
 {% for item in model.buffers -%}
 {% if item.isDoubleBuffer -%}
-#define cosmosApi_read_doubleBuffer_{{item.name}}_instance_0(array, size) (CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(SYSCALL_READ_BUFFER_{{item.bufferId}}_ID, array, size)
-#define cosmosApi_write_doubleBuffer_{{item.name}}_instance_0(array, size) (CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID, array, size)
-#define cosmosApi_read_doubleBuffer_{{item.name}}_instance_1(array, size) (CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(SYSCALL_READ_BUFFER_{{item.bufferId+1}}_ID, array, size)
-#define cosmosApi_write_doubleBuffer_{{item.name}}_instance_1(array, size) (CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(SYSCALL_WRITE_BUFFER_{{item.bufferId+1}}_ID, array, size)
+#define cosmosApi_read_doubleBuffer_{{item.name}}_instance_0(array, size) \
+(CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(\
+    SYSCALL_READ_BUFFER_{{item.bufferId}}_ID,\
+    array,\
+    size\
+    )
+#define cosmosApi_write_doubleBuffer_{{item.name}}_instance_0(array, size) \
+(CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(\
+    SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID,\
+    array,\
+    size\
+    )
+#define cosmosApi_read_doubleBuffer_{{item.name}}_instance_1(array, size) \
+(CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(\
+    SYSCALL_READ_BUFFER_{{item.bufferId+1}}_ID,\
+    array,\
+    size\
+    )
+#define cosmosApi_write_doubleBuffer_{{item.name}}_instance_1(array, size) \
+(CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(\
+    SYSCALL_WRITE_BUFFER_{{item.bufferId+1}}_ID,\
+    array,\
+    size\
+    )
 
 {% else -%}
-#define cosmosApi_read_buffer_{{item.name}}(array, size) (CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(SYSCALL_READ_BUFFER_{{item.bufferId}}_ID, array, size)
-#define cosmosApi_write_buffer_{{item.name}}(array, size) (CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID, array, size)
+#define cosmosApi_read_buffer_{{item.name}}(array, size) \
+(CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(\
+    SYSCALL_READ_BUFFER_{{item.bufferId}}_ID,\
+    array,\
+    size\
+    )
+#define cosmosApi_write_buffer_{{item.name}}(array, size) \
+(CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(\
+    SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID,\
+    array,\
+    size\
+    )
 {% endif -%}
 {% endfor -%}
 {% for item in model.spinlocks -%}
-#define cosmosApi_get_spinlock_{{item.name}}() (CosmOS_SpinlockStateType)sysCalls_bitWidthType_ret_bitWidthType(SYSCALL_GET_SPINLOCK_{{item.spinlockId}}_ID)
-#define cosmosApi_try_spinlock_{{item.name}}() (CosmOS_SpinlockStateType)sysCalls_bitWidthType_ret_bitWidthType(SYSCALL_TRY_SPINLOCK_{{item.spinlockId}}_ID)
-#define cosmosApi_release_spinlock_{{item.name}}() (CosmOS_SpinlockStateType)sysCalls_bitWidthType_ret_bitWidthType(SYSCALL_RELEASE_SPINLOCK_{{item.spinlockId}}_ID)
+#define cosmosApi_get_spinlock_{{item.name}}() \
+(CosmOS_SpinlockStateType)sysCalls_bitWidthType_ret_bitWidthType(\
+    SYSCALL_GET_SPINLOCK_{{item.spinlockId}}_ID\
+    )
+#define cosmosApi_try_spinlock_{{item.name}}() \
+(CosmOS_SpinlockStateType)sysCalls_bitWidthType_ret_bitWidthType(\
+    SYSCALL_TRY_SPINLOCK_{{item.spinlockId}}_ID\
+    )
+#define cosmosApi_release_spinlock_{{item.name}}() \
+(CosmOS_SpinlockStateType)sysCalls_bitWidthType_ret_bitWidthType(\
+    SYSCALL_RELEASE_SPINLOCK_{{item.spinlockId}}_ID\
+    )
 {% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **

@@ -59,12 +59,13 @@
 __SEC_START(__OS_CONSTS_SECTION_START)
 /* @endcond*/
 {% for core in model.cores -%}
-const CosmOS_ThreadListConfigurationType SchedulerThreadListScheduler{{core.coreId}}CfgConst[SCHEDULERTHREADLIST_SCHEDULER_{{core.coreId}}_ELEMENT_NUM] __OS_CONSTS_SECTION
+const CosmOS_ThreadListConfigurationType
+    SchedulerThreadListScheduler{{core.coreId}}CfgConst[SCHEDULERTHREADLIST_SCHEDULER_{{core.coreId}}_ELEMENT_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO
 {
 {% for thread in core.prioSortedThreads -%}
-{{"\t\t"}}{
-        &ThreadsProgram{{thread.program.programId}}Core{{core.coreId}}Var[THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{core.coreId}}_ID],   /* CosmOS_ThreadVariableType * thread                  */
+{{"    "}}{
+        &ThreadsProgram{{thread.program.programId}}Core{{core.coreId}}Var[THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{core.coreId}}_ID],    /* CosmOS_ThreadVariableType * thread */
     },
 {% endfor -%}
 };
