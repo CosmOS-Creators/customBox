@@ -67,43 +67,43 @@
 #define ROUTES_ID_TO_ENTITY_DUMMY (BitWidthType)0     /* Dummy it to entity */
 
 {% for item in model.sysCallRoutes -%}
-#define {{item.routedFuncName.upper()}} (BitWidthType){{loop.index-1}}            /* Identificator pointing on function pointer in array (Routes) */
+#define {{item.routedFuncName.upper()}} (BitWidthType){{loop.index-1}}            /* identifier pointing on function pointer in array (Routes) */
 {% endfor -%}
 
 {% set ns = namespace(index=0) -%}
 {% for item in model.spinlocks -%}
-#define SYSCALL_GET_SPINLOCK_{{item.spinlockId}}_ID (BitWidthType){{ns.index}}   /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
+#define SYSCALL_GET_SPINLOCK_{{item.spinlockId}}_ID (BitWidthType){{ns.index}}   /* identifier pointing on element in id array (RoutesIdToFuncConst) */
 {% set ns.index = ns.index + 1 -%}
-#define SYSCALL_TRY_SPINLOCK_{{item.spinlockId}}_ID (BitWidthType){{ns.index}}   /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
+#define SYSCALL_TRY_SPINLOCK_{{item.spinlockId}}_ID (BitWidthType){{ns.index}}   /* identifier pointing on element in id array (RoutesIdToFuncConst) */
 {% set ns.index = ns.index + 1 -%}
-#define SYSCALL_RELEASE_SPINLOCK_{{item.spinlockId}}_ID (BitWidthType){{ns.index}}   /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
+#define SYSCALL_RELEASE_SPINLOCK_{{item.spinlockId}}_ID (BitWidthType){{ns.index}}   /* identifier pointing on element in id array (RoutesIdToFuncConst) */
 {% set ns.index = ns.index + 1 -%}
 {% endfor -%}
 {% for item in model.buffers -%}
-#define SYSCALL_READ_BUFFER_{{item.bufferId}}_ID (BitWidthType){{ns.index}}   /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
+#define SYSCALL_READ_BUFFER_{{item.bufferId}}_ID (BitWidthType){{ns.index}}   /* identifier pointing on element in id array (RoutesIdToFuncConst) */
 {% set ns.index = ns.index + 1 -%}
-#define SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID (BitWidthType){{ns.index}}  /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
+#define SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID (BitWidthType){{ns.index}}  /* identifier pointing on element in id array (RoutesIdToFuncConst) */
 {% set ns.index = ns.index + 1 -%}
 {% if item.isDoubleBuffer -%}
-#define SYSCALL_READ_BUFFER_{{item.bufferId+1}}_ID (BitWidthType){{ns.index}}   /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
+#define SYSCALL_READ_BUFFER_{{item.bufferId+1}}_ID (BitWidthType){{ns.index}}   /* identifier pointing on element in id array (RoutesIdToFuncConst) */
 {% set ns.index = ns.index + 1 -%}
-#define SYSCALL_WRITE_BUFFER_{{item.bufferId+1}}_ID (BitWidthType){{ns.index}}  /* Identificator pointing on element in id array (RoutesIdToFuncConst) */
+#define SYSCALL_WRITE_BUFFER_{{item.bufferId+1}}_ID (BitWidthType){{ns.index}}  /* identifier pointing on element in id array (RoutesIdToFuncConst) */
 {% set ns.index = ns.index + 1 -%}
 {% endif -%}
 {% endfor -%}
 {% for item in model.sysCallRoutes -%}
 {% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" and item.routedFuncName != "spinlock_getSpinlock" and item.routedFuncName != "spinlock_trySpinlock" and item.routedFuncName != "spinlock_releaseSpinlock" -%}
-#define SYSCALL_{{item.routedFuncName.upper()}} (BitWidthType){{ns.index}}            /* Identificator pointing on function pointer in array (Routes) */
+#define SYSCALL_{{item.routedFuncName.upper()}} (BitWidthType){{ns.index}}            /* identifier pointing on function pointer in array (Routes) */
 {% set ns.index = ns.index + 1 -%}
 {% endif -%}
 {% endfor -%}
-{{"\n"}}#define ROUTES_ID_TO_FUNC_NUM (BitWidthType){{ns.index}}    /* Number of route identificators */
-#define ROUTES_ID_TO_ENTITY_NUM (BitWidthType){{ns.index}}     /* Number of route identificators */
+{{"\n"}}#define ROUTES_ID_TO_FUNC_NUM (BitWidthType){{ns.index}}    /* Number of route identifiers */
+#define ROUTES_ID_TO_ENTITY_NUM (BitWidthType){{ns.index}}     /* Number of route identifiers */
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Macros_sysDefsRoutes_h
+  * @} */
+/*  Macros_sysDefsRoutes_h
 ********************************************************************************/
 /********************************************************************************
 **                          Macro Definitions | Stop                           **
@@ -121,8 +121,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Variables_sysDefsRoutes_h
+  * @} */
+/*  Variables_sysDefsRoutes_h
 ********************************************************************************/
 /********************************************************************************
 **                              Variables | Stop                               **
@@ -146,8 +146,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Getters_sysDefsRoutes_h
+  * @} */
+/*  Getters_sysDefsRoutes_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
@@ -159,8 +159,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Setters_sysDefsRoutes_h
+  * @} */
+/*  Setters_sysDefsRoutes_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
@@ -172,8 +172,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * General_sysDefsRoutes_h
+  * @} */
+/*  General_sysDefsRoutes_h
 ********************************************************************************/
 /********************************************************************************
 **                         Function Prototypes | Stop                          **
@@ -191,8 +191,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Getters_sysDefsRoutes_h
+  * @} */
+/*  Getters_sysDefsRoutes_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
@@ -204,8 +204,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Setters_sysDefsRoutes_h
+  * @} */
+/*  Setters_sysDefsRoutes_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
@@ -217,8 +217,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * General_sysDefsRoutes_h
+  * @} */
+/*  General_sysDefsRoutes_h
 ********************************************************************************/
 /********************************************************************************
 **                        Function Definitions | Stop                          **
