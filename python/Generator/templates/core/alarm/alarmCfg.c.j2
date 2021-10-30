@@ -60,12 +60,12 @@ __SEC_START(__OS_CONSTS_SECTION_START)
 /* @endcond*/
 {% for core in model.cores -%}
 const CosmOS_AlarmConfigurationType AlarmsCore{{core.coreId}}CfgConst[ALARM_CORE_{{core.coreId}}_NUM] __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
+IS_INITIALIZED_TO{
 {% for item in core.corePrograms -%}
 {% for thread in item.programThreads -%}
-{{"\t\t"}}{
-        &ThreadsSchedulablesVar[SCHEDULABLE_THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],            /* CosmOS_SchedulableVariableType * const schedulableVar                       */
+{{"    "}}{
+        &ThreadsSchedulablesVar
+            [SCHEDULABLE_THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],    /* CosmOS_SchedulableVariableType * const schedulableVar */
     },
 {% endfor -%}
 {% endfor -%}
@@ -84,10 +84,11 @@ IS_INITIALIZED_TO
 {
 {% for item in core.corePrograms -%}
 {% for thread in item.programThreads -%}
-{{"\t\t"}}{
-		&AlarmsCore{{core.coreId}}CfgConst[ALARM_{{thread.alarmId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],		/* const CosmOS_AlarmConfigurationType * const cfg                       */
-		ALARM_STATE_ENUM__DISABLED, /* CosmOS_AlarmStateType state                       */
-		0,            /* BitWidthType timer                       */
+{{"    "}}{
+        &AlarmsCore{{core.coreId}}CfgConst
+            [ALARM_{{thread.alarmId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],    /* const CosmOS_AlarmConfigurationType * const cfg */
+        ALARM_STATE_ENUM__DISABLED,    /* CosmOS_AlarmStateType state */
+        0,    /* BitWidthType timer */
     },
 {% endfor -%}
 {% endfor -%}

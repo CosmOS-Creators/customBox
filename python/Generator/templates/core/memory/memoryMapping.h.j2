@@ -41,7 +41,7 @@
 **                         START OF C++ SUPPORT SECTION                        **
 ********************************************************************************/
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 /********************************************************************************
 **                            Include Files | Start                            **
@@ -60,56 +60,60 @@
   * @{
 ********************************************************************************/
 #if     defined ( __GNUC__ )
-    #define __OS_FUNC_SECTION       __attribute__((section(".os_funcs")))
-    #define __OS_FUNC_SECTION_START
-    #define __OS_FUNC_SECTION_STOP
+#define __OS_FUNC_SECTION    __attribute__((section(".os_funcs")))
+#define __OS_FUNC_SECTION_START
+#define __OS_FUNC_SECTION_STOP
 {% for item in model.cores %}
-    #define __APPLICATION_FUNC_SECTION_{{item.CoreName.upper()}}       __attribute__((section(".application_funcs_{{item.CoreName}}")))
-    #define __APPLICATION_FUNC_SECTION_START_{{item.CoreName.upper()}}
-    #define __APPLICATION_FUNC_SECTION_STOP_{{item.CoreName.upper()}}
+#define __APPLICATION_FUNC_SECTION_{{item.CoreName.upper()}} \
+        __attribute__((section(".application_funcs_{{item.CoreName}}")))
+#define __APPLICATION_FUNC_SECTION_START_{{item.CoreName.upper()}}
+#define __APPLICATION_FUNC_SECTION_STOP_{{item.CoreName.upper()}}
 {% endfor -%}
 
 {% for item in model.osPartitions %}
-    #define __OS_{{item.name.upper()}}_SECTION        __attribute__((section(".os_{{item.name}}")))
-    #define __OS_{{item.name.upper()}}_SECTION_START
-    #define __OS_{{item.name.upper()}}_SECTION_STOP
+#define __OS_{{item.name.upper()}}_SECTION \
+        __attribute__((section(".os_{{item.name}}")))
+#define __OS_{{item.name.upper()}}_SECTION_START
+#define __OS_{{item.name.upper()}}_SECTION_STOP
 {% endfor -%}
 {% for item in model.programs %}
-    #define __{{item.name.upper()}}_INIT_SECTION        __attribute__((section(".{{item.name}}_init")))
-    #define __{{item.name.upper()}}_INIT_SECTION_START
-    #define __{{item.name.upper()}}_INIT_SECTION_STOP
+#define __{{item.name.upper()}}_INIT_SECTION \
+        __attribute__((section(".{{item.name}}_init")))
+#define __{{item.name.upper()}}_INIT_SECTION_START
+#define __{{item.name.upper()}}_INIT_SECTION_STOP
 
-    #define __{{item.name.upper()}}_NOINIT_SECTION        __attribute__((section(".{{item.name}}_noInit")))
-    #define __{{item.name.upper()}}_NOINIT_SECTION_START
-    #define __{{item.name.upper()}}_NOINIT_SECTION_STOP
+#define __{{item.name.upper()}}_NOINIT_SECTION \
+        __attribute__((section(".{{item.name}}_noInit")))
+#define __{{item.name.upper()}}_NOINIT_SECTION_START
+#define __{{item.name.upper()}}_NOINIT_SECTION_STOP
 {% endfor -%}
 
 #elif   defined ( __CC_ARM )
-    #define __OS_FUNC_SECTION
-    #define __OS_FUNC_SECTION_START
-    #define __OS_FUNC_SECTION_STOP
+#define __OS_FUNC_SECTION
+#define __OS_FUNC_SECTION_START
+#define __OS_FUNC_SECTION_STOP
 {% for item in model.cores %}
-    #define __APPLICATION_FUNC_SECTION_{{item.CoreName.upper()}}
-    #define __APPLICATION_FUNC_SECTION_START_{{item.CoreName.upper()}}
-    #define __APPLICATION_FUNC_SECTION_STOP_{{item.CoreName.upper()}}
+#define __APPLICATION_FUNC_SECTION_{{item.CoreName.upper()}}
+#define __APPLICATION_FUNC_SECTION_START_{{item.CoreName.upper()}}
+#define __APPLICATION_FUNC_SECTION_STOP_{{item.CoreName.upper()}}
 {% endfor -%}
 
 {% for item in model.osPartitions %}
-    #define __OS_{{item.name.upper()}}_SECTION
-    #define __OS_{{item.name.upper()}}_SECTION_START
-    #define __OS_{{item.name.upper()}}_SECTION_STOP
+#define __OS_{{item.name.upper()}}_SECTION
+#define __OS_{{item.name.upper()}}_SECTION_START
+#define __OS_{{item.name.upper()}}_SECTION_STOP
 {% endfor -%}
 {% for item in model.programs %}
-    #define __{{item.name.upper()}}_INIT_SECTION
-    #define __{{item.name.upper()}}_INIT_SECTION_START
-    #define __{{item.name.upper()}}_INIT_SECTION_STOP
+#define __{{item.name.upper()}}_INIT_SECTION
+#define __{{item.name.upper()}}_INIT_SECTION_START
+#define __{{item.name.upper()}}_INIT_SECTION_STOP
 
-    #define __{{item.name.upper()}}_NOINIT_SECTION
-    #define __{{item.name.upper()}}_NOINIT_SECTION_START
-    #define __{{item.name.upper()}}_NOINIT_SECTION_STOP
+#define __{{item.name.upper()}}_NOINIT_SECTION
+#define __{{item.name.upper()}}_NOINIT_SECTION_START
+#define __{{item.name.upper()}}_NOINIT_SECTION_STOP
 {% endfor -%}
 #else
-    #error "Your compiler is currently not supported by CosmOS!"
+#error "Your compiler is currently not supported by CosmOS!"
 #endif
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **

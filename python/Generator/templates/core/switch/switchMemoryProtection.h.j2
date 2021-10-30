@@ -41,7 +41,7 @@
 **                         START OF C++ SUPPORT SECTION                        **
 ********************************************************************************/
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 /********************************************************************************
 **                            Include Files | Start                            **
@@ -62,9 +62,9 @@
   * @{
 ********************************************************************************/
 {% if model.switches.memoryProtection.state -%}
-    #define MEMORY_PROTECTION ON
+#define MEMORY_PROTECTION ON
 {% else -%}
-    #define MEMORY_PROTECTION OFF
+#define MEMORY_PROTECTION OFF
 {% endif -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
@@ -172,11 +172,11 @@
   * DOXYGEN DOCUMENTATION INFORMATION                                          **
   * *************************************************************************//**
   * @fn switchMemoryProtection_init(AddressType codeMemoryHighAddress,
-  *							AddressType codeMemoryLowAddress,
-  *							AddressType stackMemoryHighAddress,
-  *							AddressType stackMemoryLowAddress,
-  *							AddressType unprotectedMemoryLowAddress,
-  *							AddressType unprotectedMemoryHighAddress)
+  * AddressType codeMemoryLowAddress,
+  * AddressType stackMemoryHighAddress,
+  * AddressType stackMemoryLowAddress,
+  * AddressType unprotectedMemoryLowAddress,
+  * AddressType unprotectedMemoryHighAddress)
   * @brief Init memory protection DEMO CODE.
   *
   * @param[in]  AddressType codeMemoryHighAddress
@@ -184,14 +184,32 @@
   * @param[in]  AddressType stackMemoryHighAddress
   * @param[in]  AddressType unprotectedMemoryLowAddress
   * @param[in]  AddressType unprotectedMemoryHighAddress
-	*
+  *
   * @return none
 ********************************************************************************/
 #if ( MEMORY_PROTECTION IS_EQUAL_TO ON )
-    #define switchMemoryProtection_init(codeMemoryHighAddress, codeMemoryLowAddress, stackMemoryHighAddress, stackMemoryLowAddress, unprotectedMemoryLowAddress, unprotectedMemoryHighAddress) \
-	memoryProtection_init(codeMemoryHighAddress, codeMemoryLowAddress, stackMemoryHighAddress, stackMemoryLowAddress, unprotectedMemoryLowAddress, unprotectedMemoryHighAddress)
+#define switchMemoryProtection_init(\
+    codeMemoryHighAddress,\
+    codeMemoryLowAddress,\
+    stackMemoryHighAddress,\
+    stackMemoryLowAddress,\
+    unprotectedMemoryLowAddress,\
+    unprotectedMemoryHighAddress) \
+    memoryProtection_init(\
+    codeMemoryHighAddress,\
+    codeMemoryLowAddress,\
+    stackMemoryHighAddress,\
+    stackMemoryLowAddress,\
+    unprotectedMemoryLowAddress,\
+    unprotectedMemoryHighAddress)
 #else
-    #define switchMemoryProtection_init(codeMemoryHighAddress, codeMemoryLowAddress, stackMemoryHighAddress, stackMemoryLowAddress, unprotectedMemoryLowAddress, unprotectedMemoryHighAddress)
+#define switchMemoryProtection_init(\
+    codeMemoryHighAddress,\
+    codeMemoryLowAddress,\
+    stackMemoryHighAddress,\
+    stackMemoryLowAddress,\
+    unprotectedMemoryLowAddress,\
+    unprotectedMemoryHighAddress)
 #endif
 /********************************************************************************
   * DOXYGEN DOCUMENTATION INFORMATION                                          **
@@ -206,9 +224,16 @@
   * @return none
 ********************************************************************************/
 #if ( MEMORY_PROTECTION IS_EQUAL_TO ON )
-    #define switchMemoryProtection_setMemoryProtection(coreVar,schedulable) memoryProtection_setMemoryProtection(coreVar,schedulable)
+#define switchMemoryProtection_setMemoryProtection(\
+    coreVar,\
+    schedulable) \
+memoryProtection_setMemoryProtection(\
+    coreVar,\
+    schedulable)
 #else
-    #define switchMemoryProtection_setMemoryProtection(coreVar,schedulable)
+#define switchMemoryProtection_setMemoryProtection(\
+    coreVar,\
+    schedulable)
 #endif
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **

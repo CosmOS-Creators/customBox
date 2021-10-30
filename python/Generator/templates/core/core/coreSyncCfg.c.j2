@@ -59,19 +59,18 @@ __SEC_START(__OS_VARS_SECTION_START)
 /* @endcond*/
 {% for item in model.cores -%}
 CosmOS_BarrierVariableType BarriersCore{{item.coreId}}Var[BARRIERS_NUM] __OS_VARS_SECTION
-IS_INITIALIZED_TO
-{
-    {                 /* BarriersCore{{item.coreId}}Var[OS_INIT_ID]                     */
-        BARRIER_STATE_ENUM__ACTIVATED,    /* CosmOS_BarrierStateType barrierState                */
+IS_INITIALIZED_TO{
+    {                 /* BarriersCore{{item.coreId}}Var[OS_INIT_ID] */
+        BARRIER_STATE_ENUM__ACTIVATED,    /* CosmOS_BarrierStateType barrierState */
     },
-    {                 /* BarriersCore{{item.coreId}}Var[OS_START_ID]                    */
-        BARRIER_STATE_ENUM__ACTIVATED,    /* CosmOS_BarrierStateType barrierState                */
+    {                 /* BarriersCore{{item.coreId}}Var[OS_START_ID] */
+        BARRIER_STATE_ENUM__ACTIVATED,    /* CosmOS_BarrierStateType barrierState */
     },
-    {                 /* BarriersCore{{item.coreId}}Var[OS_STOP_ID]                     */
-        BARRIER_STATE_ENUM__ACTIVATED,    /* CosmOS_BarrierStateType barrierState                */
+    {                 /* BarriersCore{{item.coreId}}Var[OS_STOP_ID] */
+        BARRIER_STATE_ENUM__ACTIVATED,    /* CosmOS_BarrierStateType barrierState */
     },
-    {                 /* BarriersCore{{item.coreId}}Var[SCHEDULERS_SYNC_ID]                     */
-        BARRIER_STATE_ENUM__ACTIVATED,    /* CosmOS_BarrierStateType barrierState                */
+    {                 /* BarriersCore{{item.coreId}}Var[SCHEDULERS_SYNC_ID] */
+        BARRIER_STATE_ENUM__ACTIVATED,    /* CosmOS_BarrierStateType barrierState */
     },
 };
 {% endfor -%}

@@ -64,9 +64,9 @@
 __SEC_START(__OS_CONSTS_SECTION_START)
 /* @endcond*/
 {% for sysJobGroup in model.sysJobs -%}
-const CosmOS_GenericVoidType SysJobsHandlersGroup{{sysJobGroup.groupId}}Core{{sysJobGroup.core.coreId}}Const[SYSJOBS_HANDLERS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_NUM] __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
+const CosmOS_GenericVoidType
+    SysJobsHandlersGroup{{sysJobGroup.groupId}}Core{{sysJobGroup.core.coreId}}Const[SYSJOBS_HANDLERS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_NUM] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
     {% for handler in sysJobGroup.handlers -%}
     (CosmOS_GenericVoidType){{handler}},
 {% endfor -%}
@@ -74,27 +74,27 @@ IS_INITIALIZED_TO
 {% endfor -%}
 
 {% for core in model.cores -%}
-const CosmOS_SysJobsGroupConfigurationType SysJobsGroupsCore{{core.coreId}}ConstCfg[SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM] __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
+const CosmOS_SysJobsGroupConfigurationType
+    SysJobsGroupsCore{{core.coreId}}ConstCfg[SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
     {% for sysJobGroup in core.coreSysJobGroups -%}
     {
-        SysJobsHandlersGroup{{sysJobGroup.groupId}}Core{{sysJobGroup.core.coreId}}Const,                /* const CosmOS_GenericVoidType * const handlers    */
-        SYSJOBS_HANDLERS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_NUM,            /* const BitWidthType numOfHandlers                 */
-        SYSJOBS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_TICK_MULTIPLICATOR,      /* const BitWidthType tickMultiplicator             */
+        SysJobsHandlersGroup{{sysJobGroup.groupId}}Core{{sysJobGroup.core.coreId}}Const,    /* const CosmOS_GenericVoidType * const handlers */
+        SYSJOBS_HANDLERS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_NUM,    /* const BitWidthType numOfHandlers */
+        SYSJOBS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_TICK_MULTIPLICATOR,    /* const BitWidthType tickMultiplicator */
     },
 {% endfor -%}
 };
 {% endfor -%}
 
-const CosmOS_SysJobsConfigurationType SysJobsConstCfg[CORE_NUM] __OS_CONSTS_SECTION
-IS_INITIALIZED_TO
-{
+const CosmOS_SysJobsConfigurationType
+    SysJobsConstCfg[CORE_NUM] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
     {% for core in model.cores -%}
     {
-        SysJobsGroupsCore{{core.coreId}}ConstCfg,                   /* const CosmOS_SysJobsGroupConfigurationType * const groups    */
-        SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM,                    /* const BitWidthType numOfGroups                               */
-        SYSJOBS_CORE_{{core.coreId}}_HYPERTICK                      /* const BitWidthType hyperTick                                 */
+        SysJobsGroupsCore{{core.coreId}}ConstCfg,    /* const CosmOS_SysJobsGroupConfigurationType * const groups */
+        SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM,    /* const BitWidthType numOfGroups */
+        SYSJOBS_CORE_{{core.coreId}}_HYPERTICK     /* const BitWidthType hyperTick */
     },
 {% endfor -%}
 };
@@ -106,12 +106,11 @@ __SEC_STOP(__OS_CONSTS_SECTION_STOP)
 __SEC_START(__OS_VARS_SECTION_START)
 /* @endcond*/
 CosmOS_SysJobsVariableType SysJobsVar[CORE_NUM] __OS_VARS_SECTION
-IS_INITIALIZED_TO
-{
+IS_INITIALIZED_TO{
     {% for core in model.cores -%}
     {
-        &SysJobsConstCfg[CORE_{{core.coreId}}_ID],    /* const CosmOS_SysJobsConfigurationType * const cfg  */
-        0,                              /* BitWidthType currentTick                           */
+        &SysJobsConstCfg[CORE_{{core.coreId}}_ID],    /* const CosmOS_SysJobsConfigurationType * const cfg */
+        0,    /* BitWidthType currentTick */
     },
 {% endfor -%}
 };
