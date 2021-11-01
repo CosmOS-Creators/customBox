@@ -1,4 +1,5 @@
 from typing import List, Union
+import math
 
 # helper decorator to ensure proper naming of functions
 def overrides(interface_class):
@@ -8,10 +9,29 @@ def overrides(interface_class):
     return overrider
 
 def toInt(hexValue: str):
-	return int(hexValue, 16)
+	if(hexValue is None):
+		return None
+	elif(isinstance(hexValue, int)):
+		return hexValue
+	else:
+		return int(hexValue, 16)
 
-def toHex(intValue: int):
-	return hex(intValue).upper().replace("X", "x")
+def toHex(intValue: int, prefix = True):
+	hexValue = hex(intValue).upper()
+	if(not prefix):
+		return hexValue.replace("0X", "")
+	else:
+		return hexValue.replace("X", "x")
+
+def check_alignment(N, align_to):
+	if(N == align_to):
+		return True
+	if(N == 0):
+		return True
+	try:
+		return N == align_to**int(round(math.log(N, align_to)))
+	except Exception:
+		return False
 
 def forceStrList(input: Union[List[str], str]):
 	out = input
@@ -27,7 +47,7 @@ def forceStrList(input: Union[List[str], str]):
 		else:
 			valid = False
 		if(valid == False):
-			raise TypeError(f"Allowed types are only str or List[str] but found type \"{str(type(input))}\" instead.")
+			raise TypeError(f'Allowed types are only str or List[str] but found type "{str(type(input))}" instead.')
 	return out
 
 def forceList(input):

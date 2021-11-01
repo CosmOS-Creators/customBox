@@ -86,9 +86,9 @@ class ConfigParser():
 				elif(isinstance(config, Path)):
 					self.__configs.append(config)
 				else:
-					raise TypeError(f"Only supported types as a config input are List[str | Path] but got List[{type(config)}] instead.")
+					raise TypeError(f'Only supported types as a config input are List[str | Path] but got List[{type(config)}] instead.')
 		else:
-			raise TypeError(f"Only supported types as a config input are List[str | Path] but got {type(workspace)} instead.")
+			raise TypeError(f'Only supported types as a config input are List[str | Path] but got {type(workspace)} instead.')
 
 	@property
 	def workspace(self):

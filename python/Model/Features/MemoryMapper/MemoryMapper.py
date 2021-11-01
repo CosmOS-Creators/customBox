@@ -48,7 +48,7 @@ class MemoryMapperLogic(logicRunnerPlugin.logicRunner):
 							'mcu/MCU:architecture'
 							])
 		except Exception as e:
-			raise Exception(f"MemoryMapper is missing required attribute, more info : {str(e)}") from e
+			raise Exception(f'MemoryMapper is missing required attribute, more info : {str(e)}') from e
 
 		self.memories = config.memories
 		self.kernels = config.kernels

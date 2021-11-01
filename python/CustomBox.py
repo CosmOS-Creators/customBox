@@ -16,7 +16,7 @@ if __name__ == "__main__":
 	parser 			= Parser.ConfigParser(workspace)
 	systemModel 	= parser.parse()
 	configGenerator = ConfigurationGenerator.configGenerator(workspace)
-	Interface 		= Configurator()
+	Interface 		= Configurator(Configurator.THEME_STYLE_DARK, Configurator.THEME_COLOR_BLUE)
 
 	mainUI = Interface.buildMainWindow(systemModel, "CustomBox", "custombox-icon")
 	generator_call = lambda: configGenerator.generate(systemModel)
