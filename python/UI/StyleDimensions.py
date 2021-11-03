@@ -33,6 +33,7 @@ class styleExtensions(object, metaclass=MetaStyleExtensionClass):
         "TITLEBAR_WINDOW_ICON_MARGINS": QMargins(10, 2, 2, 2),
         "ERROR_COLOR": "#c62828",
         "ICON_BUTTON_SIZE": QSize(24, 24),
+        "ICON_BUTTON_COMPACT_SIZE": QSize(18, 18),
     }
 
     def get_Parameters():

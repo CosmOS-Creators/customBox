@@ -5,18 +5,39 @@ from UI.support import icons
 from UI.StyleDimensions import styleExtensions
 from UI.UI import MainWindow
 import UI.PageBuilder as pageBuilder
+import os
+
+os.environ["QT_FONT_DPI"] = "96"  # FIX Problem for High DPI and Scale above 100%
 
 
 class Configurator:
-    def __init__(self):
+    THEME_STYLE_DARK = "dark"
+    THEME_STYLE_LIGHT = "light"
+
+    THEME_COLOR_BLUE = "blue"
+    THEME_COLOR_RED = "red"
+    THEME_COLOR_GREEN = "green"
+    THEME_COLOR_YELLOW = "yellow"
+
+    def __init__(self, theme_style: str = THEME_STYLE_DARK, theme_color: str = "blue"):
         scriptPath = Path(__file__)
         icons.set_resources_folder(scriptPath.with_name("resources"))
+        if theme_style == self.THEME_STYLE_DARK:
+            icons.set_default_color("white")
+        elif theme_style == self.THEME_STYLE_LIGHT:
+            icons.set_default_color("black")
+        else:
+            print(
+                f'WARNING: "{theme_style}" is an unsupported theme style for icons, defaulting to white icons'
+            )
+            icons.set_default_color("white")
         self.app = QApplication([])
         self.splash = QSplashScreen(
             icons.Amimation("custombox-logo-animation").pixmap(200)
         )
         self.splash.show()
-        apply_stylesheet(self.app, theme="dark_blue.xml")
+        stylesheet_name = f"{theme_style}_{theme_color}.xml"
+        apply_stylesheet(self.app, theme=stylesheet_name)
         stylesheet = self.app.styleSheet()
 
         with scriptPath.with_name("styles.qss").open("r") as file:

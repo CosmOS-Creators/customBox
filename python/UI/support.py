@@ -10,12 +10,16 @@ class Icons:
             self.set_icon_folder(icon_folder)
         else:
             self.icon_folder = Path(__file__).with_name("icons")
+        self.__color = "white"
 
     def set_resources_folder(self, icon_folder: Union[str, Path]):
         if not isinstance(icon_folder, Path):
             self.icon_folder = Path(icon_folder)
         else:
             self.icon_folder = icon_folder
+
+    def set_default_color(self, color: str):
+        self.__color = color
 
     def __file(self, name: str, color: str, extentsion: str):
         if name:
@@ -26,7 +30,9 @@ class Icons:
         print(f'WARNING: Icon "{name}" could not be loaded, ignoring...')
         return None
 
-    def Icon(self, icon_name: str, color: str = "white"):
+    def Icon(self, icon_name: str, color: str = None):
+        if color is None:
+            color = self.__color
         return QIcon(self.__file(icon_name, color, "*.svg"))
 
     def Amimation(self, icon_name: str, color: str = "white"):

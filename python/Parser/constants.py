@@ -15,6 +15,7 @@ ELEMENTS_LIST_KEY = "elements"
 STEP_KEY = "step"
 MIN_KEY = "min"
 MAX_KEY = "max"
+ALIGNMENT_KEY = "alignment"
 
 baseKeys = [LABEL_KEY, TOOLTIP_KEY, HIDDEN_KEY, PLACEHOLDER_KEY, TYPE_KEY]
 

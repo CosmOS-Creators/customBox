@@ -1,6 +1,6 @@
 from __future__ import annotations
 import hashlib
-from typing import Dict, List, Tuple, Type, Union
+from typing import Dict, List, Tuple, Union
 from pathlib import Path
 import Parser
 from Parser.LinkElement import Link

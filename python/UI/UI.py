@@ -183,17 +183,19 @@ class TitleBar(QWidget):
         self.title_area_layout.setContentsMargins(0, 0, 0, 0)
         self.title_area_layout.setSpacing(0)
         self.title_bar_layout = QHBoxLayout()
+        self.title_bar_layout.setAlignment(Qt.AlignVCenter)
         self.title_bar_layout.setContentsMargins(0, 0, 0, 0)
+        self.title_bar_layout.setSpacing(0)
         self.title_area_layout.addLayout(self.title_bar_layout)
         self.title_area_layout.addWidget(SeperatorLine(self))
 
         self.custom_window_title = QLabel(main_window.windowTitle())
         self.custom_window_title.setObjectName("windowTitle")
 
-        self.title_bar_layout.setSpacing(0)
         if titlebar_icon:
             self.tile_icon = icons.Icon(titlebar_icon)
             self.tile_icon_label = QLabel(self)
+            self.tile_icon_label.setObjectName("TitlebarIcon")
             icon_pixmap = self.tile_icon.pixmap(
                 styleExtensions.TITLEBAR_WINDOW_ICON_SIZE
             )

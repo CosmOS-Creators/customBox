@@ -48,7 +48,7 @@ QFrame[objectName^="seperatorLine"] {{
 	background-color : transparent;
 	border: none;
 	padding: 0px;
-	margin: 8px;
+	margin: 0px 1px 0px 1px;
 	height: {TITLEBAR_ICON_SIZE_HEIGHT}px;
 	min-height: {TITLEBAR_ICON_SIZE_HEIGHT}px;
 	max-height: {TITLEBAR_ICON_SIZE_HEIGHT}px;
@@ -59,7 +59,7 @@ QFrame[objectName^="seperatorLine"] {{
 	background-color : transparent;
 	border: none;
 	padding: 0px;
-	margin: 8px;
+	margin: 0px 8px 0px 1px;
 	height: {TITLEBAR_ICON_SIZE_HEIGHT}px;
 	min-height: {TITLEBAR_ICON_SIZE_HEIGHT}px;
 	max-height: {TITLEBAR_ICON_SIZE_HEIGHT}px;
@@ -72,6 +72,10 @@ QFrame[objectName^="seperatorLine"] {{
 
 #TitleBar .QPushButton[objectName^="CloseButton"]:hover {{
 	background-color : {CLOSE_BUTTON_HOVER_COLOR};
+}}
+
+#TitleBar #TitlebarIcon {{
+	margin: 8px 8px 8px 0px;
 }}
 
 QFrame[class^="cardContainer"] {{
@@ -99,6 +103,17 @@ QPushButton[class^="iconButton"] {{
 	width: {ICON_BUTTON_SIZE_WIDTH}px;
 }}
 
+QPushButton[class^="iconButtonCompact"] {{
+	border: none;
+	padding: 0px;
+	margin: 0px;
+	background-color : transparent;
+	height: {ICON_BUTTON_COMPACT_SIZE_HEIGHT}px;
+	min-height: {ICON_BUTTON_COMPACT_SIZE_HEIGHT}px;
+	max-height: {ICON_BUTTON_COMPACT_SIZE_HEIGHT}px;
+	width: {ICON_BUTTON_COMPACT_SIZE_WIDTH}px;
+}}
+
 QPushButton[class^="iconButton"]:hover {{
 	border: none;
 	padding: 0px;
@@ -109,6 +124,11 @@ QPushButton[class^="iconButton"]:hover {{
 #ListBuilder_LineLabel {{
 	padding: 0px;
 	margin: 0px, 0px, 0px, 0px;
+}}
+
+#hexInputPrefixLabel {{
+	font-size: 15px;
+	color: {QTMATERIAL_PRIMARYCOLOR};
 }}
 
 CardWidget {{
@@ -123,6 +143,6 @@ CardWidget {{
 }}
 
 #CardWidgetHeaderHeading {{
-	color: {QTMATERIAL_SECONDARYLIGHTCOLOR};
 	font-size: 20px;
+	color: {QTMATERIAL_SECONDARYLIGHTCOLOR};
 }}

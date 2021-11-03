@@ -4,7 +4,7 @@ import Parser.ConfigTypes as ConfigTypes
 from Parser.ParserExceptions import ValidationError
 import Parser.helpers as helpers
 import Parser.constants as const
-from typing import List, Type, Union
+from typing import List, Union
 from Parser.helpers import overrides
 from Parser.LinkElement import Link
 
@@ -276,6 +276,71 @@ class FloatType(IntType):
         return float(self._checkMinMax(valueInput))
 
 
+class HexType(AttributeType):
+    _comparison_type = "hex"
+    _typeSpecificKeys = [const.MIN_KEY, const.MAX_KEY, const.ALIGNMENT_KEY]
+
+    @overrides(AttributeType)
+    def __init__(self, attribute_definition: dict, globalID: str):
+        super().__init__(attribute_definition, globalID)
+        min = self.checkForKey(const.MIN_KEY, None)
+        max = self.checkForKey(const.MAX_KEY, None)
+        self.__ensure_hex_consistency(min)
+        self.__ensure_hex_consistency(max)
+        self.min = helpers.toInt(min)
+        self.max = helpers.toInt(max)
+        self.alignment = self.checkForKey(const.ALIGNMENT_KEY, None)
+
+    def __ensure_hex_consistency(self, value):
+        if isinstance(value, str):
+            if not value.upper().startswith("0X"):
+                raise ValueError(
+                    f'Error parsing "{self.globalID}", the 0x prefix should always be used for hex values in the config files. If you want to specify a decimal value instead please define the value as an integer.'
+                )
+
+    @overrides(AttributeType)
+    def checkValue(self, valueInput: Union[str, int]):
+        if isinstance(valueInput, int):
+            convertedInput = valueInput
+        else:
+            convertedInput = helpers.toInt(valueInput)
+        if not self.min is None:
+            if convertedInput < self.min:
+                reportValidationError(
+                    f"The input value ({valueInput}) is lower than the minimum value({self.min}) for this attribute"
+                )
+        if not self.max is None:
+            if convertedInput > self.max:
+                reportValidationError(
+                    f"The input value ({valueInput}) is higher than the maximum value({self.min}) for this attribute"
+                )
+        if self.alignment is not None:
+            if not helpers.check_alignment(convertedInput, self.alignment):
+                reportValidationError(
+                    f"The input value ({valueInput}) is not a power of ({self.alignment}) but that is specified as required"
+                )
+        return convertedInput
+
+    @overrides(AttributeType)
+    def getDefault(self) -> int:
+        return int(0)
+
+    @overrides(AttributeType)
+    def _serialize_value(self, value):
+        return helpers.toHex(value)
+
+    @overrides(AttributeType)
+    def _get_serialization_specifics(self):
+        specifics = OrderedDict()
+        if self.min is not None:
+            specifics[const.MIN_KEY] = self.min
+        if self.max is not None:
+            specifics[const.MAX_KEY] = self.max
+        if self.alignment is not None:
+            specifics[const.ALIGNMENT_KEY] = self.alignment
+        return specifics
+
+
 class ReferenceListType(AttributeType):
     _comparison_type = "referenceList"
     _needs_linking = True
@@ -505,36 +570,6 @@ class SelectionType(AttributeType):
         if self.elements is not None:
             specifics[const.ELEMENTS_LIST_KEY] = self.elements
         return specifics
-
-
-class HexType(IntType):
-    _comparison_type = "hex"
-    _typeSpecificKeys = [const.MIN_KEY, const.MAX_KEY]
-
-    @overrides(AttributeType)
-    def checkValue(self, valueInput: str):
-        convertedInput = helpers.toInt(valueInput)
-        if not self.min is None:
-            convertedMin = helpers.toInt(self.min)
-            if convertedInput < convertedMin:
-                reportValidationError(
-                    f"The input value ({valueInput}) is lower than the minimum value({self.min}) for this attribute"
-                )
-        if not self.max is None:
-            convertedMax = helpers.toInt(self.max)
-            if convertedInput > convertedMax:
-                reportValidationError(
-                    f"The input value ({valueInput}) is higher than the maximum value({self.min}) for this attribute"
-                )
-        return convertedInput
-
-    @overrides(AttributeType)
-    def getDefault(self) -> int:
-        return int(0)
-
-    @overrides(AttributeType)
-    def _serialize_value(self, value):
-        return helpers.toHex(value)
 
 
 class SliderType(IntType):
