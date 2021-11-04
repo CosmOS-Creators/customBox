@@ -61,26 +61,26 @@
   * @ingroup Global_sysDefsSchedulables
   * @{
 ********************************************************************************/
-#define SCHEDULABLE_NUM                 (BitWidthType){{model.os.os.schedulableNum}}        /* Maximal number of configurated schedulables on one core  */
+#define SCHEDULABLE_NUM                 (BitWidthType){{model.os.os.schedulableNum}}        /* Maximal number of configured schedulables on one core  */
 #define SCHEDULABLE_NO_ALARM_ID     (BitWidthType)0       /* Schedulable without alarms - critical threads  */
 {{"\n"}}{% for item in model.cores -%}
-#define SCHEDULABLE_NUM_CORE_{{item.coreId}}                       (BitWidthType){{item.coreNumberOfTasks + item.coreNumberOfThreads}}        /* Number of configurated schedulables for the core {{item.CoreName}} */
+#define SCHEDULABLE_NUM_CORE_{{item.coreId}}                       (BitWidthType){{item.coreNumberOfTasks + item.coreNumberOfThreads}}        /* Number of configured schedulables for the core {{item.CoreName}} */
 {% endfor -%}
 {{"\n"}}{% for item in model.tasks -%}
-#define SCHEDULABLE_TASK_{{item.taskId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_ID              (BitWidthType){{ loop.index - 1 }}    /* Task {{item.name}} schedulable identificator */
+#define SCHEDULABLE_TASK_{{item.taskId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_ID              (BitWidthType){{ loop.index - 1 }}    /* Task {{item.name}} schedulable identifier */
 {% endfor -%}
 {{"\n"}}{% for item in model.threads -%}
-#define SCHEDULABLE_THREAD_{{item.threadId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_ID            (BitWidthType){{ loop.index - 1 }}   /* Thread {{item.name}} schedulable identificator */
+#define SCHEDULABLE_THREAD_{{item.threadId}}_PROGRAM_{{item.program.programId}}_CORE_{{item.program.core.coreId}}_ID            (BitWidthType){{ loop.index - 1 }}   /* Thread {{item.name}} schedulable identifier */
 {% endfor -%}
 
 {{"\n"}}{% for item in model.tasks -%}
-#define SCHEDULABLE_{{item.uniqueId}}_UNIQUE_ID            (BitWidthType){{item.uniqueId}}   /* Schedulable {{item.name}} unique identificator */
+#define SCHEDULABLE_{{item.uniqueId}}_UNIQUE_ID            (BitWidthType){{item.uniqueId}}   /* Schedulable {{item.name}} unique identifier */
 #define SCHEDULABLE_{{item.uniqueId}}_PERIPHERAL_ACCESS_LOW_ADDRESS            (AddressType)0x{{'%04x' % item.peripheralAccessLowAddress}}   /* Schedulable {{item.name}} peripheralAccessLowAddress */
 #define SCHEDULABLE_{{item.uniqueId}}_PERIPHERAL_ACCESS_HIGH_ADDRESS            (AddressType)0x{{'%04x' % (item.peripheralAccessLowAddress + item.peripheralAccessSize)}}   /* Schedulable {{item.name}} peripheralAccessHighAddress */
 #define SCHEDULABLE_{{item.uniqueId}}_PERIPHERAL_ACCESS_HIGH_SIZE            (BitWidthType){{item.peripheralAccessSize}}   /* Schedulable {{item.name}} peripheralAccessSize */
 {% endfor -%}
 {% for item in model.threads -%}
-#define SCHEDULABLE_{{item.uniqueId}}_UNIQUE_ID            (BitWidthType){{item.uniqueId}}   /* Schedulable {{item.name}} unique identificator */
+#define SCHEDULABLE_{{item.uniqueId}}_UNIQUE_ID            (BitWidthType){{item.uniqueId}}   /* Schedulable {{item.name}} unique identifier */
 #define SCHEDULABLE_{{item.uniqueId}}_PERIPHERAL_ACCESS_LOW_ADDRESS            (AddressType)0x{{'%04x' %item.peripheralAccessLowAddress}}   /* Schedulable {{item.name}} peripheralAccessLowAddress */
 #define SCHEDULABLE_{{item.uniqueId}}_PERIPHERAL_ACCESS_HIGH_ADDRESS            (AddressType)0x{{'%04x' % (item.peripheralAccessLowAddress + item.peripheralAccessSize)}}   /* Schedulable {{item.name}} peripheralAccessHighAddress */
 #define SCHEDULABLE_{{item.uniqueId}}_PERIPHERAL_ACCESS_HIGH_SIZE            (BitWidthType){{item.peripheralAccessSize}}   /* Schedulable {{item.name}} peripheralAccessSize */
@@ -88,8 +88,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Macros_sysDefsSchedulables_h
+  * @} */
+/*  Macros_sysDefsSchedulables_h
 ********************************************************************************/
 /********************************************************************************
 **                          Macro Definitions | Stop                           **
@@ -107,8 +107,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Variables_sysDefsSchedulables_h
+  * @} */
+/*  Variables_sysDefsSchedulables_h
 ********************************************************************************/
 /********************************************************************************
 **                              Variables | Stop                               **
@@ -132,8 +132,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Getters_sysDefsSchedulables_h
+  * @} */
+/*  Getters_sysDefsSchedulables_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
@@ -145,8 +145,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Setters_sysDefsSchedulables_h
+  * @} */
+/*  Setters_sysDefsSchedulables_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
@@ -158,8 +158,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * General_sysDefsSchedulables_h
+  * @} */
+/*  General_sysDefsSchedulables_h
 ********************************************************************************/
 /********************************************************************************
 **                         Function Prototypes | Stop                          **
@@ -177,8 +177,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Getters_sysDefsSchedulables_h
+  * @} */
+/*  Getters_sysDefsSchedulables_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
@@ -190,8 +190,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Setters_sysDefsSchedulables_h
+  * @} */
+/*  Setters_sysDefsSchedulables_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
@@ -203,8 +203,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * General_sysDefsSchedulables_h
+  * @} */
+/*  General_sysDefsSchedulables_h
 ********************************************************************************/
 /********************************************************************************
 **                        Function Definitions | Stop                          **

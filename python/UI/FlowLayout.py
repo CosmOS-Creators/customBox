@@ -4,6 +4,7 @@
 from PySide6.QtCore import QPoint, QRect, QSize, Qt
 from PySide6.QtWidgets import QLayout, QSizePolicy
 
+
 class FlowLayout(QLayout):
     def __init__(self, parent=None, spacing=-1):
         super(FlowLayout, self).__init__(parent)
@@ -58,7 +59,9 @@ class FlowLayout(QLayout):
         for item in self.itemList:
             size = size.expandedTo(item.minimumSize())
 
-        size += QSize(2 * self.contentsMargins().bottom(), 2 * self.contentsMargins().bottom())
+        size += QSize(
+            2 * self.contentsMargins().bottom(), 2 * self.contentsMargins().bottom()
+        )
         return size
 
     def _doLayout(self, rect, testOnly):
@@ -69,14 +72,12 @@ class FlowLayout(QLayout):
         for item in self.itemList:
             wid = item.widget()
             spaceX = self.spacing() + wid.style().layoutSpacing(
-                QSizePolicy.PushButton,
-                QSizePolicy.PushButton,
-                Qt.Horizontal)
+                QSizePolicy.PushButton, QSizePolicy.PushButton, Qt.Horizontal
+            )
 
             spaceY = self.spacing() + wid.style().layoutSpacing(
-                QSizePolicy.PushButton,
-                QSizePolicy.PushButton,
-                Qt.Vertical)
+                QSizePolicy.PushButton, QSizePolicy.PushButton, Qt.Vertical
+            )
 
             nextX = x + item.sizeHint().width() + spaceX
             if nextX - spaceX > rect.right() and lineHeight > 0:
@@ -86,8 +87,7 @@ class FlowLayout(QLayout):
                 lineHeight = 0
 
             if not testOnly:
-                item.setGeometry(
-                    QRect(QPoint(x, y), item.sizeHint()))
+                item.setGeometry(QRect(QPoint(x, y), item.sizeHint()))
 
             x = nextX
             lineHeight = max(lineHeight, item.sizeHint().height())

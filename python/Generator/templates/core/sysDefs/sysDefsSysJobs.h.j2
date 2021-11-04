@@ -62,18 +62,18 @@
   * @{
 ********************************************************************************/
 {% for core in model.cores -%}
-#define SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM    (BitWidthType){{core.coreSysJobGroups | length}}        /* Number of configurated sysJob groups on the core {{core.CoreName}}  */
+#define SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM    (BitWidthType){{core.coreSysJobGroups | length}}        /* Number of configured sysJob groups on the core {{core.CoreName}}  */
 #define SYSJOBS_CORE_{{core.coreId}}_HYPERTICK    (BitWidthType){{core.coreSysJobHyperTick}}              /* HyperTick on the {{core.CoreName}}  */
 {% for sysJobGroup in core.coreSysJobGroups -%}
-{{"\n"}}#define SYSJOBS_HANDLERS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_NUM    (BitWidthType){{sysJobGroup.handlers | length}}        /* Number of configurated handlers in group ID {{sysJobGroup.groupId}}  */
+{{"\n"}}#define SYSJOBS_HANDLERS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_NUM    (BitWidthType){{sysJobGroup.handlers | length}}        /* Number of configured handlers in group ID {{sysJobGroup.groupId}}  */
 #define SYSJOBS_GROUP_{{sysJobGroup.groupId}}_CORE_{{sysJobGroup.core.coreId}}_TICK_MULTIPLICATOR    (BitWidthType){{sysJobGroup.tickMultiplicator}}        /* Tick multiplicator in group ID {{sysJobGroup.groupId}}  */
 {% endfor -%}
 {% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Macros_sysDefsSysJobs_h
+  * @} */
+/*  Macros_sysDefsSysJobs_h
 ********************************************************************************/
 /********************************************************************************
 **                          Macro Definitions | Stop                           **
@@ -91,8 +91,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Variables_sysDefsSysJobs_h
+  * @} */
+/*  Variables_sysDefsSysJobs_h
 ********************************************************************************/
 /********************************************************************************
 **                              Variables | Stop                               **
@@ -116,8 +116,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Getters_sysDefsSysJobs_h
+  * @} */
+/*  Getters_sysDefsSysJobs_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
@@ -129,8 +129,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Setters_sysDefsSysJobs_h
+  * @} */
+/*  Setters_sysDefsSysJobs_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
@@ -142,8 +142,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * General_sysDefsSysJobs_h
+  * @} */
+/*  General_sysDefsSysJobs_h
 ********************************************************************************/
 /********************************************************************************
 **                         Function Prototypes | Stop                          **
@@ -161,8 +161,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Getters_sysDefsSysJobs_h
+  * @} */
+/*  Getters_sysDefsSysJobs_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
@@ -174,8 +174,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * Setters_sysDefsSysJobs_h
+  * @} */
+/*  Setters_sysDefsSysJobs_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
@@ -187,8 +187,8 @@
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
-  * @}
-  * General_sysDefsSysJobs_h
+  * @} */
+/*  General_sysDefsSysJobs_h
 ********************************************************************************/
 /********************************************************************************
 **                        Function Definitions | Stop                          **
