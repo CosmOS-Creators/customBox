@@ -10,8 +10,18 @@ from Parser.LinkElement import Link
 
 
 class AttributeType:
-    """Base class attribute type. Specifics should be overwritten in inherited classes
+    """Base class attribute type
+    Holds basic common information and provides common interfaces for an attribute type.
+    Specifics should be overwritten in inherited classes.
     The base type itself should never be instantiated.
+    The following keys can be handled:
+
+    - Required: |TYPE_KEY|
+    - Optional: |TOOLTIP_KEY|
+    - Optional: |LABEL_KEY|
+    - Optional: |PLACEHOLDER_KEY|
+    - Optional: |HIDDEN_KEY|
+    - Optional: |INHERIT_KEY|
     """
 
     _comparison_type = None
@@ -19,6 +29,14 @@ class AttributeType:
     _typeSpecificKeys = []
 
     def __init__(self, attribute_definition: dict, globalID: Union[Link, str]):
+        """Inits the base class
+        Parses the most basic commonly shared properties.
+        Args:
+            attribute_definition:
+              A dict of the attribute definition with all of it's defined keys from the json config
+            globalID:
+              A unique link that describes this attribute.
+        """
         globalID = Link.force(globalID, Link.EMPHASIZE_ATTRIBUTE)
         if globalID.isGlobal():
             if not globalID.hasAttribute():
@@ -66,11 +84,16 @@ class AttributeType:
         return super().__new__(cls)
 
     def getDefault(self):
+        """Gets the default value for a specific type of attribute
+        Returns:
+            A value of the attribute of a specific type
+        """
         raise NotImplementedError(
             "getDefault of the base class AttributeType was called. But this method should always be overwritten by a more specific type"
         )
 
     def checkValue(self, valueInput):
+        """Checks the valueInput"""
         return valueInput
 
     def link(
@@ -167,6 +190,21 @@ class AttributeType:
 
 
 class StringType(AttributeType):
+    """String type attribute:
+
+    Used if |TYPE_KEY| was set to |STRING_TYPE|
+
+    Holds all information necessary for a string attribute type definition.
+
+    Supports the following special keys:
+
+    - Optional: |VALIDATION_KEY|
+
+    Attributes:
+        _comparison_type:
+            string type
+    """
+
     _comparison_type = "string"
     _typeSpecificKeys = [const.VALIDATION_KEY]
 
@@ -177,6 +215,17 @@ class StringType(AttributeType):
 
     @overrides(AttributeType)
     def checkValue(self, valueInput: str):
+        """Check the valueInput attribute against any defined validation rules (regex matching)
+
+        Args:
+            valueInput (str): Value to check
+
+        Raises:
+            ValueError: If the provided validation regex is invalid
+
+        Returns:
+            str: provided input value
+        """
         if not type(valueInput) is str:
             reportValidationError(
                 f'Input value "{valueInput}" is not of type str but the attribute definition was expecting a string'
@@ -196,6 +245,11 @@ class StringType(AttributeType):
 
     @overrides(AttributeType)
     def getDefault(self) -> str:
+        """Return empty string
+
+        Returns:
+            str: empty string
+        """
         return str("")
 
     @overrides(AttributeType)
@@ -207,6 +261,8 @@ class StringType(AttributeType):
 
 
 class BoolType(AttributeType):
+    """A type of bool attribute."""
+
     _comparison_type = "bool"
 
     @overrides(AttributeType)
