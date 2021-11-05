@@ -424,12 +424,11 @@ class Configuration(dynamicObject, serializer.serializeable):
             Data = serializer.serialize(subconfig)
             serialized_data[subconfig.source_file] = (
                 subconfig,
-                json.dumps(Data, indent="\t"),
+                json.dumps(Data, indent=4),
             )
         for config_file, (subconfig, data) in serialized_data.items():
             with config_file.open("w") as fp:
                 fp.write(data)
-                # json.dump(Data, fp, indent = '\t')
             subconfig._file_elements_hash = subconfig.elements_hash
 
 
@@ -842,7 +841,7 @@ class ConfigElement(dynamicObject, serializer.serializeable):
                     if(isinstance(requested_item, AttributeInstance)):
                         requested_item.value = value
                     else:
-                        raise AttributeError(f'Tried to set an attribute called {name} on the element "{self.link}" but this element does not have an attribute with that name.')
+                        raise AttributeError(f'Tried to set an attribute called {name} on the element "{self.link}" but this attribute should not be changed by the user.')
                 except (KeyError, AttributeError):
                     object.__setattr__(self, name, value)
         else:
