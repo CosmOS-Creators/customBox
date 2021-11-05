@@ -837,7 +837,12 @@ class ConfigElement(dynamicObject, serializer.serializeable):
                 object.__setattr__(self, name, value)
             else:
                 try:
-                    object.__getattribute__(self, "dynamic_items")[name].value = value
+                    items = object.__getattribute__(self, "dynamic_items")
+                    requested_item = items[name]
+                    if(isinstance(requested_item, AttributeInstance)):
+                        requested_item.value = value
+                    else:
+                        raise AttributeError(f'Tried to set an attribute called {name} on the element "{self.link}" but this element does not have an attribute with that name.')
                 except (KeyError, AttributeError):
                     object.__setattr__(self, name, value)
         else:
