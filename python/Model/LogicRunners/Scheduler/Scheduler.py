@@ -1,19 +1,17 @@
 from typing import List
 import Generator.GeneratorCorePlugins.LogicRunner as logicRunnerPlugin
 from Parser.helpers import overrides
-from Parser.ConfigTypes import ConfigElement
+from Parser.ConfigTypes import ConfigElement, Configuration, Subconfig
 from functools import reduce
-
 
 class ScheduleEntry:
     startTime = None
     task = None
     wcet = None
 
-
 class SchedulerLogic(logicRunnerPlugin.logicRunner):
     @overrides(logicRunnerPlugin.logicRunner)
-    def doMagic(self, config):
+    def doMagic(self, config:Configuration):
         try:
             config.require(
                 [
@@ -35,13 +33,12 @@ class SchedulerLogic(logicRunnerPlugin.logicRunner):
 
         self.maxUniqueId = None
 
-        self.cores = config.cores  # type: List[ConfigElement]
-        self.tasks = config.tasks  # type: List[ConfigElement]
-        self.schedulers = config.schedulers  # type: List[ConfigElement]
-        self.scheduleTableEntries = (
-            config.scheduleTableEntries
-        )  # type: List[ConfigElement]
+        self.cores = config.getSubconfig("cores")
+        self.tasks = config.getSubconfig("tasks")
+        self.schedulers = config.getSubconfig("schedulers")
+        self.scheduleTableEntries = config.getSubconfig("scheduleTableEntries")
 
+        self.clearScheduleTable()
         self.createScheduleTable()
 
     def lcm(self, x, y):
@@ -53,7 +50,16 @@ class SchedulerLogic(logicRunnerPlugin.logicRunner):
     def lcmm(self, numbers):
         return reduce(self.lcm, numbers)
 
+    def clearScheduleTable(self):
+        elementNames = []
+        for element in self.scheduleTableEntries.elements.keys():
+            elementNames.append(element)
+        for elementName in elementNames:
+            element = self.scheduleTableEntries.getElement(elementName)
+            element.delete()
+
     def createScheduleTable(self):
+        elementCounter = 0
         for core in self.cores:
             scheduleTable = list()
             hyperPeriod = self.lcmm(
@@ -63,6 +69,7 @@ class SchedulerLogic(logicRunnerPlugin.logicRunner):
                     if task.period and task.program.core == core
                 ]
             )
+            core.schedulers[0].hyperTick = hyperPeriod
             for task in self.tasks:
                 if task.program.core == core and task.period:
                     for startTime in range(0, task.period - 1):
@@ -98,6 +105,13 @@ class SchedulerLogic(logicRunnerPlugin.logicRunner):
                                 entryTmp.task = task
                                 entryTmp.wcet = task.wcet
                                 scheduleTable.append(entryTmp)
+
+                                newElement = self.scheduleTableEntries.createElement(f"element_{elementCounter}")
+                                newElement.executionTick = tmpStartTime
+                                newElement.scheduler = task.program.core.schedulers[0]
+                                newElement.task = task
+                                elementCounter += 1
+
                                 tmpStartTime += task.period
                             break
                     if not foundStartTime:

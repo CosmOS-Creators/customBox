@@ -27,5 +27,15 @@
 			"placeholder": true
 		}
 	},
+    "element_restrictions": {
+		"scheduler_entries_restrictions": {
+			"requires": [
+				"executionTick",
+				"scheduler",
+				"task",
+				"entryId"
+			]
+		}
+	},
 	"elements": {}
 }

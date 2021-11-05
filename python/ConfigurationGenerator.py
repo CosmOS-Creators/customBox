@@ -16,10 +16,10 @@ class configGenerator:
 
         self.logicRunnerPlugin.registerLogic(
             [
+                SchedulerLogic(),
                 InitializerLogic(),
                 MemoryMapperLogic(),
                 PermissionerLogic(),
-                SchedulerLogic(),
             ]
         )
         self.__generator = FileGenerator.Generator(workspace)
