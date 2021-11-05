@@ -200,9 +200,6 @@ class StringType(AttributeType):
 
     - Optional: |VALIDATION_KEY|
 
-    Attributes:
-        _comparison_type:
-            string type
     """
 
     _comparison_type = "string"

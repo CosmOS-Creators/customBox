@@ -850,7 +850,11 @@ class ConfigElement(dynamicObject, serializer.serializeable):
         except AttributeError:
             items = object.__getattribute__(self, "dynamic_items")
             if name in items:
-                return items[name].value
+                requested_item = items[name]
+                if(isinstance(requested_item, AttributeInstance)):
+                    return requested_item.value
+                else:
+                    return requested_item
             else:
                 error_msg = object.__getattribute__(
                     self, "_dynamicObject__non_existant_error"
@@ -970,6 +974,9 @@ class ReferenceCollection(dynamicObject):
     @property
     def references(self):
         return self._getItems()
+
+    def __getitem__(self, n):
+        return list(self._getItems().items())[n][1]
 
     def _unlinkReference(self, ref):
         return self._del(ref)
