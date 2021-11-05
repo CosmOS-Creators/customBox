@@ -1,76 +1,76 @@
 {
-	"version": "1.1.0",
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"threads": {
-			"view_type": "tabbed",
-			"tab_label": "Threads",
-			"tab_icon": "date_range",
-			"allow_element_deletion": false,
-			"allow_element_creation": false
-		}
-	},
-	"attributes": {
-		"name": {
-			"type": "string",
-			"label": "Name of the thread",
-			"tooltip": "Name of the thread, be aware that the thread name is used also as a function name",
-			"validation": "^[A-Za-z][A-Za-z0-9_]*$"
-		},
-		"floatingPoint": {
-			"type": "bool",
-			"label": "Floating point",
-			"tooltip": "Enable floating point for the current thread"
-		},
-		"isIdle": {
-			"type": "bool",
-			"label": "Is thread idle",
-			"tooltip": "Is the thread idle"
-		},
-		"stackSize": {
-			"type": "int",
-			"label": "Stack size",
-			"tooltip": "Stack size of the current thread"
-		},
-		"priority": {
-			"type": "int",
-			"label": "Priority",
-			"tooltip": "Priority of the current thread - must be unique across all threads under same core"
-		},
-		"peripheralAccessLowAddress": {
-			"type": "hex",
-			"label": "Peripheral access low address",
-			"tooltip": "In the case task needs access to the peripheral memory region, the low address needs to be set"
-		},
-		"peripheralAccessSize": {
-			"type": "int",
-			"label": "Peripheral access size",
-			"tooltip": "In the case task needs access to the peripheral memory region, the size needs to be set",
-			"min": 0
-		},
-		"uniqueId": {
-			"type": "int",
-			"placeholder": true
-		},
-		"program": {
-			"type": "parentReference"
-		},
-		"lowAddress": {
-			"type": "int",
-			"placeholder": true
-		},
-		"highAddress": {
-			"type": "int",
-			"placeholder": true
-		},
-		"threadId": {
-			"type": "int",
-			"placeholder": true
-		},
-		"alarmId": {
-			"type": "int",
-			"placeholder": true
-		}
-	},
-	"elements": {}
+    "version": "1.1.0",
+    "checksum": "99914b932bd37a50b983c5e7c90ae93b",
+    "ui_page": {
+        "threads": {
+            "view_type": "tabbed",
+            "tab_label": "Threads",
+            "tab_icon": "date_range",
+            "allow_element_deletion": false,
+            "allow_element_creation": false
+        }
+    },
+    "attributes": {
+        "name": {
+            "type": "string",
+            "label": "Name of the thread",
+            "tooltip": "Name of the thread, be aware that the thread name is used also as a function name",
+            "validation": "^[A-Za-z][A-Za-z0-9_]*$"
+        },
+        "floatingPoint": {
+            "type": "bool",
+            "label": "Floating point",
+            "tooltip": "Enable floating point for the current thread"
+        },
+        "isIdle": {
+            "type": "bool",
+            "label": "Is thread idle",
+            "tooltip": "Is the thread idle"
+        },
+        "stackSize": {
+            "type": "int",
+            "label": "Stack size",
+            "tooltip": "Stack size of the current thread"
+        },
+        "priority": {
+            "type": "int",
+            "label": "Priority",
+            "tooltip": "Priority of the current thread - must be unique across all threads under same core"
+        },
+        "peripheralAccessLowAddress": {
+            "type": "hex",
+            "label": "Peripheral access low address",
+            "tooltip": "In the case task needs access to the peripheral memory region, the low address needs to be set"
+        },
+        "peripheralAccessSize": {
+            "type": "int",
+            "label": "Peripheral access size",
+            "tooltip": "In the case task needs access to the peripheral memory region, the size needs to be set",
+            "min": 0
+        },
+        "uniqueId": {
+            "type": "int",
+            "placeholder": true
+        },
+        "program": {
+            "type": "parentReference"
+        },
+        "lowAddress": {
+            "type": "int",
+            "placeholder": true
+        },
+        "highAddress": {
+            "type": "int",
+            "placeholder": true
+        },
+        "threadId": {
+            "type": "int",
+            "placeholder": true
+        },
+        "alarmId": {
+            "type": "int",
+            "placeholder": true
+        }
+    },
+    "elements": {}
 }

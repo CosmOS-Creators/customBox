@@ -1,64 +1,64 @@
 {
-	"version": "1.1.0",
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"schedulers": {
-			"view_type": "tabbed",
-			"tab_label": "Schedulers",
-			"tab_icon": "history_toggle_off",
-			"allow_element_deletion": false,
-			"allow_element_creation": false
-		}
-	},
-	"attributes": {
-		"hyperTick": {
-			"type": "int",
-			"label": "Hyper tick of this scheduler",
-			"tooltip": "Hyper period for the current scheduler",
-			"min": 0,
-			"max": 2048
-		},
-		"sync": {
-			"type": "bool",
-			"label": "Synchronization",
-			"tooltip": "Synchronization of the all schedulers which have this feature enabled"
-		},
-		"syncTicks": {
-			"type": "int",
-			"tooltip": "Synchronization period",
-			"min": 0,
-			"max": 2048
-		},
-		"firstSyncTaskStartTick": {
-			"type": "int",
-			"hidden": true,
-			"min": 0,
-			"max": 2048
-		},
-		"lastToFistTaskTicks": {
-			"type": "int",
-			"hidden": true,
-			"min": 0,
-			"max": 2048
-		},
-		"preemptTick": {
-			"type": "int",
-			"label": "Preempt period",
-			"tooltip": "Preempt period for the threads",
-			"min": 0,
-			"max": 2048
-		},
-		"core": {
-			"type": "parentReference"
-		},
-		"table": {
-			"type": "referenceList",
-			"placeholder": true
-		},
-		"maxTimerTick": {
-			"type": "int",
-			"placeholder": true
-		}
-	},
-	"elements": {}
+    "version": "1.1.0",
+    "checksum": "99914b932bd37a50b983c5e7c90ae93b",
+    "ui_page": {
+        "schedulers": {
+            "view_type": "tabbed",
+            "tab_label": "Schedulers",
+            "tab_icon": "history_toggle_off",
+            "allow_element_deletion": false,
+            "allow_element_creation": false
+        }
+    },
+    "attributes": {
+        "hyperTick": {
+            "type": "int",
+            "label": "Hyper tick of this scheduler",
+            "tooltip": "Hyper period for the current scheduler",
+            "min": 0,
+            "max": 2048
+        },
+        "sync": {
+            "type": "bool",
+            "label": "Synchronization",
+            "tooltip": "Synchronization of the all schedulers which have this feature enabled"
+        },
+        "syncTicks": {
+            "type": "int",
+            "tooltip": "Synchronization period",
+            "min": 0,
+            "max": 2048
+        },
+        "firstSyncTaskStartTick": {
+            "type": "int",
+            "hidden": true,
+            "min": 0,
+            "max": 2048
+        },
+        "lastToFistTaskTicks": {
+            "type": "int",
+            "hidden": true,
+            "min": 0,
+            "max": 2048
+        },
+        "preemptTick": {
+            "type": "int",
+            "label": "Preempt period",
+            "tooltip": "Preempt period for the threads",
+            "min": 0,
+            "max": 2048
+        },
+        "core": {
+            "type": "parentReference"
+        },
+        "table": {
+            "type": "referenceList",
+            "placeholder": true
+        },
+        "maxTimerTick": {
+            "type": "int",
+            "placeholder": true
+        }
+    },
+    "elements": {}
 }

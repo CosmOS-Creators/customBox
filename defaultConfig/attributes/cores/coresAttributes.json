@@ -1,155 +1,155 @@
 {
-	"version": "1.1.0",
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"cores": {
-			"view_type": "carded",
-			"tab_label": "Cores",
-			"tab_icon": "memory",
-			"allow_element_deletion": true,
-			"allow_element_creation": true
-		}
-	},
-	"element_restrictions": {
-		"core_restrictions": {
-			"requires": [
-				"CoreName",
-				"bootOs",
-				"isCosmos",
-				"userCodeSize",
-				"userCodeLowAddress",
-				"userCodeHighAddress",
-				"staticDataSize",
-				"staticDataLowAddress",
-				"staticDataHighAddress",
-				"unmappedDataSize",
-				"unmappedDataLowAddress",
-				"unmappedDataHighAddress",
-				"cpu",
-				"coreId",
-				"corePrograms",
-				"coreSysJobGroups",
-				"coreSysJobHyperTick",
-				"coreScheduler",
-				"coreNumberOfThreads",
-				"coreNumberOfTasks",
-				"prioSortedThreads",
-				"userCodeMemory",
-				"staticDataMemory",
-				"unmappedDataMemory"
-			]
-		}
-	},
-	"attributes": {
-		"CoreName": {
-			"type": "string",
-			"label": "Core Name",
-			"tooltip": "Current core name",
-			"validation": "^[A-Za-z0-9]+$"
-		},
-		"bootOs": {
-			"type": "bool",
-			"label": "Boot OS",
-			"tooltip": "Will current core boot the operating system?"
-		},
-		"isCosmos": {
-			"type": "bool",
-			"label": "Is CosmOS core",
-			"tooltip": "Runs current core the CosmOS operating system?"
-		},
-		"userCodeSize": {
-			"type": "int",
-			"label": "User code section size",
-			"tooltip": "Size of the user code section in the local core flash memory bank"
-		},
-		"userCodeLowAddress": {
-			"type": "int",
-			"placeholder": true
-		},
-		"userCodeHighAddress": {
-			"type": "int",
-			"placeholder": true
-		},
-		"staticDataSize": {
-			"type": "int",
-			"label": "Unmapped code section size",
-			"tooltip": "Size of the static data section in the local core flash memory bank"
-		},
-		"staticDataLowAddress": {
-			"type": "int",
-			"placeholder": true
-		},
-		"staticDataHighAddress": {
-			"type": "int",
-			"placeholder": true
-		},
-		"unmappedDataSize": {
-			"type": "int",
-			"label": "Unmapped data section size",
-			"tooltip": "Size of the unmapped data section (used mainly for libraries and startup code, not protected by MPU)",
-			"min": 0
-		},
-		"unmappedHeapSize": {
-			"type": "int",
-			"label": "Unmapped heap section size",
-			"tooltip": "Size of the unmapped heap section (used mainly for libraries and startup code, not protected by MPU)",
-			"min": 0
-		},
-		"unmappedDataLowAddress": {
-			"type": "int",
-			"placeholder": true
-		},
-		"unmappedDataHighAddress": {
-			"type": "int",
-			"placeholder": true
-		},
-		"cpu": {
-			"type": "parentReference"
-		},
-		"coreId": {
-			"type": "int",
-			"placeholder": true
-		},
-		"corePrograms": {
-			"type": "referenceList",
-			"placeholder": true
-		},
-		"coreSysJobGroups": {
-			"type": "referenceList",
-			"placeholder": true
-		},
-		"coreSysJobHyperTick": {
-			"type": "int",
-			"placeholder": true
-		},
-		"coreScheduler": {
-			"type": "referenceList",
-			"placeholder": true
-		},
-		"coreNumberOfThreads": {
-			"type": "int",
-			"placeholder": true
-		},
-		"coreNumberOfTasks": {
-			"type": "int",
-			"placeholder": true
-		},
-		"prioSortedThreads": {
-			"type": "referenceList",
-			"placeholder": true
-		},
-		"userCodeMemory": {
-			"label": "Memory location of the user code - advised local core flash memory bank for improving performance",
-			"inherit": "memoriesAttributes/:memory"
-		},
-		"staticDataMemory": {
-			"label": "Memory location of the static data - local core flash memory bank",
-			"inherit": "memoriesAttributes/:memory"
-		},
-		"unmappedDataMemory": {
-			"label": "Memory location of the unmapped data",
-			"inherit": "memoriesAttributes/:memory"
-		}
-	},
-	"elements": {}
+    "version": "1.1.0",
+    "checksum": "99914b932bd37a50b983c5e7c90ae93b",
+    "ui_page": {
+        "cores": {
+            "view_type": "carded",
+            "tab_label": "Cores",
+            "tab_icon": "memory",
+            "allow_element_deletion": true,
+            "allow_element_creation": true
+        }
+    },
+    "element_restrictions": {
+        "core_restrictions": {
+            "requires": [
+                "CoreName",
+                "bootOs",
+                "isCosmos",
+                "userCodeSize",
+                "userCodeLowAddress",
+                "userCodeHighAddress",
+                "staticDataSize",
+                "staticDataLowAddress",
+                "staticDataHighAddress",
+                "unmappedDataSize",
+                "unmappedDataLowAddress",
+                "unmappedDataHighAddress",
+                "cpu",
+                "coreId",
+                "corePrograms",
+                "coreSysJobGroups",
+                "coreSysJobHyperTick",
+                "coreScheduler",
+                "coreNumberOfThreads",
+                "coreNumberOfTasks",
+                "prioSortedThreads",
+                "userCodeMemory",
+                "staticDataMemory",
+                "unmappedDataMemory"
+            ]
+        }
+    },
+    "attributes": {
+        "CoreName": {
+            "type": "string",
+            "label": "Core Name",
+            "tooltip": "Current core name",
+            "validation": "^[A-Za-z0-9]+$"
+        },
+        "bootOs": {
+            "type": "bool",
+            "label": "Boot OS",
+            "tooltip": "Will current core boot the operating system?"
+        },
+        "isCosmos": {
+            "type": "bool",
+            "label": "Is CosmOS core",
+            "tooltip": "Runs current core the CosmOS operating system?"
+        },
+        "userCodeSize": {
+            "type": "int",
+            "label": "User code section size",
+            "tooltip": "Size of the user code section in the local core flash memory bank"
+        },
+        "userCodeLowAddress": {
+            "type": "int",
+            "placeholder": true
+        },
+        "userCodeHighAddress": {
+            "type": "int",
+            "placeholder": true
+        },
+        "staticDataSize": {
+            "type": "int",
+            "label": "Unmapped code section size",
+            "tooltip": "Size of the static data section in the local core flash memory bank"
+        },
+        "staticDataLowAddress": {
+            "type": "int",
+            "placeholder": true
+        },
+        "staticDataHighAddress": {
+            "type": "int",
+            "placeholder": true
+        },
+        "unmappedDataSize": {
+            "type": "int",
+            "label": "Unmapped data section size",
+            "tooltip": "Size of the unmapped data section (used mainly for libraries and startup code, not protected by MPU)",
+            "min": 0
+        },
+        "unmappedHeapSize": {
+            "type": "int",
+            "label": "Unmapped heap section size",
+            "tooltip": "Size of the unmapped heap section (used mainly for libraries and startup code, not protected by MPU)",
+            "min": 0
+        },
+        "unmappedDataLowAddress": {
+            "type": "int",
+            "placeholder": true
+        },
+        "unmappedDataHighAddress": {
+            "type": "int",
+            "placeholder": true
+        },
+        "cpu": {
+            "type": "parentReference"
+        },
+        "coreId": {
+            "type": "int",
+            "placeholder": true
+        },
+        "corePrograms": {
+            "type": "referenceList",
+            "placeholder": true
+        },
+        "coreSysJobGroups": {
+            "type": "referenceList",
+            "placeholder": true
+        },
+        "coreSysJobHyperTick": {
+            "type": "int",
+            "placeholder": true
+        },
+        "coreScheduler": {
+            "type": "referenceList",
+            "placeholder": true
+        },
+        "coreNumberOfThreads": {
+            "type": "int",
+            "placeholder": true
+        },
+        "coreNumberOfTasks": {
+            "type": "int",
+            "placeholder": true
+        },
+        "prioSortedThreads": {
+            "type": "referenceList",
+            "placeholder": true
+        },
+        "userCodeMemory": {
+            "label": "Memory location of the user code - advised local core flash memory bank for improving performance",
+            "inherit": "memoriesAttributes/:memory"
+        },
+        "staticDataMemory": {
+            "label": "Memory location of the static data - local core flash memory bank",
+            "inherit": "memoriesAttributes/:memory"
+        },
+        "unmappedDataMemory": {
+            "label": "Memory location of the unmapped data",
+            "inherit": "memoriesAttributes/:memory"
+        }
+    },
+    "elements": {}
 }

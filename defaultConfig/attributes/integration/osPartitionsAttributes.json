@@ -1,45 +1,45 @@
 {
-	"version": "1.1.0",
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"os_partitions": {
-			"view_type": "tabbed",
-			"tab_label": "OS partitions",
-			"tab_icon": "segment",
-			"allow_element_deletion": false,
-			"allow_element_creation": false
-		}
-	},
-	"attributes": {
-		"name": {
-			"type": "string",
-			"label": "Name of partition",
-			"tooltip": "Name of the partition cannot be changed by user because it is used in linker script generation process",
-			"validation": ""
-		},
-		"size": {
-			"type": "hex",
-			"label": "Size of the current partition",
-			"tooltip": "Size in bytes for the current partition"
-		},
-		"boot": {
-			"type": "bool",
-			"label": "Boot",
-			"tooltip": "Section need to be loaded in to the RAM"
-		},
-		"lowAddress": {
-			"type": "int",
-			"placeholder": true
-		},
-		"highAddress": {
-			"type": "int",
-			"placeholder": true
-		},
-		"memory": {
-			"label": "Memory location of the current partition",
-			"tooltip": "Memory location of the current partition can be picked from available memories for current MCU",
-			"inherit": "memoriesAttributes/:memory"
-		}
-	},
-	"elements": {}
+    "version": "1.1.0",
+    "checksum": "99914b932bd37a50b983c5e7c90ae93b",
+    "ui_page": {
+        "os_partitions": {
+            "view_type": "tabbed",
+            "tab_label": "OS partitions",
+            "tab_icon": "segment",
+            "allow_element_deletion": false,
+            "allow_element_creation": false
+        }
+    },
+    "attributes": {
+        "name": {
+            "type": "string",
+            "label": "Name of partition",
+            "tooltip": "Name of the partition cannot be changed by user because it is used in linker script generation process",
+            "validation": ""
+        },
+        "size": {
+            "type": "hex",
+            "label": "Size of the current partition",
+            "tooltip": "Size in bytes for the current partition"
+        },
+        "boot": {
+            "type": "bool",
+            "label": "Boot",
+            "tooltip": "Section need to be loaded in to the RAM"
+        },
+        "lowAddress": {
+            "type": "int",
+            "placeholder": true
+        },
+        "highAddress": {
+            "type": "int",
+            "placeholder": true
+        },
+        "memory": {
+            "label": "Memory location of the current partition",
+            "tooltip": "Memory location of the current partition can be picked from available memories for current MCU",
+            "inherit": "memoriesAttributes/:memory"
+        }
+    },
+    "elements": {}
 }

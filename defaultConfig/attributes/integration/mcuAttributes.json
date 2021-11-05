@@ -1,38 +1,38 @@
 {
-	"version": "1.1.0",
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"mcu": {
-			"view_type": "tabbed",
-			"tab_label": "MCU settings",
-			"tab_icon": "developer_board",
-			"allow_element_deletion": false,
-			"allow_element_creation": false
-		}
-	},
-	"attributes": {
-		"mcuName": {
-			"type": "string",
-			"label": "Name of the MCU",
-			"tooltip": "Name of the integrated MCU with CosmOS",
-			"validation": ""
-		},
-		"cpuBitWidth": {
-			"type": "int",
-			"label": "Bit width of the CPU architecture",
-			"tooltip": "CPU bitwidth defined by datasheet"
-		},
-		"addressBitWidth": {
-			"type": "int",
-			"label": "Bit width of the address bus",
-			"tooltip": "Address width defined by datasheet"
-		},
-		"architecture": {
-			"type": "string",
-			"label": "Architecture",
-			"tooltip": "Architecture of the MCU (must be picked from the integrated architectures list)",
-			"validation": ""
-		}
-	},
-	"elements": {}
+    "version": "1.1.0",
+    "checksum": "99914b932bd37a50b983c5e7c90ae93b",
+    "ui_page": {
+        "mcu": {
+            "view_type": "tabbed",
+            "tab_label": "MCU settings",
+            "tab_icon": "developer_board",
+            "allow_element_deletion": false,
+            "allow_element_creation": false
+        }
+    },
+    "attributes": {
+        "mcuName": {
+            "type": "string",
+            "label": "Name of the MCU",
+            "tooltip": "Name of the integrated MCU with CosmOS",
+            "validation": ""
+        },
+        "cpuBitWidth": {
+            "type": "int",
+            "label": "Bit width of the CPU architecture",
+            "tooltip": "CPU bitwidth defined by datasheet"
+        },
+        "addressBitWidth": {
+            "type": "int",
+            "label": "Bit width of the address bus",
+            "tooltip": "Address width defined by datasheet"
+        },
+        "architecture": {
+            "type": "string",
+            "label": "Architecture",
+            "tooltip": "Architecture of the MCU (must be picked from the integrated architectures list)",
+            "validation": ""
+        }
+    },
+    "elements": {}
 }

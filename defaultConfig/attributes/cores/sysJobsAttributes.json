@@ -1,38 +1,38 @@
 {
-	"version": "1.1.0",
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"sys_jobs": {
-			"view_type": "tabbed",
-			"tab_label": "Sys Jobs",
-			"tab_icon": "work_outline",
-			"allow_element_deletion": false,
-			"allow_element_creation": false
-		}
-	},
-	"attributes": {
-		"tickMultiplicator": {
-			"type": "int",
-			"tooltip": "Multiplicator of the sysJob task tick for the current group, this group will be triggered with tick multiplicator*tick of sysJob task",
-			"min": 0,
-			"max": 2048
-		},
-		"handlers": {
-			"type": "stringList",
-			"tooltip": "API names, be aware that the name must be the same as defined in header file"
-		},
-		"apiHeaders": {
-			"type": "stringList",
-			"label": "API header files",
-			"tooltip": "API headers providing definitions of sysJobs used in the current group"
-		},
-		"core": {
-			"type": "parentReference"
-		},
-		"groupId": {
-			"type": "int",
-			"placeholder": true
-		}
-	},
-	"elements": {}
+    "version": "1.1.0",
+    "checksum": "99914b932bd37a50b983c5e7c90ae93b",
+    "ui_page": {
+        "sys_jobs": {
+            "view_type": "tabbed",
+            "tab_label": "Sys Jobs",
+            "tab_icon": "work_outline",
+            "allow_element_deletion": false,
+            "allow_element_creation": false
+        }
+    },
+    "attributes": {
+        "tickMultiplicator": {
+            "type": "int",
+            "tooltip": "Multiplicator of the sysJob task tick for the current group, this group will be triggered with tick multiplicator*tick of sysJob task",
+            "min": 0,
+            "max": 2048
+        },
+        "handlers": {
+            "type": "stringList",
+            "tooltip": "API names, be aware that the name must be the same as defined in header file"
+        },
+        "apiHeaders": {
+            "type": "stringList",
+            "label": "API header files",
+            "tooltip": "API headers providing definitions of sysJobs used in the current group"
+        },
+        "core": {
+            "type": "parentReference"
+        },
+        "groupId": {
+            "type": "int",
+            "placeholder": true
+        }
+    },
+    "elements": {}
 }

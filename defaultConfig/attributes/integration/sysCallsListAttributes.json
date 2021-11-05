@@ -1,22 +1,22 @@
 {
-	"version": "1.1.0",
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"sys_calls_list": {
-			"view_type": "tabbed",
-			"tab_label": "Sys Calls List",
-			"tab_icon": "call",
-			"allow_element_deletion": false,
-			"allow_element_creation": false
-		}
-	},
-	"attributes": {
-		"name": {
-			"type": "string",
-			"label": "Name of the sysCall",
-			"tooltip": "Name of the core system call integrated also in the integration layer",
-			"validation": ""
-		}
-	},
-	"elements": {}
+    "version": "1.1.0",
+    "checksum": "99914b932bd37a50b983c5e7c90ae93b",
+    "ui_page": {
+        "sys_calls_list": {
+            "view_type": "tabbed",
+            "tab_label": "Sys Calls List",
+            "tab_icon": "call",
+            "allow_element_deletion": false,
+            "allow_element_creation": false
+        }
+    },
+    "attributes": {
+        "name": {
+            "type": "string",
+            "label": "Name of the sysCall",
+            "tooltip": "Name of the core system call integrated also in the integration layer",
+            "validation": ""
+        }
+    },
+    "elements": {}
 }
