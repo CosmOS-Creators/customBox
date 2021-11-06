@@ -97,7 +97,7 @@ IS_INITIALIZED_TO{
 {% for item in model.cores -%}
 {{"    "}}{                                               /* CoresVar[CORE_{{item.coreId}}_ID] */
         &CoresCfgConst[CORE_{{item.coreId}}_ID],    /* const CosmOS_CoreConfigurationType *cfg */
-        NULL,    /* CosmOS_SchedulableVariableType * schedulableInExecution */
+        NULL,    /* CosmOS_SchedulableConfigurationType * schedulableInExecution */
         NULL,    /* CosmOS_ProgramVariableType * programInCurrentContext */
         ProgramsCore{{item.coreId}}Var,    /* CosmOS_ProgramVariableType * programVars */
         &SchedulersVar[SCHEDULER_CORE_{{item.coreId}}_ID],    /* CosmOS_SchedulerVariableType * scheduler */

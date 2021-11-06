@@ -93,8 +93,8 @@ IS_INITIALIZED_TO{
 {% for program in item.corePrograms -%}
 {{"        "}}{
         &ProgramsCore{{item.coreId}}CfgConst[PROGRAM_{{program.programId}}_CORE_{{item.coreId}}_ID],    /* const CosmOS_ProgramConfigurationType * cfg */
-        TasksProgram{{program.programId}}Core{{item.coreId}}Var,    /* CosmOS_TaskVariableType * taskVars */
-        ThreadsProgram{{program.programId}}Core{{item.coreId}}Var,    /* CosmOS_ThreadVariableType * threadVars */
+        TasksProgram{{program.programId}}Core{{item.coreId}}CfgConst,    /* CosmOS_TaskConfigurationType * taskCfgs */
+        ThreadsProgram{{program.programId}}Core{{item.coreId}}CfgConst,    /* CosmOS_ThreadConfigurationType * threadCfgs */
         0,    /* BitWidthType numberOfMallocVars */
     },
 {% endfor -%}

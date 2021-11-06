@@ -64,8 +64,8 @@ IS_INITIALIZED_TO{
 {% for item in core.corePrograms -%}
 {% for thread in item.programThreads -%}
 {{"    "}}{
-        &ThreadsSchedulablesVar
-            [SCHEDULABLE_THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],    /* CosmOS_SchedulableVariableType * const schedulableVar */
+        &ThreadsSchedulablesCfgConst
+            [SCHEDULABLE_THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],    /* CosmOS_SchedulableConfigurationType * const schedulableCfg */
     },
 {% endfor -%}
 {% endfor -%}

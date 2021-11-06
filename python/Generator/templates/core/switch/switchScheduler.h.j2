@@ -186,7 +186,7 @@ extern "C" {
   * DOXYGEN DOCUMENTATION INFORMATION                                          **
   * *************************************************************************//**
   * @fn switchScheduler_classicScheduling(schedulerVar,
-  * schedulableVar,
+  * schedulableCfg,
   * stackPointerRetVal,
   * timerTicks,
   * startTick,
@@ -195,7 +195,7 @@ extern "C" {
   * @brief Classic scheduling function. DEMO
   *
   * @param[in]  CosmOS_SchedulerVariableType * schedulerVar
-  * @param[in]  CosmOS_SchedulableVariableType * schedulableVar
+  * @param[in]  CosmOS_SchedulableConfigurationType * schedulableCfg
   * @param[in]  StackPointerType * stackPointerRetVal
   * @param[in]  BitWidthType * timerTicks
   * @param[in]  BitWidthType startTick
@@ -206,14 +206,14 @@ extern "C" {
 #if ( SCHEDULER_PERFORMANCE_SCHEDULING IS_EQUAL_TO OFF )
 #define switchScheduler_classicScheduling(\
     schedulerVar,\
-    schedulableVar,\
+    schedulableCfg,\
     stackPointerRetVal,\
     timerTicks,\
     startTick,\
     currentTick) \
     scheduler_classicScheduling(\
     schedulerVar,\
-    schedulableVar,\
+    schedulableCfg,\
     stackPointerRetVal,\
     timerTicks,\
     startTick,\
@@ -221,7 +221,7 @@ extern "C" {
 #else
 #define switchScheduler_classicScheduling(\
     schedulerVar,\
-    schedulableVar,\
+    schedulableCfg,\
     stackPointerRetVal,\
     timerTicks,\
     startTick,\
@@ -233,14 +233,14 @@ extern "C" {
   * *************************************************************************//**
   * @fn  scheduler_performanceScheduling(
   * CosmOS_SchedulerVariableType * schedulerVar,
-  * CosmOS_SchedulableVariableType ** schedulableVar,
+  * CosmOS_SchedulableConfigurationType ** schedulableCfg,
   * StackPointerType * stackPointerRetVal,
   * BitWidthType * timerTicks)
   *
   * @brief Performance scheduling function. DEMO
   *
   * @param[in]  CosmOS_SchedulerVariableType * schedulerVar
-  * @param[in]  CosmOS_SchedulableVariableType * schedulableVar
+  * @param[in]  CosmOS_SchedulableConfigurationType * schedulableCfg
   * @param[in]  StackPointerType * stackPointerRetVal
   * @param[in]  BitWidthType * timerTicks
   *
@@ -249,18 +249,18 @@ extern "C" {
 #if ( SCHEDULER_PERFORMANCE_SCHEDULING IS_EQUAL_TO ON )
 #define switchScheduler_performanceScheduling(\
     schedulerVar,\
-    schedulableVar,\
+    schedulableCfg,\
     stackPointerRetVal,\
     timerTicks) \
     scheduler_performanceScheduling(\
     schedulerVar,\
-    schedulableVar,\
+    schedulableCfg,\
     stackPointerRetVal,\
     timerTicks)
 #else
 #define switchScheduler_performanceScheduling(\
     schedulerVar,\
-    schedulableVar,\
+    schedulableCfg,\
     stackPointerRetVal,\
     timerTicks)
 #endif
@@ -269,7 +269,7 @@ extern "C" {
   * DOXYGEN DOCUMENTATION INFORMATION                                          **
   * *************************************************************************//**
   * @fn switchScheduler_schedulable_setStackPointer(schedulerVar,
-  * schedulableVar,
+  * schedulableCfg,
   * stackPointerRetVal,
   * timerTicks,
   * startTick,
@@ -277,21 +277,21 @@ extern "C" {
   *
   * @brief Set schedulable stackPointer.
   *
-  * @param[in]  CosmOS_SchedulableVariableType * schedulableVar
+  * @param[in]  CosmOS_SchedulableConfigurationType * schedulableCfg
   * @param[in]  StackPointerType stackPointer
   *
   * @return none
 ********************************************************************************/
 #if ( SCHEDULER_PERFORMANCE_SCHEDULING IS_EQUAL_TO ON )
 #define switchScheduler_schedulable_setStackPointer(\
-    priorSchedulableVar,\
+    priorSchedulableCfg,\
     stackPointer) \
     schedulable_setStackPointer(\
-    priorSchedulableVar,\
+    priorSchedulableCfg,\
     stackPointer)
 #else
 #define switchScheduler_schedulable_setStackPointer(\
-    priorSchedulableVar,\
+    priorSchedulableCfg,\
     stackPointer)
 #endif
 

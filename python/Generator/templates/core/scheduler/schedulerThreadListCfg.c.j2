@@ -65,7 +65,7 @@ IS_INITIALIZED_TO
 {
 {% for thread in core.prioSortedThreads -%}
 {{"    "}}{
-        &ThreadsProgram{{thread.program.programId}}Core{{core.coreId}}Var[THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{core.coreId}}_ID],    /* CosmOS_ThreadVariableType * thread */
+        &ThreadsProgram{{thread.program.programId}}Core{{core.coreId}}CfgConst[THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{core.coreId}}_ID],    /* CosmOS_ThreadConfigurationType * threadCfg */
     },
 {% endfor -%}
 };

@@ -66,7 +66,7 @@ IS_INITIALIZED_TO{
 {% for element in scheduler.table -%}
 {{"    "}}{                                                           /* ScheduleTableScheduler{{item.coreId}}CfgConst element {{element.entryId}} */
         TASK_{{element.task.taskId}}_SCHEDULER_{{item.coreId}}_EXECUTION_TICK_{{element.entryId}},    /* const bitWidth startTime */
-        &TasksProgram{{element.task.program.programId}}Core{{item.coreId}}Var[TASK_{{element.task.taskId}}_PROGRAM_{{element.task.program.programId}}_CORE_{{item.coreId}}_ID],    /* CosmOS_TaskVariableType * taskVar */
+        &TasksProgram{{element.task.program.programId}}Core{{item.coreId}}CfgConst[TASK_{{element.task.taskId}}_PROGRAM_{{element.task.program.programId}}_CORE_{{item.coreId}}_ID],    /* CosmOS_TaskConfigurationType * taskCfg */
     },
 {% endfor -%}
 {% endfor -%}

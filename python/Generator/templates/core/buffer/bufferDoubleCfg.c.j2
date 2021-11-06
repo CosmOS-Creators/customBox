@@ -56,6 +56,27 @@
   * @{
 ********************************************************************************/
 /* @cond S */
+__SEC_START(__OS_VARS_SECTION_START)
+/* @endcond*/
+CosmOS_BufferDoubleVariableType
+    BuffersDoubleVar[BUFFER_DOUBLE_NUM] __OS_VARS_SECTION
+IS_INITIALIZED_TO
+{
+{% for buffer in model.buffers -%}
+{% if buffer.isDoubleBuffer -%}
+{{"    "}}{
+{{"        "}}BUFFER_PAIR_BUFFER_0_ID,
+{{"        "}}BUFFER_PAIR_BUFFER_1_ID,
+{{"    "}}},
+{% endif -%}
+{% endfor -%}
+};
+
+/* @cond S */
+__SEC_STOP(__OS_VARS_SECTION_STOP)
+/* @endcond*/
+
+/* @cond S */
 __SEC_START(__OS_CONSTS_SECTION_START)
 /* @endcond*/
 {% for buffer in model.buffers -%}
@@ -64,10 +85,10 @@ const CosmOS_BufferDoublePairConfigurationType
     BuffersDoublePair{{buffer.doubleBufferId}}Cfg[BUFFER_PAIR_NUM] __OS_CONSTS_SECTION
 IS_INITIALIZED_TO{
 {{"    "}}{
-{{"        "}}&BuffersVar[BUFFER_{{buffer.bufferId}}_ID],
+{{"        "}}&BuffersCfgConst[BUFFER_{{buffer.bufferId}}_ID],
 {{"    "}}},
 {{"    "}}{
-{{"        "}}&BuffersVar[BUFFER_{{buffer.bufferId+1}}_ID],
+{{"        "}}&BuffersCfgConst[BUFFER_{{buffer.bufferId+1}}_ID],
 {{"    "}}},
 };
 {% endif -%}
@@ -80,6 +101,7 @@ IS_INITIALIZED_TO
 {% for buffer in model.buffers -%}
 {% if buffer.isDoubleBuffer -%}
 {{"    "}}{
+{{"        "}}&BuffersDoubleVar[BUFFER_DOUBLE_{{buffer.doubleBufferId}}_ID],
 {{"        "}}BuffersDoublePair{{buffer.doubleBufferId}}Cfg,
 {{"    "}}},
 {% endif -%}
@@ -87,27 +109,6 @@ IS_INITIALIZED_TO
 };
 /* @cond S */
 __SEC_STOP(__OS_CONSTS_SECTION_STOP)
-/* @endcond*/
-
-/* @cond S */
-__SEC_START(__OS_VARS_SECTION_START)
-/* @endcond*/
-CosmOS_BufferDoubleVariableType
-    BuffersDoubleVar[BUFFER_DOUBLE_NUM] __OS_VARS_SECTION
-IS_INITIALIZED_TO
-{
-{% for buffer in model.buffers -%}
-{% if buffer.isDoubleBuffer -%}
-{{"    "}}{
-{{"        "}}&BuffersDoubleCfg[BUFFER_DOUBLE_{{buffer.doubleBufferId}}_ID],
-{{"        "}}BUFFER_PAIR_BUFFER_0_ID,
-{{"        "}}BUFFER_PAIR_BUFFER_1_ID,
-{{"    "}}},
-{% endif -%}
-{% endfor -%}
-};
-/* @cond S */
-__SEC_STOP(__OS_VARS_SECTION_STOP)
 /* @endcond*/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
