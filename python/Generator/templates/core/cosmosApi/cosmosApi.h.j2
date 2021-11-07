@@ -255,20 +255,6 @@ extern "C" {
     )
 {% endif -%}
 {% endfor -%}
-{% for item in model.spinlocks -%}
-#define cosmosApi_get_spinlock_{{item.name}}() \
-(CosmOS_SpinlockStateType)sysCalls_bitWidthType_ret_bitWidthType(\
-    SYSCALL_GET_SPINLOCK_{{item.spinlockId}}_ID\
-    )
-#define cosmosApi_try_spinlock_{{item.name}}() \
-(CosmOS_SpinlockStateType)sysCalls_bitWidthType_ret_bitWidthType(\
-    SYSCALL_TRY_SPINLOCK_{{item.spinlockId}}_ID\
-    )
-#define cosmosApi_release_spinlock_{{item.name}}() \
-(CosmOS_SpinlockStateType)sysCalls_bitWidthType_ret_bitWidthType(\
-    SYSCALL_RELEASE_SPINLOCK_{{item.spinlockId}}_ID\
-    )
-{% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**

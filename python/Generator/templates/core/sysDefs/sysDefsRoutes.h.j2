@@ -71,14 +71,6 @@
 {% endfor -%}
 
 {% set ns = namespace(index=0) -%}
-{% for item in model.spinlocks -%}
-#define SYSCALL_GET_SPINLOCK_{{item.spinlockId}}_ID (BitWidthType){{ns.index}}   /* identifier pointing on element in id array (RoutesIdToFuncConst) */
-{% set ns.index = ns.index + 1 -%}
-#define SYSCALL_TRY_SPINLOCK_{{item.spinlockId}}_ID (BitWidthType){{ns.index}}   /* identifier pointing on element in id array (RoutesIdToFuncConst) */
-{% set ns.index = ns.index + 1 -%}
-#define SYSCALL_RELEASE_SPINLOCK_{{item.spinlockId}}_ID (BitWidthType){{ns.index}}   /* identifier pointing on element in id array (RoutesIdToFuncConst) */
-{% set ns.index = ns.index + 1 -%}
-{% endfor -%}
 {% for item in model.buffers -%}
 #define SYSCALL_READ_BUFFER_{{item.bufferId}}_ID (BitWidthType){{ns.index}}   /* identifier pointing on element in id array (RoutesIdToFuncConst) */
 {% set ns.index = ns.index + 1 -%}
