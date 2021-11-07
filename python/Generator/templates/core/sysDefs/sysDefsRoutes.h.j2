@@ -84,10 +84,8 @@
 {% endif -%}
 {% endfor -%}
 {% for item in model.sysCallRoutes -%}
-{% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" -%}
 #define SYSCALL_{{item.routedFuncName.upper()}} (BitWidthType){{ns.index}}            /* identifier pointing on function pointer in array (Routes) */
 {% set ns.index = ns.index + 1 -%}
-{% endif -%}
 {% endfor -%}
 {{"\n"}}#define ROUTES_ID_TO_FUNC_NUM (BitWidthType){{ns.index}}    /* Number of route identifiers */
 #define ROUTES_ID_TO_ENTITY_NUM (BitWidthType){{ns.index}}     /* Number of route identifiers */
