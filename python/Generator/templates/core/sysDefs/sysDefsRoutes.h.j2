@@ -84,7 +84,7 @@
 {% endif -%}
 {% endfor -%}
 {% for item in model.sysCallRoutes -%}
-{% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" and item.routedFuncName != "spinlock_getSpinlock" and item.routedFuncName != "spinlock_trySpinlock" and item.routedFuncName != "spinlock_releaseSpinlock" -%}
+{% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" -%}
 #define SYSCALL_{{item.routedFuncName.upper()}} (BitWidthType){{ns.index}}            /* identifier pointing on function pointer in array (Routes) */
 {% set ns.index = ns.index + 1 -%}
 {% endif -%}

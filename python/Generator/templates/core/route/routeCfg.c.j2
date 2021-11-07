@@ -81,7 +81,7 @@ IS_INITIALIZED_TO
 {% endif -%}
 {% endfor -%}
 {% for item in model.sysCallRoutes -%}
-{% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" and item.routedFuncName != "spinlock_getSpinlock" and item.routedFuncName != "spinlock_trySpinlock" and item.routedFuncName != "spinlock_releaseSpinlock" -%}
+{% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" -%}
 {{"    "}}{{item.routedFuncName.upper()}},
 {% endif -%}
 {% endfor -%}
@@ -100,7 +100,7 @@ IS_INITIALIZED_TO
 {% endif -%}
 {% endfor -%}
 {% for item in model.sysCallRoutes -%}
-{% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" and item.routedFuncName != "spinlock_getSpinlock" and item.routedFuncName != "spinlock_trySpinlock" and item.routedFuncName != "spinlock_releaseSpinlock" -%}
+{% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" -%}
 {{"    "}}ROUTES_ID_TO_ENTITY_DUMMY,
 {% endif -%}
 {% endfor -%}
