@@ -201,7 +201,7 @@ extern "C" {
   * @{
 ********************************************************************************/
 {% for item in model.sysCallRoutes -%}
-{% if item.userVisible and item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" and item.routedFuncName != "spinlock_getSpinlock" and item.routedFuncName != "spinlock_trySpinlock" and item.routedFuncName != "spinlock_releaseSpinlock"  -%}
+{% if item.userVisible -%}
 #define cosmosApi_{{item.routedFuncName}}({% for arg in item.args -%}{% if loop.index > 1 -%} ,{% endif -%}{{arg}}{% endfor -%}) \
 ({{item.returnType}}){{item.sysCall}}(\
     SYSCALL_{{item.routedFuncName.upper()}}\
@@ -212,49 +212,6 @@ extern "C" {
 {% endif -%}
 {% endfor -%}
 #define cosmosApi_boot() osBoot_boot()
-
-{% for item in model.buffers -%}
-{% if item.isDoubleBuffer -%}
-#define cosmosApi_read_doubleBuffer_{{item.name}}_instance_0(array, size) \
-(CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(\
-    SYSCALL_READ_BUFFER_{{item.bufferId}}_ID,\
-    array,\
-    size\
-    )
-#define cosmosApi_write_doubleBuffer_{{item.name}}_instance_0(array, size) \
-(CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(\
-    SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID,\
-    array,\
-    size\
-    )
-#define cosmosApi_read_doubleBuffer_{{item.name}}_instance_1(array, size) \
-(CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(\
-    SYSCALL_READ_BUFFER_{{item.bufferId+1}}_ID,\
-    array,\
-    size\
-    )
-#define cosmosApi_write_doubleBuffer_{{item.name}}_instance_1(array, size) \
-(CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(\
-    SYSCALL_WRITE_BUFFER_{{item.bufferId+1}}_ID,\
-    array,\
-    size\
-    )
-
-{% else -%}
-#define cosmosApi_read_buffer_{{item.name}}(array, size) \
-(CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(\
-    SYSCALL_READ_BUFFER_{{item.bufferId}}_ID,\
-    array,\
-    size\
-    )
-#define cosmosApi_write_buffer_{{item.name}}(array, size) \
-(CosmOS_BufferStateType)sysCalls_bitWidthType_voidPtr_bitWidthType_ret_bitWidthType(\
-    SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID,\
-    array,\
-    size\
-    )
-{% endif -%}
-{% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
