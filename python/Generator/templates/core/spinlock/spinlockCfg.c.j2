@@ -66,7 +66,6 @@ IS_INITIALIZED_TO{
     },
 {% endfor -%}
 {% for item in model.buffers -%}
-{% if item.isInterCore -%}
 {{"    "}}{
         SPINLOCK_STATE_ENUM__RELEASED,    /* BitWidthType spinlock */
         NULL,    /* CosmOS_SchedulableConfigurationType * schedulableOwner */
@@ -76,7 +75,6 @@ IS_INITIALIZED_TO{
         SPINLOCK_STATE_ENUM__RELEASED,    /* BitWidthType spinlock */
         NULL,    /* CosmOS_SchedulableConfigurationType * schedulableOwner */
     },
-{% endif -%}
 {% endif -%}
 {% endfor -%}
 };

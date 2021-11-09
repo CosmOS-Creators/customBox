@@ -192,13 +192,11 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
                 if coreId is not writePermission.program.core.coreId:
                     isInterCore = True
                     break
-            if isInterCore:
+            self.highestSpinlockId += 1
+            buffer.spinlockId = self.highestSpinlockId
+            if buffer.isDoubleBuffer:
                 self.highestSpinlockId += 1
-                buffer.spinlockId = self.highestSpinlockId
-                if buffer.isDoubleBuffer:
-                    self.highestSpinlockId += 1
-            else:
-                buffer.spinlockId = 0
+
             buffer.isInterCore = isInterCore
 
     def assigneMaxTimerTick(self):
