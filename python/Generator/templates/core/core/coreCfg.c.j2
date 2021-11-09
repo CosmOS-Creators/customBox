@@ -24,7 +24,6 @@
 #include "coreCfg.h"
 #include "coreSyncCfg.h"
 #include "programCfg.h"
-#include "alarmCfg.h"
 #include "sysJobsCfg.h"
 #include "schedulerCfg.h"
 {% for item in model.cores -%}
@@ -104,7 +103,6 @@ IS_INITIALIZED_TO{
         &SchedulersCfgConst[SCHEDULER_CORE_{{item.coreId}}_ID],    /* CosmOS_SchedulerConfigurationType * schedulerCfg */
         BarriersCore{{item.coreId}}Var,    /* CosmOS_BarrierVariableType * barrierVars */
         &SysJobsCfgConst[CORE_{{item.coreId}}_ID],    /* CosmOS_SysJobsConfigurationType * const sysJobsCfg */
-        AlarmsCore{{item.coreId}}CfgConst,    /* CosmOS_AlarmConfigurationType * const alarmCfgs */
     },
 {% endfor -%}
 };

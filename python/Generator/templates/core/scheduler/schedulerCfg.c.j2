@@ -22,6 +22,7 @@
 ********************************************************************************/
 /* CORE interfaces */
 #include "taskCfg.h"
+#include "alarmCfg.h"
 #include "schedulerCfg.h"
 #include "schedulerScheduleTableCfg.h"
 #include "schedulerThreadListCfg.h"
@@ -100,6 +101,7 @@ IS_INITIALIZED_TO{
         MAX_TIMER_TICK_SCHEDULER_{{item.coreId}},    /* const BitWidthType maxTimerTick */
         TIMER_TICK_COUNT_SCHEDULER_{{item.coreId}},    /* const BitWidthType timerTickCount */
         {% for program in item.corePrograms -%}{% for task in program.programTasks -%}{% if task.isIdle and task.program.core.coreId == item.coreId -%}&TasksProgram{{task.program.programId}}Core{{task.program.core.coreId}}CfgConst[TASK_{{task.taskId}}_PROGRAM_{{task.program.programId}}_CORE_{{task.program.core.coreId}}_ID]{% endif -%}{% endfor -%}{% endfor -%},    /* const CosmOS_TaskConfigurationType * const idleTask */
+        AlarmsCore{{item.coreId}}CfgConst,    /* CosmOS_AlarmConfigurationType * const alarmCfgs */
     },
 {% endfor -%}
 };
