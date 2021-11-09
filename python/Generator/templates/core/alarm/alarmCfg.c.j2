@@ -56,26 +56,6 @@
   * @{
 ********************************************************************************/
 /* @cond S */
-__SEC_START(__OS_CONSTS_SECTION_START)
-/* @endcond*/
-{% for core in model.cores -%}
-const CosmOS_AlarmConfigurationType AlarmsCore{{core.coreId}}CfgConst[ALARM_CORE_{{core.coreId}}_NUM] __OS_CONSTS_SECTION
-IS_INITIALIZED_TO{
-{% for item in core.corePrograms -%}
-{% for thread in item.programThreads -%}
-{{"    "}}{
-        &ThreadsSchedulablesVar
-            [SCHEDULABLE_THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],    /* CosmOS_SchedulableVariableType * const schedulableVar */
-    },
-{% endfor -%}
-{% endfor -%}
-};
-{% endfor -%}
-/* @cond S */
-__SEC_STOP(__OS_CONSTS_SECTION_STOP)
-/* @endcond*/
-
-/* @cond S */
 __SEC_START(__OS_VARS_SECTION_START)
 /* @endcond*/
 {% for core in model.cores -%}
@@ -85,8 +65,6 @@ IS_INITIALIZED_TO
 {% for item in core.corePrograms -%}
 {% for thread in item.programThreads -%}
 {{"    "}}{
-        &AlarmsCore{{core.coreId}}CfgConst
-            [ALARM_{{thread.alarmId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],    /* const CosmOS_AlarmConfigurationType * const cfg */
         ALARM_STATE_ENUM__DISABLED,    /* CosmOS_AlarmStateType state */
         0,    /* BitWidthType timer */
     },
@@ -94,6 +72,28 @@ IS_INITIALIZED_TO
 {% endfor -%}
 };
 {% endfor -%}
+
+/* @cond S */
+__SEC_START(__OS_CONSTS_SECTION_START)
+/* @endcond*/
+{% for core in model.cores -%}
+const CosmOS_AlarmConfigurationType AlarmsCore{{core.coreId}}CfgConst[ALARM_CORE_{{core.coreId}}_NUM] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
+{% for item in core.corePrograms -%}
+{% for thread in item.programThreads -%}
+{{"    "}}{
+        &AlarmsCore{{core.coreId}}Var
+            [ALARM_{{thread.alarmId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],    /* CosmOS_AlarmVariableType * const var */
+        &ThreadsSchedulablesCfgConst
+            [SCHEDULABLE_THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],    /* CosmOS_SchedulableConfigurationType * const schedulableCfg */
+    },
+{% endfor -%}
+{% endfor -%}
+};
+{% endfor -%}
+/* @cond S */
+__SEC_STOP(__OS_CONSTS_SECTION_STOP)
+/* @endcond*/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**

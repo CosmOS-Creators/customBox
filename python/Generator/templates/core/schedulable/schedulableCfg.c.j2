@@ -57,6 +57,33 @@
   * @{
 ********************************************************************************/
 /* @cond S */
+__SEC_START(__OS_VARS_SECTION_START)
+/* @endcond*/
+CosmOS_SchedulableVariableType TasksSchedulablesVar[TASK_NUM] __OS_VARS_SECTION
+IS_INITIALIZED_TO{
+{% for task in model.tasks -%}
+{{"    "}}{
+        SCHEDULABLE_STATE_ENUM__READY,    /* CosmOS_SchedulableStateType state */
+        STACK_TASK_{{task.taskId}}_PROGRAM_{{task.program.programId}}_CORE_{{task.program.core.coreId}}_HIGH_ADDRESS,    /* StackPointerType stackPointer */
+    },
+{% endfor -%}
+};
+
+CosmOS_SchedulableVariableType
+    ThreadsSchedulablesVar[THREAD_NUM] __OS_VARS_SECTION
+IS_INITIALIZED_TO{
+{% for thread in model.threads -%}
+{{"    "}}{
+        SCHEDULABLE_STATE_ENUM__READY,    /* CosmOS_SchedulableStateType state */
+        STACK_THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_HIGH_ADDRESS,    /* StackPointerType stackPointer */
+    },
+{% endfor -%}
+};
+/* @cond S */
+__SEC_STOP(__OS_VARS_SECTION_STOP)
+/* @endcond*/
+
+/* @cond S */
 __SEC_START(__OS_CONSTS_SECTION_START)
 /* @endcond*/
 const CosmOS_SchedulableConfigurationType
@@ -64,6 +91,7 @@ const CosmOS_SchedulableConfigurationType
 IS_INITIALIZED_TO{
 {% for task in model.tasks -%}
 {{"    "}}{
+        &TasksSchedulablesVar[SCHEDULABLE_TASK_{{task.taskId}}_PROGRAM_{{task.program.programId}}_CORE_{{task.program.core.coreId}}_ID],    /* CosmOS_SchedulableVariableType * const var */
         &TasksStacksCfgConst[STACK_TASK_{{task.taskId}}_PROGRAM_{{task.program.programId}}_CORE_{{task.program.core.coreId}}_ID],    /* const CosmOS_StackConfigurationType * stack */
         SCHEDULABLE_INSTANCE_ENUM__TASK,    /* const CosmOS_SchedulableInstanceType instance */
         wrapped_{{task.name}},    /* const CosmOS_GenericVoidType handler */
@@ -85,6 +113,7 @@ const CosmOS_SchedulableConfigurationType
 IS_INITIALIZED_TO{
 {% for thread in model.threads -%}
 {{"    "}}{
+        &ThreadsSchedulablesVar[SCHEDULABLE_THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],    /* CosmOS_SchedulableVariableType * const var */
         &ThreadsStacksCfgConst[STACK_THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],    /* const CosmOS_StackConfigurationType * stack */
         SCHEDULABLE_INSTANCE_ENUM__THREAD,    /* const CosmOS_SchedulableInstanceType instance */
         wrapped_{{thread.name}},    /* const CosmOS_GenericVoidType handler */
@@ -102,35 +131,6 @@ IS_INITIALIZED_TO{
 };
 /* @cond S */
 __SEC_STOP(__OS_CONSTS_SECTION_STOP)
-/* @endcond*/
-
-/* @cond S */
-__SEC_START(__OS_VARS_SECTION_START)
-/* @endcond*/
-CosmOS_SchedulableVariableType TasksSchedulablesVar[TASK_NUM] __OS_VARS_SECTION
-IS_INITIALIZED_TO{
-{% for task in model.tasks -%}
-{{"    "}}{
-        &TasksSchedulablesCfgConst[SCHEDULABLE_TASK_{{task.taskId}}_PROGRAM_{{task.program.programId}}_CORE_{{task.program.core.coreId}}_ID],    /* const CosmOS_SchedulableConfigurationType * const cfg */
-        SCHEDULABLE_STATE_ENUM__READY,    /* CosmOS_SchedulableStateType state */
-        STACK_TASK_{{task.taskId}}_PROGRAM_{{task.program.programId}}_CORE_{{task.program.core.coreId}}_HIGH_ADDRESS,    /* StackPointerType stackPointer */
-    },
-{% endfor -%}
-};
-
-CosmOS_SchedulableVariableType
-    ThreadsSchedulablesVar[THREAD_NUM] __OS_VARS_SECTION
-IS_INITIALIZED_TO{
-{% for thread in model.threads -%}
-{{"    "}}{
-        &ThreadsSchedulablesCfgConst[SCHEDULABLE_THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],    /* const CosmOS_SchedulableConfigurationType * const cfg */
-        SCHEDULABLE_STATE_ENUM__READY,    /* CosmOS_SchedulableStateType state */
-        STACK_THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_HIGH_ADDRESS,    /* StackPointerType stackPointer */
-    },
-{% endfor -%}
-};
-/* @cond S */
-__SEC_STOP(__OS_VARS_SECTION_STOP)
 /* @endcond*/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **

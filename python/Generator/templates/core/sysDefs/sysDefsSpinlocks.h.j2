@@ -68,13 +68,11 @@
 {% endfor -%}
 /* Buffer Spinlock identifiers */
 {% for item in model.buffers -%}
-{% if item.isInterCore -%}
 #define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier */
 {% set ns.index = ns.index + 1 -%}
 {% if item.isDoubleBuffer -%}
 #define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier */
 {% set ns.index = ns.index + 1 -%}
-{% endif -%}
 {% endif -%}
 {% endfor -%}
 {{"\n"}}#define SPINLOCK_NUM                                    (BitWidthType){{ns.index}}    /* Number of configured spinlocks */

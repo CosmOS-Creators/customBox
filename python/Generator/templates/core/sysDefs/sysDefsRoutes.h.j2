@@ -71,31 +71,9 @@
 {% endfor -%}
 
 {% set ns = namespace(index=0) -%}
-{% for item in model.spinlocks -%}
-#define SYSCALL_GET_SPINLOCK_{{item.spinlockId}}_ID (BitWidthType){{ns.index}}   /* identifier pointing on element in id array (RoutesIdToFuncConst) */
-{% set ns.index = ns.index + 1 -%}
-#define SYSCALL_TRY_SPINLOCK_{{item.spinlockId}}_ID (BitWidthType){{ns.index}}   /* identifier pointing on element in id array (RoutesIdToFuncConst) */
-{% set ns.index = ns.index + 1 -%}
-#define SYSCALL_RELEASE_SPINLOCK_{{item.spinlockId}}_ID (BitWidthType){{ns.index}}   /* identifier pointing on element in id array (RoutesIdToFuncConst) */
-{% set ns.index = ns.index + 1 -%}
-{% endfor -%}
-{% for item in model.buffers -%}
-#define SYSCALL_READ_BUFFER_{{item.bufferId}}_ID (BitWidthType){{ns.index}}   /* identifier pointing on element in id array (RoutesIdToFuncConst) */
-{% set ns.index = ns.index + 1 -%}
-#define SYSCALL_WRITE_BUFFER_{{item.bufferId}}_ID (BitWidthType){{ns.index}}  /* identifier pointing on element in id array (RoutesIdToFuncConst) */
-{% set ns.index = ns.index + 1 -%}
-{% if item.isDoubleBuffer -%}
-#define SYSCALL_READ_BUFFER_{{item.bufferId+1}}_ID (BitWidthType){{ns.index}}   /* identifier pointing on element in id array (RoutesIdToFuncConst) */
-{% set ns.index = ns.index + 1 -%}
-#define SYSCALL_WRITE_BUFFER_{{item.bufferId+1}}_ID (BitWidthType){{ns.index}}  /* identifier pointing on element in id array (RoutesIdToFuncConst) */
-{% set ns.index = ns.index + 1 -%}
-{% endif -%}
-{% endfor -%}
 {% for item in model.sysCallRoutes -%}
-{% if item.routedFuncName != "buffer_readArray" and item.routedFuncName != "buffer_writeArray" and item.routedFuncName != "spinlock_getSpinlock" and item.routedFuncName != "spinlock_trySpinlock" and item.routedFuncName != "spinlock_releaseSpinlock" -%}
 #define SYSCALL_{{item.routedFuncName.upper()}} (BitWidthType){{ns.index}}            /* identifier pointing on function pointer in array (Routes) */
 {% set ns.index = ns.index + 1 -%}
-{% endif -%}
 {% endfor -%}
 {{"\n"}}#define ROUTES_ID_TO_FUNC_NUM (BitWidthType){{ns.index}}    /* Number of route identifiers */
 #define ROUTES_ID_TO_ENTITY_NUM (BitWidthType){{ns.index}}     /* Number of route identifiers */

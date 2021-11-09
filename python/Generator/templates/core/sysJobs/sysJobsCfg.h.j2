@@ -89,10 +89,10 @@ extern const CosmOS_GenericVoidType
 
 {% for core in model.cores -%}
 extern const CosmOS_SysJobsGroupConfigurationType
-    SysJobsGroupsCore{{core.coreId}}ConstCfg[SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM];
+    SysJobsGroupsCore{{core.coreId}}CfgConst[SYSJOBS_GROUPS_CORE_{{core.coreId}}_NUM];
 {% endfor -%}
 
-extern const CosmOS_SysJobsConfigurationType SysJobsConstCfg[CORE_NUM];
+extern const CosmOS_SysJobsConfigurationType SysJobsCfgConst[CORE_NUM];
 
 extern CosmOS_SysJobsVariableType SysJobsVar[CORE_NUM];
 /********************************************************************************
