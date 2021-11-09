@@ -1,82 +1,82 @@
 {
-	"version": "1.1.0",
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"tasks": {
-			"view_type": "tabbed",
-			"tab_label": "Tasks",
-			"tab_icon": "task_alt",
-			"allow_element_deletion": false,
-			"allow_element_creation": false
-		}
-	},
-	"attributes": {
-		"name": {
-			"type": "string",
-			"label": "Name of the task",
-			"tooltip": "Name of the task, be aware that the task name is used also as a function name",
-			"validation": "^[A-Za-z][A-Za-z0-9_]*$"
-		},
-		"wcet": {
-			"type": "int",
-			"label": "Worst case execution time",
-			"tooltip": "Worst case execution time in ticks"
-		},
-		"period": {
-			"type": "int",
-			"label": "Scheduling period",
-			"tooltip": "Scheduling period in ticks"
-		},
-		"floatingPoint": {
-			"type": "bool",
-			"label": "Floating point",
-			"tooltip": "Enable floating point for the current thread"
-		},
-		"isIdle": {
-			"type": "bool",
-			"label": "Is the task an idle task",
-			"tooltip": "Is the task an idle task"
-		},
-		"isSysJob": {
-			"type": "bool",
-			"label": "Is the task a sysJob wrapper",
-			"tooltip": "Is the task a sysJob wrapper"
-		},
-		"stackSize": {
-			"type": "int",
-			"label": "stack size of the task",
-			"tooltip": "Stack size of the current task"
-		},
-		"peripheralAccessLowAddress": {
-			"type": "hex",
-			"label": "Peripheral access low address",
-			"tooltip": "In the case task needs access to the peripheral memory region, the low address needs to be set"
-		},
-		"peripheralAccessSize": {
-			"type": "int",
-			"label": "Peripheral access size",
-			"tooltip": "In the case task needs access to the peripheral memory region, the size needs to be set",
-			"min": 0
-		},
-		"uniqueId": {
-			"type": "int",
-			"placeholder": true
-		},
-		"program": {
-			"type": "parentReference"
-		},
-		"lowAddress": {
-			"type": "int",
-			"placeholder": true
-		},
-		"highAddress": {
-			"type": "int",
-			"placeholder": true
-		},
-		"taskId": {
-			"type": "int",
-			"placeholder": true
-		}
-	},
-	"elements": {}
+    "version": "1.1.0",
+    "checksum": "99914b932bd37a50b983c5e7c90ae93b",
+    "ui_page": {
+        "tasks": {
+            "view_type": "tabbed",
+            "tab_label": "Tasks",
+            "tab_icon": "task_alt",
+            "allow_element_deletion": false,
+            "allow_element_creation": false
+        }
+    },
+    "attributes": {
+        "name": {
+            "type": "string",
+            "label": "Name of the task",
+            "tooltip": "Name of the task, be aware that the task name is used also as a function name",
+            "validation": "^[A-Za-z][A-Za-z0-9_]*$"
+        },
+        "wcet": {
+            "type": "int",
+            "label": "Worst case execution time",
+            "tooltip": "Worst case execution time in ticks"
+        },
+        "period": {
+            "type": "int",
+            "label": "Scheduling period",
+            "tooltip": "Scheduling period in ticks"
+        },
+        "floatingPoint": {
+            "type": "bool",
+            "label": "Floating point",
+            "tooltip": "Enable floating point for the current thread"
+        },
+        "isIdle": {
+            "type": "bool",
+            "label": "Is the task an idle task",
+            "tooltip": "Is the task an idle task"
+        },
+        "isSysJob": {
+            "type": "bool",
+            "label": "Is the task a sysJob wrapper",
+            "tooltip": "Is the task a sysJob wrapper"
+        },
+        "stackSize": {
+            "type": "int",
+            "label": "stack size of the task",
+            "tooltip": "Stack size of the current task"
+        },
+        "peripheralAccessLowAddress": {
+            "type": "hex",
+            "label": "Peripheral access low address",
+            "tooltip": "In the case task needs access to the peripheral memory region, the low address needs to be set"
+        },
+        "peripheralAccessSize": {
+            "type": "int",
+            "label": "Peripheral access size",
+            "tooltip": "In the case task needs access to the peripheral memory region, the size needs to be set",
+            "min": 0
+        },
+        "uniqueId": {
+            "type": "int",
+            "placeholder": true
+        },
+        "program": {
+            "type": "parentReference"
+        },
+        "lowAddress": {
+            "type": "int",
+            "placeholder": true
+        },
+        "highAddress": {
+            "type": "int",
+            "placeholder": true
+        },
+        "taskId": {
+            "type": "int",
+            "placeholder": true
+        }
+    },
+    "elements": {}
 }

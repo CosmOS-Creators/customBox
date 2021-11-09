@@ -1,42 +1,42 @@
 {
-	"version": "1.1.0",
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"cpus": {
-			"view_type": "tabbed",
-			"tab_label": "CPUs",
-			"tab_icon": "memory",
-			"allow_element_deletion": false,
-			"allow_element_creation": false
-		}
-	},
-	"attributes": {
-		"systemTimerWidth": {
-			"type": "int",
-			"label": "System Timer bit width"
-		},
-		"systemTimerFrequency": {
-			"type": "int",
-			"label": "System timer frequency in Hz"
-		},
-		"systemTimerTickCount": {
-			"type": "int",
-			"label": "System timer one tick count",
-			"tooltip": "Defines load value of the one tick for the system timer"
-		},
-		"memoryProtection": {
-			"type": "bool",
-			"label": "MPU engine available",
-			"tooltip": "Presence of the MPU in current CPU"
-		},
-		"stackMemory": {
-			"label": "Memory location of the kernel/task/thread stacks",
-			"inherit": "memoriesAttributes/:memory"
-		},
-		"flashMemory": {
-			"label": "Memory location of the local code",
-			"inherit": "memoriesAttributes/:memory"
-		}
-	},
-	"elements": {}
+    "version": "1.1.0",
+    "checksum": "99914b932bd37a50b983c5e7c90ae93b",
+    "ui_page": {
+        "cpus": {
+            "view_type": "tabbed",
+            "tab_label": "CPUs",
+            "tab_icon": "memory",
+            "allow_element_deletion": false,
+            "allow_element_creation": false
+        }
+    },
+    "attributes": {
+        "systemTimerWidth": {
+            "type": "int",
+            "label": "System Timer bit width"
+        },
+        "systemTimerFrequency": {
+            "type": "int",
+            "label": "System timer frequency in Hz"
+        },
+        "systemTimerTickCount": {
+            "type": "int",
+            "label": "System timer one tick count",
+            "tooltip": "Defines load value of the one tick for the system timer"
+        },
+        "memoryProtection": {
+            "type": "bool",
+            "label": "MPU engine available",
+            "tooltip": "Presence of the MPU in current CPU"
+        },
+        "stackMemory": {
+            "label": "Memory location of the kernel/task/thread stacks",
+            "inherit": "memoriesAttributes/:memory"
+        },
+        "flashMemory": {
+            "label": "Memory location of the local code",
+            "inherit": "memoriesAttributes/:memory"
+        }
+    },
+    "elements": {}
 }

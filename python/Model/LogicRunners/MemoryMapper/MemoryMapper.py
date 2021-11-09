@@ -1,4 +1,4 @@
-from Model.Features.MemoryMapper.privateClasses.chunk import Chunk
+from Model.LogicRunners.MemoryMapper.privateClasses.chunk import Chunk
 import Generator.GeneratorCorePlugins.LogicRunner as logicRunnerPlugin
 from Parser.helpers import overrides
 

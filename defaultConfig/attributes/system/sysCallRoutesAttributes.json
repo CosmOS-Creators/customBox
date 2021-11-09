@@ -1,55 +1,55 @@
 {
-	"version": "1.1.0",
-	"checksum": "9926b1ecf93ec19909a2663aaad061f8",
-	"ui_page": {
-		"sys_call_routes": {
-			"view_type": "tabbed",
-			"tab_label": "Sys Call Routes",
-			"tab_icon": "alt_route",
-			"allow_element_deletion": false,
-			"allow_element_creation": false
-		}
-	},
-	"attributes": {
-		"routedFuncName": {
-			"type": "string",
-			"label": "Name of the routed function",
-			"tooltip": "Name of the routed function to the sysCall, be aware that routed function args and return type must be compliant with sysCall",
-			"validation": "^[A-Za-z][A-Za-z0-9_]*$"
-		},
-		"apiHeader": {
-			"type": "string",
-			"label": "API header with routed function definition",
-			"tooltip": "API header with routed function definition is included in the routes configuration",
-			"validation": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z]+$"
-		},
-		"sysCall": {
-			"type": "string",
-			"label": "Name of the sysCall",
-			"tooltip": "Name of the sysCall used to interface with your routed function",
-			"validation": "^[A-Za-z][A-Za-z0-9_]*$"
-		},
-		"userVisible": {
-			"type": "bool",
-			"label": "Visible for application layer",
-			"tooltip": "Should be this route generated as CosmOS API for the usage in application layer?"
-		},
-		"isMappedToEntity": {
-			"type": "bool",
-			"label": "Is route mapped to entity",
-			"tooltip": "Is this route mapped also to entity for instance buffer"
-		},
-		"args": {
-			"type": "stringList",
-			"label": "Function arguments",
-			"tooltip": "Arguments of the routed function in the correct order"
-		},
-		"returnType": {
-			"type": "string",
-			"label": "Type of the returned value",
-			"tooltip": "Return type of the routed function",
-			"validation": ""
-		}
-	},
-	"elements": {}
+    "version": "1.1.0",
+    "checksum": "99914b932bd37a50b983c5e7c90ae93b",
+    "ui_page": {
+        "sys_call_routes": {
+            "view_type": "tabbed",
+            "tab_label": "Sys Call Routes",
+            "tab_icon": "alt_route",
+            "allow_element_deletion": false,
+            "allow_element_creation": false
+        }
+    },
+    "attributes": {
+        "routedFuncName": {
+            "type": "string",
+            "label": "Name of the routed function",
+            "tooltip": "Name of the routed function to the sysCall, be aware that routed function args and return type must be compliant with sysCall",
+            "validation": "^[A-Za-z][A-Za-z0-9_]*$"
+        },
+        "apiHeader": {
+            "type": "string",
+            "label": "API header with routed function definition",
+            "tooltip": "API header with routed function definition is included in the routes configuration",
+            "validation": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z]+$"
+        },
+        "sysCall": {
+            "type": "string",
+            "label": "Name of the sysCall",
+            "tooltip": "Name of the sysCall used to interface with your routed function",
+            "validation": "^[A-Za-z][A-Za-z0-9_]*$"
+        },
+        "userVisible": {
+            "type": "bool",
+            "label": "Visible for application layer",
+            "tooltip": "Should be this route generated as CosmOS API for the usage in application layer?"
+        },
+        "isMappedToEntity": {
+            "type": "bool",
+            "label": "Is route mapped to entity",
+            "tooltip": "Is this route mapped also to entity for instance buffer"
+        },
+        "args": {
+            "type": "stringList",
+            "label": "Function arguments",
+            "tooltip": "Arguments of the routed function in the correct order"
+        },
+        "returnType": {
+            "type": "string",
+            "label": "Type of the returned value",
+            "tooltip": "Return type of the routed function",
+            "validation": ""
+        }
+    },
+    "elements": {}
 }

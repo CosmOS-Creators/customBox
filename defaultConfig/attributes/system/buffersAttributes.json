@@ -1,84 +1,84 @@
 {
-	"version": "1.1.0",
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"buffers": {
-			"view_type": "tabbed",
-			"tab_label": "Buffers",
-			"tab_icon": "inventory_2",
-			"allow_element_deletion": false,
-			"allow_element_creation": false
-		}
-	},
-	"attributes": {
-		"name": {
-			"type": "string",
-			"label": "Name of the buffer",
-			"tooltip": "Name of the current buffer",
-			"validation": "^[A-Za-z][A-Za-z0-9_]+$"
-		},
-		"size": {
-			"type": "int",
-			"label": "Buffer size",
-			"tooltip": "Size of the current buffer in bytes",
-			"min": 0,
-			"max": 2048
-		},
-		"isDoubleBuffer": {
-			"type": "bool",
-			"label": "Double buffer",
-			"tooltip": "If true, two buffers will be created to handle user/os data access"
-		},
-		"readPermissions": {
-			"type": "referenceList",
-			"label": "List of schedulables which have read access to this buffer",
-			"tooltip": "All schedulables in this list can read data from this buffer",
-			"elements": [
-				"threads/:name",
-				"tasks/:name"
-			]
-		},
-		"writePermissions": {
-			"type": "referenceList",
-			"label": "List of schedulables which have write access to this buffer",
-			"tooltip": "All schedulables in this list can write data to this buffer",
-			"elements": [
-				"threads/:name",
-				"tasks/:name"
-			]
-		},
-		"compressedReadPermission": {
-			"type": "stringList",
-			"placeholder": true
-		},
-		"compressedWritePermission": {
-			"type": "stringList",
-			"placeholder": true
-		},
-		"compressedReadPermissionInverted": {
-			"type": "stringList",
-			"placeholder": true
-		},
-		"compressedWritePermissionInverted": {
-			"type": "stringList",
-			"placeholder": true
-		},
-		"bufferId": {
-			"type": "int",
-			"placeholder": true
-		},
-		"doubleBufferId": {
-			"type": "int",
-			"placeholder": true
-		},
-		"spinlockId": {
-			"type": "int",
-			"placeholder": true
-		},
-		"isInterCore": {
-			"type": "bool",
-			"placeholder": true
-		}
-	},
-	"elements": {}
+    "version": "1.1.0",
+    "checksum": "99914b932bd37a50b983c5e7c90ae93b",
+    "ui_page": {
+        "buffers": {
+            "view_type": "tabbed",
+            "tab_label": "Buffers",
+            "tab_icon": "inventory_2",
+            "allow_element_deletion": false,
+            "allow_element_creation": false
+        }
+    },
+    "attributes": {
+        "name": {
+            "type": "string",
+            "label": "Name of the buffer",
+            "tooltip": "Name of the current buffer",
+            "validation": "^[A-Za-z][A-Za-z0-9_]+$"
+        },
+        "size": {
+            "type": "int",
+            "label": "Buffer size",
+            "tooltip": "Size of the current buffer in bytes",
+            "min": 0,
+            "max": 2048
+        },
+        "isDoubleBuffer": {
+            "type": "bool",
+            "label": "Double buffer",
+            "tooltip": "If true, two buffers will be created to handle user/os data access"
+        },
+        "readPermissions": {
+            "type": "referenceList",
+            "label": "List of schedulables which have read access to this buffer",
+            "tooltip": "All schedulables in this list can read data from this buffer",
+            "elements": [
+                "threads/:name",
+                "tasks/:name"
+            ]
+        },
+        "writePermissions": {
+            "type": "referenceList",
+            "label": "List of schedulables which have write access to this buffer",
+            "tooltip": "All schedulables in this list can write data to this buffer",
+            "elements": [
+                "threads/:name",
+                "tasks/:name"
+            ]
+        },
+        "compressedReadPermission": {
+            "type": "stringList",
+            "placeholder": true
+        },
+        "compressedWritePermission": {
+            "type": "stringList",
+            "placeholder": true
+        },
+        "compressedReadPermissionInverted": {
+            "type": "stringList",
+            "placeholder": true
+        },
+        "compressedWritePermissionInverted": {
+            "type": "stringList",
+            "placeholder": true
+        },
+        "bufferId": {
+            "type": "int",
+            "placeholder": true
+        },
+        "doubleBufferId": {
+            "type": "int",
+            "placeholder": true
+        },
+        "spinlockId": {
+            "type": "int",
+            "placeholder": true
+        },
+        "isInterCore": {
+            "type": "bool",
+            "placeholder": true
+        }
+    },
+    "elements": {}
 }

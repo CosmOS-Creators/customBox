@@ -6,6 +6,18 @@ import Parser.AttributeTypes as AttributeTypes
 
 
 class Link:
+    """
+    The Link utility class is used for creating references to various components of the configuration model.
+    A link could point to 3 different types of places:
+
+        - A Subconfig; For example: ``cores/``
+        - An element inside a subconfig; For example: ``cores/core_0``
+        - A An attribute instacne inside of an element inside of a subconfig; For example: ``cores/core_0:core_name``
+
+    Links can be global or local to a subconfig in which case the subconfig part of a link does not need to be specified.
+    For example if in the context of subconfig ``cores`` we wanted to point to the ``core_name`` attribute of ``core_0`` we could use ``core_0:core_name``.
+    But if we wanted to access the same attribute from a config file other than :file:`cores.json` we would need to write ``cores/core_0:core_name``.
+    """
     EMPHASIZE_CONFIG = 0
     EMPHASIZE_ELEMENT = 1
     EMPHASIZE_ATTRIBUTE = 2

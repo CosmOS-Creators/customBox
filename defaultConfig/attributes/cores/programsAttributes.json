@@ -1,77 +1,77 @@
 {
-	"version": "1.1.0",
-	"checksum": "99914b932bd37a50b983c5e7c90ae93b",
-	"ui_page": {
-		"programs": {
-			"view_type": "tabbed",
-			"tab_label": "Programs",
-			"tab_icon": "book",
-			"allow_element_deletion": true,
-			"allow_element_creation": true
-		}
-	},
-	"element_restrictions": {
-		"program_restrictions": {
-			"requires": [
-				"name",
-				"size",
-				"heapSize",
-				"memory",
-				"lowAddress",
-				"highAddress",
-				"programId",
-				"programThreads",
-				"programTasks"
-			]
-		}
-	},
-	"attributes": {
-		"name": {
-			"type": "string",
-			"label": "Name of the program",
-			"tooltip": "Please be aware that name is used also as file name in the application layer for the source and header file",
-			"validation": "^[A-Za-z][A-Za-z0-9_]*$"
-		},
-		"size": {
-			"type": "int",
-			"label": "Size of the program memory",
-			"tooltip": "Size of the program data memory",
-			"min": 0
-		},
-		"heapSize": {
-			"type": "int",
-			"label": "Size of the program heap",
-			"tooltip": "Size of the program heap placed in the program memory",
-			"min": 0
-		},
-		"lowAddress": {
-			"type": "int",
-			"placeholder": true
-		},
-		"highAddress": {
-			"type": "int",
-			"placeholder": true
-		},
-		"core": {
-			"type": "parentReference"
-		},
-		"programId": {
-			"type": "int",
-			"placeholder": true
-		},
-		"programThreads": {
-			"type": "referenceList",
-			"placeholder": true
-		},
-		"programTasks": {
-			"type": "referenceList",
-			"placeholder": true
-		},
-		"memory": {
-			"label": "Memory location of the Program",
-			"tooltip": "Memory location of the Program, all the program data will be stored here",
-			"inherit": "memoriesAttributes/:memory"
-		}
-	},
-	"elements": {}
+    "version": "1.1.0",
+    "checksum": "99914b932bd37a50b983c5e7c90ae93b",
+    "ui_page": {
+        "programs": {
+            "view_type": "tabbed",
+            "tab_label": "Programs",
+            "tab_icon": "book",
+            "allow_element_deletion": true,
+            "allow_element_creation": true
+        }
+    },
+    "element_restrictions": {
+        "program_restrictions": {
+            "requires": [
+                "name",
+                "size",
+                "heapSize",
+                "memory",
+                "lowAddress",
+                "highAddress",
+                "programId",
+                "programThreads",
+                "programTasks"
+            ]
+        }
+    },
+    "attributes": {
+        "name": {
+            "type": "string",
+            "label": "Name of the program",
+            "tooltip": "Please be aware that name is used also as file name in the application layer for the source and header file",
+            "validation": "^[A-Za-z][A-Za-z0-9_]*$"
+        },
+        "size": {
+            "type": "int",
+            "label": "Size of the program memory",
+            "tooltip": "Size of the program data memory",
+            "min": 0
+        },
+        "heapSize": {
+            "type": "int",
+            "label": "Size of the program heap",
+            "tooltip": "Size of the program heap placed in the program memory",
+            "min": 0
+        },
+        "lowAddress": {
+            "type": "int",
+            "placeholder": true
+        },
+        "highAddress": {
+            "type": "int",
+            "placeholder": true
+        },
+        "core": {
+            "type": "parentReference"
+        },
+        "programId": {
+            "type": "int",
+            "placeholder": true
+        },
+        "programThreads": {
+            "type": "referenceList",
+            "placeholder": true
+        },
+        "programTasks": {
+            "type": "referenceList",
+            "placeholder": true
+        },
+        "memory": {
+            "label": "Memory location of the Program",
+            "tooltip": "Memory location of the Program, all the program data will be stored here",
+            "inherit": "memoriesAttributes/:memory"
+        }
+    },
+    "elements": {}
 }

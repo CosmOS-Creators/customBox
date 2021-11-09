@@ -80,6 +80,40 @@ class TestClassBasicFunctions:
         for name, attribute in reference_test_0_configElement.attributes.items():
             assert element_1_attribute_values[name] == attribute.value
 
+    def test_referenceTypes_test_reference_fetching(
+        self, parsed_config: ConfigTypes.Configuration
+    ):
+        referenceTypes_subconfig = parsed_config.getSubconfig("referenceTypes")
+        basicTypes_subconfig = parsed_config.getSubconfig("basicTypes")
+        reference_test_0_configElement = referenceTypes_subconfig.getElement(
+            "reference_test_0"
+        )
+        element_1_configElement = basicTypes_subconfig.getElement("element_1")
+        element_2_configElement = basicTypes_subconfig.getElement("element_2")
+
+        ref_dict = element_1_configElement.referenceTypes.references
+        assert len(ref_dict) == 1
+        for ref in ref_dict.values():
+            assert ref == reference_test_0_configElement
+
+
+    def test_referenceTypes_test_reference_indexing(
+        self, parsed_config: ConfigTypes.Configuration
+    ):
+        referenceTypes_subconfig = parsed_config.getSubconfig("referenceTypes")
+        basicTypes_subconfig = parsed_config.getSubconfig("basicTypes")
+        reference_test_0_configElement = referenceTypes_subconfig.getElement(
+            "reference_test_0"
+        )
+        element_1_configElement = basicTypes_subconfig.getElement("element_1")
+        element_2_configElement = basicTypes_subconfig.getElement("element_2")
+
+        ref_dict = element_1_configElement.referenceTypes.references
+        assert len(ref_dict) == 1
+        refs = element_1_configElement.referenceTypes
+        ref = refs[0]
+        assert ref == reference_test_0_configElement
+
 
 class TestCreatingElementCreationAndDeletion:
     def test_new_element_creation(self, parsed_config: ConfigTypes.Configuration):

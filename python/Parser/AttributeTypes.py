@@ -10,8 +10,18 @@ from Parser.LinkElement import Link
 
 
 class AttributeType:
-    """Base class attribute type. Specifics should be overwritten in inherited classes
-    The base type itself should never be instantiated.
+    """
+    Holds basic common information and provides common interfaces for an attribute type definition.
+    Specific keys are defined in the specialized attribute types.
+
+    The following keys can be handled by every type of attribute:
+
+    - Required: |TYPE_KEY|
+    - Optional: |TOOLTIP_KEY|
+    - Optional: |LABEL_KEY|
+    - Optional: |PLACEHOLDER_KEY|
+    - Optional: |HIDDEN_KEY|
+    - Optional: |INHERIT_KEY|
     """
 
     _comparison_type = None
@@ -19,6 +29,14 @@ class AttributeType:
     _typeSpecificKeys = []
 
     def __init__(self, attribute_definition: dict, globalID: Union[Link, str]):
+        """Inits the base class
+        Parses the most basic commonly shared properties.
+        Args:
+            attribute_definition:
+              A dict of the attribute definition with all of it's defined keys from the json config
+            globalID:
+              A unique link that describes this attribute.
+        """
         globalID = Link.force(globalID, Link.EMPHASIZE_ATTRIBUTE)
         if globalID.isGlobal():
             if not globalID.hasAttribute():
@@ -66,11 +84,16 @@ class AttributeType:
         return super().__new__(cls)
 
     def getDefault(self):
+        """Gets the default value for a specific type of attribute
+        Returns:
+            A value of the attribute of a specific type
+        """
         raise NotImplementedError(
             "getDefault of the base class AttributeType was called. But this method should always be overwritten by a more specific type"
         )
 
     def checkValue(self, valueInput):
+        """Checks the valueInput"""
         return valueInput
 
     def link(
@@ -167,7 +190,21 @@ class AttributeType:
 
 
 class StringType(AttributeType):
-    _comparison_type = "string"
+    """String type attribute:
+
+    Used if |TYPE_KEY| was set to |ATTRIB_STRING_TYPE|
+
+    Holds all information necessary for a string attribute type definition.
+
+    Will be rendered in the UI as a text input field.
+
+    Supports the following additional keys:
+
+    - Optional: |VALIDATION_KEY| takes a regular expression as value and uses it to validate any input.
+
+    """
+
+    _comparison_type = const.ATTRIB_TYPE_STRING
     _typeSpecificKeys = [const.VALIDATION_KEY]
 
     @overrides(AttributeType)
@@ -177,6 +214,17 @@ class StringType(AttributeType):
 
     @overrides(AttributeType)
     def checkValue(self, valueInput: str):
+        """Check the valueInput attribute against any defined validation rules (regex matching)
+
+        Args:
+            valueInput (str): Value to check
+
+        Raises:
+            ValueError: If the provided validation regex is invalid
+
+        Returns:
+            str: provided input value
+        """
         if not type(valueInput) is str:
             reportValidationError(
                 f'Input value "{valueInput}" is not of type str but the attribute definition was expecting a string'
@@ -196,6 +244,11 @@ class StringType(AttributeType):
 
     @overrides(AttributeType)
     def getDefault(self) -> str:
+        """Return empty string
+
+        Returns:
+            str: empty string
+        """
         return str("")
 
     @overrides(AttributeType)
@@ -207,7 +260,17 @@ class StringType(AttributeType):
 
 
 class BoolType(AttributeType):
-    _comparison_type = "bool"
+    """Boolean type attribute:
+
+    Used if |TYPE_KEY| was set to |ATTRIB_BOOL_TYPE|
+
+    Can be either true or false.
+
+    Will be rendered in the UI as a checkbox.
+
+    """
+
+    _comparison_type = const.ATTRIB_TYPE_BOOL
 
     @overrides(AttributeType)
     def checkValue(self, valueInput: bool):
@@ -219,7 +282,22 @@ class BoolType(AttributeType):
 
 
 class IntType(AttributeType):
-    _comparison_type = "int"
+    """Integer type attribute:
+
+    Used if |TYPE_KEY| was set to |ATTRIB_INT_TYPE|
+
+    Can store an integer value.
+
+    Will be rendered in the UI as a spinner which will only accept integer values.
+
+    Supports the following additional keys:
+
+    - Optional: |MIN_KEY| constraints the input value to not be lower than the provided value.
+    - Optional: |MAX_KEY| constraints the input value to not be higher than the provided value.
+
+    """
+
+    _comparison_type = const.ATTRIB_TYPE_INT
     _typeSpecificKeys = [const.MIN_KEY, const.MAX_KEY]
 
     @overrides(AttributeType)
@@ -265,7 +343,22 @@ class IntType(AttributeType):
 
 
 class FloatType(IntType):
-    _comparison_type = "float"
+    """Float type attribute:
+
+    Used if |TYPE_KEY| was set to |ATTRIB_FLOAT_TYPE|
+
+    Can store a float value.
+
+    Will be rendered in the UI as a spinner which will accept float values.
+
+    Supports the following additional keys:
+
+    - Optional: |MIN_KEY| constraints the input value to not be lower than the provided value.
+    - Optional: |MAX_KEY| constraints the input value to not be higher than the provided value.
+
+    """
+
+    _comparison_type = const.ATTRIB_TYPE_FLOAT
 
     @overrides(AttributeType)
     def getDefault(self) -> float:
@@ -277,7 +370,23 @@ class FloatType(IntType):
 
 
 class HexType(AttributeType):
-    _comparison_type = "hex"
+    """Hex type attribute:
+
+    Used if |TYPE_KEY| was set to |ATTRIB_HEX_TYPE|
+
+    Can store an integer value.
+
+    Will be rendered in the UI as a special kind of spinner which will show a 0x prefix and allows selecting hex values.
+
+    Supports the following additional keys:
+
+    - Optional: |MIN_KEY| constraints the input value to not be lower than the provided value.
+    - Optional: |MAX_KEY| constraints the input value to not be higher than the provided value.
+    - Optional: |ALIGNMENT_KEY| constraints the input value to be aligned to the provided value in the form of :math:`{alignmentValue}^{inputValue}`.
+
+    """
+
+    _comparison_type = const.ATTRIB_TYPE_HEX
     _typeSpecificKeys = [const.MIN_KEY, const.MAX_KEY, const.ALIGNMENT_KEY]
 
     @overrides(AttributeType)
@@ -342,7 +451,21 @@ class HexType(AttributeType):
 
 
 class ReferenceListType(AttributeType):
-    _comparison_type = "referenceList"
+    """Reference list type attribute:
+
+    Used if |TYPE_KEY| was set to |ATTRIB_REFERENCE_LIST_TYPE|
+
+    The values of attribute instances created using this type will be a list of references to the entities which are defined in the config file by using a |JSON_PROPERTY_TYPE_LINK|.
+
+    Will be rendered in the UI as a list builder which will allow to select multiple specific entities.
+
+    Supports the following additional keys:
+
+    - OPTIONAL: |ELEMENTS_LIST_KEY| constraints the options to choose from to be the ones defined in this property.
+
+    """
+
+    _comparison_type = const.ATTRIB_TYPE_REFERENCE_LIST
     _needs_linking = True
     _typeSpecificKeys = [const.ELEMENTS_LIST_KEY]
 
@@ -444,7 +567,17 @@ class ReferenceListType(AttributeType):
 
 
 class StringListType(AttributeType):
-    _comparison_type = "stringList"
+    """String list type attribute:
+
+    Used if |TYPE_KEY| was set to |ATTRIB_STRING_LIST_TYPE|
+
+    The values of attribute instances created using this type will be a list of strings.
+
+    Will be rendered in the UI as a list builder which will allow to add or remove arbitrary strings.
+
+    """
+
+    _comparison_type = const.ATTRIB_TYPE_STRING_LIST
 
     @overrides(AttributeType)
     def checkValue(self, valueInput: List[str]):
@@ -467,7 +600,21 @@ class StringListType(AttributeType):
 
 
 class SelectionType(AttributeType):
-    _comparison_type = "selection"
+    """Selection type attribute:
+
+    Used if |TYPE_KEY| was set to |ATTRIB_SELECTION_TYPE|
+
+    The values of attribute instances created using this type will be the value of the selected option.
+
+    Will be rendered in the UI as a combo box which will allow to select one of the options defined in the |ELEMENTS_LIST_KEY| property.
+
+    Supports the following additional keys:
+
+    - Required: |ELEMENTS_LIST_KEY| constraints the options to choose from to be the ones defined in this property.
+
+    """
+
+    _comparison_type = const.ATTRIB_TYPE_SELECTION
     _needs_linking = True
     _typeSpecificKeys = [const.ELEMENTS_LIST_KEY]
 
@@ -573,7 +720,23 @@ class SelectionType(AttributeType):
 
 
 class SliderType(IntType):
-    _comparison_type = "slider"
+    """Slider type attribute:
+
+    Used if |TYPE_KEY| was set to |ATTRIB_SLIDER_TYPE|
+
+    Can store a float or int value depending on the type of the |STEP_KEY| property.
+
+    For now rendering this item in the UI is not implemented yet.
+
+    Supports the following additional keys:
+
+    - Optional: |MIN_KEY| constraints the input value to not be lower than the provided value.
+    - Optional: |MAX_KEY| constraints the input value to not be higher than the provided value.
+    - Optional: |STEP_KEY| defines the step size for the slider.
+
+    """
+
+    _comparison_type = const.ATTRIB_TYPE_SLIDER
     _typeSpecificKeys = [const.MIN_KEY, const.MAX_KEY, const.STEP_KEY]
 
     @overrides(AttributeType)
@@ -608,7 +771,18 @@ class SliderType(IntType):
 
 
 class ParentReferenceType(AttributeType):
-    _comparison_type = "parentReference"
+    """Reference list type attribute:
+
+    Used if |TYPE_KEY| was set to |ATTRIB_PARENT_REFERENCE_TYPE|
+
+    Will create a link between the attribute and the referenced entity. The link created will go both ways. This means that in the entity referenced by this attribute will get a reference to this attribute and vice versa.
+
+    Will be rendered in the UI as a placeholder text for now because relinking these elemntes is not yet supported.
+
+    """
+
+
+    _comparison_type = const.ATTRIB_TYPE_PARENT_REFERENCE
     _needs_linking = True
 
     @overrides(AttributeType)

@@ -424,12 +424,11 @@ class Configuration(dynamicObject, serializer.serializeable):
             Data = serializer.serialize(subconfig)
             serialized_data[subconfig.source_file] = (
                 subconfig,
-                json.dumps(Data, indent="\t"),
+                json.dumps(Data, indent=4),
             )
         for config_file, (subconfig, data) in serialized_data.items():
             with config_file.open("w") as fp:
                 fp.write(data)
-                # json.dump(Data, fp, indent = '\t')
             subconfig._file_elements_hash = subconfig.elements_hash
 
 
@@ -837,7 +836,12 @@ class ConfigElement(dynamicObject, serializer.serializeable):
                 object.__setattr__(self, name, value)
             else:
                 try:
-                    object.__getattribute__(self, "dynamic_items")[name].value = value
+                    items = object.__getattribute__(self, "dynamic_items")
+                    requested_item = items[name]
+                    if(isinstance(requested_item, AttributeInstance)):
+                        requested_item.value = value
+                    else:
+                        raise AttributeError(f'Tried to set an attribute called {name} on the element "{self.link}" but this attribute should not be changed by the user.')
                 except (KeyError, AttributeError):
                     object.__setattr__(self, name, value)
         else:
@@ -850,7 +854,11 @@ class ConfigElement(dynamicObject, serializer.serializeable):
         except AttributeError:
             items = object.__getattribute__(self, "dynamic_items")
             if name in items:
-                return items[name].value
+                requested_item = items[name]
+                if(isinstance(requested_item, AttributeInstance)):
+                    return requested_item.value
+                else:
+                    return requested_item
             else:
                 error_msg = object.__getattribute__(
                     self, "_dynamicObject__non_existant_error"
@@ -970,6 +978,9 @@ class ReferenceCollection(dynamicObject):
     @property
     def references(self):
         return self._getItems()
+
+    def __getitem__(self, n):
+        return list(self._getItems().items())[n][1]
 
     def _unlinkReference(self, ref):
         return self._del(ref)
