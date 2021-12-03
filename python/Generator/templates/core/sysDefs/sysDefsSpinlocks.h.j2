@@ -63,18 +63,19 @@
 ********************************************************************************/
 {% set ns = namespace(index=0) -%}
 {{"\n"}}{% for item in model.spinlocks -%}
-#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier */
+#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier {{item.name}} */
 {% set ns.index = ns.index + 1 -%}
 {% endfor -%}
-/* Buffer Spinlock identifiers */
 {% for item in model.buffers -%}
-#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier */
+#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier for buffer {{item.bufferId}} */
 {% set ns.index = ns.index + 1 -%}
 {% if item.isDoubleBuffer -%}
-#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier */
+#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier for second buffer of doubleBuffer {{item.doubleBufferId}} */
 {% set ns.index = ns.index + 1 -%}
 {% endif -%}
 {% endfor -%}
+#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier for core event */
+{% set ns.index = ns.index + 1 -%}
 {{"\n"}}#define SPINLOCK_NUM                                    (BitWidthType){{ns.index}}    /* Number of configured spinlocks */
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **

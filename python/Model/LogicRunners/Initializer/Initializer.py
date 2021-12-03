@@ -44,6 +44,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
                     "os/:schedulableNum",
                     "os/:buffersNum",
                     "os/:doubleBuffersNum",
+                    "os/:eventSpinlockId",
                     "scheduleTableEntries/:scheduler",
                     "scheduleTableEntries/:entryId",
                     "scheduleTableEntries/:executionTick",
@@ -82,11 +83,13 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 
         self.highestSpinlockId = 0
 
+        #sequence of the functions must be kept
         self.assigneUniqueId()
         self.assigneIterativeId()
         self.assigneSysJobHypertick()
         self.assigneSchedulerEntries()
         self.assigneBufferSpinlocks()
+        self.assigneEventSpinlock()
         self.assigneMaxTimerTick()
 
     def assigneUniqueId(self):
@@ -198,6 +201,10 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
                 self.highestSpinlockId += 1
 
             buffer.isInterCore = isInterCore
+
+    def assigneEventSpinlock(self):
+        self.highestSpinlockId += 1
+        self.os.eventSpinlockId = self.highestSpinlockId
 
     def assigneMaxTimerTick(self):
         for scheduler in self.schedulers:

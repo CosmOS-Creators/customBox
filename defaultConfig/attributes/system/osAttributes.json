@@ -22,6 +22,10 @@
         "doubleBuffersNum": {
             "type": "int",
             "placeholder": true
+        },
+        "eventSpinlockId": {
+            "type": "int",
+            "placeholder": true
         }
     },
     "elements": {}
