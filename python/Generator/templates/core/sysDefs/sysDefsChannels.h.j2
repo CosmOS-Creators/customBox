@@ -5,13 +5,13 @@
 *********************************************************************************
 **                       DOXYGEN DOCUMENTATION INFORMATION                     **
 *****************************************************************************//**
-** @file sysDefsSpinlocks.h
+** @file sysDefsChannels.h
 *********************************************************************************
-<!--                   sysDefsSpinlocks Unit Group Definition                 -->
+<!--                   sysDefsChannels Unit Group Definition                  -->
 *********************************************************************************
-** @defgroup sysDefsSpinlocks_unit sysDefsSpinlocks Unit
+** @defgroup sysDefsChannels_unit sysDefsChannels Unit
 ** @ingroup sysDefs_module
-** @brief sysDefsSpinlocks Unit
+** @brief sysDefsChannels Unit
 ** @details lorem
 *********************************************************************************
 <!--                           Version Information                            -->
@@ -25,18 +25,18 @@
 ** @warning Modifying code can lead to unexpected behaviour of the whole system
 ** @copyright MIT License
 *********************************************************************************
-<!--                sysDefsSpinlocks Unit Global Group Definition             -->
+<!--               sysDefsChannels Unit Global Group Definition               -->
 *********************************************************************************
-** @defgroup Global_sysDefsSpinlocks Global
-** @ingroup sysDefsSpinlocks_unit
-** @brief sysDefsSpinlocks globals
+** @defgroup Global_sysDefsChannels Global
+** @ingroup sysDefsChannels_unit
+** @brief sysDefsChannels globals
 ** @details lorem
 ********************************************************************************/
 /********************************************************************************
 **                           START OF THE HEADER FILE                          **
 ********************************************************************************/
-#ifndef __SYSDEFSSPINLOCKS_H__
-#define __SYSDEFSSPINLOCKS_H__
+#ifndef __SYSDEFSCHANNELS_H__
+#define __SYSDEFSCHANNELS_H__
 /********************************************************************************
 **                         START OF C++ SUPPORT SECTION                        **
 ********************************************************************************/
@@ -57,38 +57,22 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Macros_sysDefsSpinlocks_h Macros
-  * @ingroup Global_sysDefsSpinlocks
+  * @defgroup Macros_sysDefsChannels_h Macros
+  * @ingroup Global_sysDefsChannels
   * @{
 ********************************************************************************/
-{% set ns = namespace(index=0) -%}
-{{"\n"}}{% for item in model.spinlocks -%}
-#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier {{item.name}} */
-{% set ns.index = ns.index + 1 -%}
-{% endfor -%}
-
-{% for item in model.buffers -%}
-#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier for buffer {{item.name}} */
-{% set ns.index = ns.index + 1 -%}
-{% if item.isDoubleBuffer -%}
-#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier for second buffer of doubleBuffer {{item.name}} */
-{% set ns.index = ns.index + 1 -%}
-{% endif -%}
-{% endfor -%}
+#define CHANNEL_NUM (BitWidthType){{ model.channels|length }}          /* Number of channels */
 
 {% for item in model.channels -%}
-#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier for channel {{item.name}} */
-{% set ns.index = ns.index + 1 -%}
+#define CHANNEL_{{item.channelId}}_ID (BitWidthType){{ item.channelId }}          /* Channel {{item.name}} identifier */
+#define CHANNEL_{{item.channelId}}_SEND_POOL_SIZE  (BitWidthType){{ item.sendPoolSize }}          /* Size of the channel {{item.name}} send dataPool */
+#define CHANNEL_{{item.channelId}}_REPLY_POOL_SIZE  (BitWidthType){{ item.sendPoolSize }}          /* Size of the channel {{item.name}} reply dataPool */
 {% endfor -%}
-
-#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier for core event */
-{% set ns.index = ns.index + 1 -%}
-{{"\n"}}#define SPINLOCK_NUM                                    (BitWidthType){{ns.index}}    /* Number of configured spinlocks */
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Macros_sysDefsSpinlocks_h
+/*  Macros_sysDefsChannels_h
 ********************************************************************************/
 /********************************************************************************
 **                          Macro Definitions | Stop                           **
@@ -99,15 +83,15 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Variables_sysDefsSpinlocks_h Variables
-  * @ingroup Global_sysDefsSpinlocks
+  * @defgroup Variables_sysDefsChannels_h Variables
+  * @ingroup Global_sysDefsChannels
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Variables_sysDefsSpinlocks_h
+/*  Variables_sysDefsChannels_h
 ********************************************************************************/
 /********************************************************************************
 **                              Variables | Stop                               **
@@ -118,47 +102,47 @@
 /********************************************************************************
   * DOXYGEN DEF GROUP                                                          **
   * *************************************************************************//**
-  * @defgroup Apis_sysDefsSpinlocks_h API's
-  * @ingroup Global_sysDefsSpinlocks
+  * @defgroup Apis_sysDefsChannels_h API's
+  * @ingroup Global_sysDefsChannels
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_sysDefsSpinlocks_h Getters
-  * @ingroup Apis_sysDefsSpinlocks_h
+  * @addtogroup Getters_sysDefsChannels_h Getters
+  * @ingroup Apis_sysDefsChannels_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Getters_sysDefsSpinlocks_h
+/*  Getters_sysDefsChannels_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_sysDefsSpinlocks_h Setters
-  * @ingroup Apis_sysDefsSpinlocks_h
+  * @addtogroup Setters_sysDefsChannels_h Setters
+  * @ingroup Apis_sysDefsChannels_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Setters_sysDefsSpinlocks_h
+/*  Setters_sysDefsChannels_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_sysDefsSpinlocks_h General
-  * @ingroup Apis_sysDefsSpinlocks_h
+  * @addtogroup General_sysDefsChannels_h General
+  * @ingroup Apis_sysDefsChannels_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  General_sysDefsSpinlocks_h
+/*  General_sysDefsChannels_h
 ********************************************************************************/
 /********************************************************************************
 **                         Function Prototypes | Stop                          **
@@ -169,41 +153,41 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_sysDefsSpinlocks_h Getters
-  * @ingroup Apis_sysDefsSpinlocks_h
+  * @addtogroup Getters_sysDefsChannels_h Getters
+  * @ingroup Apis_sysDefsChannels_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Getters_sysDefsSpinlocks_h
+/*  Getters_sysDefsChannels_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_sysDefsSpinlocks_h Setters
-  * @ingroup Apis_sysDefsSpinlocks_h
+  * @addtogroup Setters_sysDefsChannels_h Setters
+  * @ingroup Apis_sysDefsChannels_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Setters_sysDefsSpinlocks_h
+/*  Setters_sysDefsChannels_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_sysDefsSpinlocks_h General
-  * @ingroup Apis_sysDefsSpinlocks_h
+  * @addtogroup General_sysDefsChannels_h General
+  * @ingroup Apis_sysDefsChannels_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  General_sysDefsSpinlocks_h
+/*  General_sysDefsChannels_h
 ********************************************************************************/
 /********************************************************************************
 **                        Function Definitions | Stop                          **

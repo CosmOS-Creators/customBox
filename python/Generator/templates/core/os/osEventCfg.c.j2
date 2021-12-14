@@ -61,12 +61,13 @@
 /* @cond S */
 __SEC_START(__OS_VARS_SECTION_START)
 /* @endcond*/
+unsigned char osEventDataPool[OS_EVENT_DATAPOOL_SIZE] __OS_VARS_SECTION;
+
 CosmOS_BooleanType __OS_VARS_SECTION handleCoresArr[CORE_NUM] IS_INITIALIZED_TO { False };
 
 CosmOS_OsEventVariableType OsEventVar __OS_VARS_SECTION
 IS_INITIALIZED_TO{                       /* osEventVar */
     0,    /* BitWidthType event */
-    NULL,    /* AddressType * data */
 };
 /* @cond S */
 __SEC_STOP(__OS_VARS_SECTION_STOP)
@@ -90,6 +91,8 @@ IS_INITIALIZED_TO{                       /* osEventCfg */
     SPINLOCK_{{model.os.os.eventSpinlockId}}_ID,    /* const BitWidthType spinlockId */
     EventsFuncConst,    /* const CosmOS_GenericVoidType * const eventFuncs */
     EVENTS_FUNC_NUM,    /* const BitWidthType numberOfEventFuncs */
+    osEventDataPool,    /* unsigned char * const dataPool */
+    OS_EVENT_DATAPOOL_SIZE,    /* const BitWidthType dataPoolSize */
 };
 /* @cond S */
 __SEC_STOP(__OS_CONSTS_SECTION_STOP)

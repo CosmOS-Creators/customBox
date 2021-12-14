@@ -62,6 +62,7 @@
   * @{
 ********************************************************************************/
 #define EVENTS_FUNC_NUM (BitWidthType){{ model.osEvents|length }}          /* Number of event handler */
+#define OS_EVENT_DATAPOOL_SIZE  (BitWidthType){{ model.os.os.osEventDataPoolSize }}          /* Size of the dataPool */
 
 {% for item in model.osEvents -%}
 #define OS_EVENT_{{item.eventName.upper()}} (BitWidthType){{loop.index-1}}            /* identifier pointing on function {{item.eventHandlerFunc}} in event handler function array */

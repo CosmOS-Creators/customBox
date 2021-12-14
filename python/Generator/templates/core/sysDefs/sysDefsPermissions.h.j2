@@ -65,6 +65,11 @@
 #define BITLOCK_BUFFER_{{item.bufferId}}_READ_ELEMENTS_NUM      (BitWidthType){{item.compressedReadPermission|length}}    /* Number of bitlock read elements for buffer {{item.name}} */
 #define BITLOCK_BUFFER_{{item.bufferId}}_WRITE_ELEMENTS_NUM      (BitWidthType){{item.compressedWritePermission|length}}    /* Number of bitlock write elements for buffer {{item.name}} */
 {% endfor -%}
+
+{% for item in model.channels -%}
+#define BITLOCK_CHANNEL_{{item.channelId}}_REPLY_ELEMENTS_NUM      (BitWidthType){{item.compressedReplyPermission|length}}    /* Number of bitlock read elements for channel {{item.name}} */
+#define BITLOCK_CHANNEL_{{item.channelId}}_SEND_ELEMENTS_NUM      (BitWidthType){{item.compressedSendPermission|length}}    /* Number of bitlock write elements for channel {{item.name}} */
+{% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
