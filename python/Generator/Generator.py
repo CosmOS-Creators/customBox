@@ -167,6 +167,7 @@ class Generator:
                 f"Workspace file is missing some required keys: {str(e)}"
             ) from e
         self.__workspace = workspace
+        self.cancel_requested = False
 
     def __parseGeneratorConfig(
         self, workspace: Parser.Workspace, SysConfig: configTypes.Configuration
@@ -280,8 +281,10 @@ class Generator:
         )
         generatedFiles = []
         for genConf in self.__genConfig:
-            generatedFiles += genConf.generate(systemConfig)
+            if(self.cancel_requested is False):
+                generatedFiles += genConf.generate(systemConfig)
         self.__callPostGenerationPluginHooks(generatedFiles)
+        self.cancel_requested = False
 
     def registerPlugin(
         self,
@@ -297,6 +300,9 @@ class Generator:
             raise TypeError(
                 f'Plugin registration only works with lists of plugins or single plugins. But the plugin that was passed was of type "{type(plugin)}".'
             )
+
+    def cancel_generation(self):
+        self.cancel_requested = True
 
 
 if __name__ == "__main__":
