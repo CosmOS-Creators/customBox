@@ -14,6 +14,12 @@ class PermissionerLogic(logicRunnerPlugin.logicRunner):
                     "buffers/:compressedWritePermission",
                     "buffers/:compressedReadPermissionInverted",
                     "buffers/:compressedWritePermissionInverted",
+                    "channels/:replyPermissions",
+                    "channels/:sendPermissions",
+                    "channels/:compressedReplyPermission",
+                    "channels/:compressedSendPermission",
+                    "channels/:compressedReplyPermissionInverted",
+                    "channels/:compressedSendPermissionInverted",
                     "mcu/:cpuBitWidth",
                     "os/:schedulableNum",
                 ]
@@ -26,12 +32,14 @@ class PermissionerLogic(logicRunnerPlugin.logicRunner):
         self.tasks = config.tasks
         self.threads = config.threads
         self.buffers = config.buffers
+        self.channels = config.channels
         self.cpuBitWidth = config.mcu.MCU.cpuBitWidth
         self.maxUniqueId = config.os.os.schedulableNum
 
-        self.permissionCompression()
+        self.bufferPermissionCompression()
+        self.channelPermissionCompression()
 
-    def permissionCompression(self):
+    def bufferPermissionCompression(self):
         for buffer in self.buffers:
             if len(buffer.readPermissions):
                 buffer.readPermissions.sort(key=lambda x: x.uniqueId, reverse=False)
@@ -105,6 +113,82 @@ class PermissionerLogic(logicRunnerPlugin.logicRunner):
                 buffer.compressedWritePermissionInverted = [
                     "".join("1" if x == "0" else "0" for x in element)
                     for element in buffer.compressedWritePermission
+                ]
+
+    def channelPermissionCompression(self):
+        for channel in self.channels:
+            if len(channel.replyPermissions):
+                channel.replyPermissions.sort(key=lambda x: x.uniqueId, reverse=False)
+
+                readPermissionTemp = [0] * self.getPermissionArraySize(self.maxUniqueId)
+
+                for schedulable in channel.replyPermissions:
+                    arrayIterator = self.getPermissionArrayIterator(
+                        schedulable.uniqueId
+                    )
+                    readPermissionTemp[arrayIterator] = readPermissionTemp[
+                        arrayIterator
+                    ] | (
+                        1 << (schedulable.uniqueId - (self.cpuBitWidth * arrayIterator))
+                    )
+
+                channel.compressedReplyPermission = [
+                    "{0:0{1}b}".format(element, self.cpuBitWidth)
+                    for element in readPermissionTemp
+                ]
+                channel.compressedReplyPermissionInverted = [
+                    "".join("1" if x == "0" else "0" for x in element)
+                    for element in channel.compressedReplyPermission
+                ]
+            else:
+                readPermissionTemp = [0] * self.getPermissionArraySize(self.maxUniqueId)
+
+                channel.compressedReplyPermission = [
+                    "{0:0{1}b}".format(element, self.cpuBitWidth)
+                    for element in readPermissionTemp
+                ]
+                channel.compressedReplyPermissionInverted = [
+                    "".join("1" if x == "0" else "0" for x in element)
+                    for element in channel.compressedReplyPermission
+                ]
+
+            if len(channel.sendPermissions):
+                channel.sendPermissions.sort(key=lambda x: x.uniqueId, reverse=False)
+
+                writePermissionTemp = [0] * self.getPermissionArraySize(
+                    self.maxUniqueId
+                )
+
+                for schedulable in channel.sendPermissions:
+                    arrayIterator = self.getPermissionArrayIterator(
+                        schedulable.uniqueId
+                    )
+                    writePermissionTemp[arrayIterator] = writePermissionTemp[
+                        arrayIterator
+                    ] | (
+                        1 << (schedulable.uniqueId - (self.cpuBitWidth * arrayIterator))
+                    )
+
+                channel.compressedSendPermission = [
+                    "{0:0{1}b}".format(element, self.cpuBitWidth)
+                    for element in writePermissionTemp
+                ]
+                channel.compressedSendPermissionInverted = [
+                    "".join("1" if x == "0" else "0" for x in element)
+                    for element in channel.compressedSendPermission
+                ]
+            else:
+                writePermissionTemp = [0] * self.getPermissionArraySize(
+                    self.maxUniqueId
+                )
+
+                channel.compressedSendPermission = [
+                    "{0:0{1}b}".format(element, self.cpuBitWidth)
+                    for element in writePermissionTemp
+                ]
+                channel.compressedSendPermissionInverted = [
+                    "".join("1" if x == "0" else "0" for x in element)
+                    for element in channel.compressedSendPermission
                 ]
 
     def getPermissionArrayIterator(self, uniqueId):

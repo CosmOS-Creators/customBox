@@ -97,6 +97,13 @@ extern const CosmOS_PermissionsConfigurationType
     PermissionsBuffer{{item.bufferId+1}}WriteCfgConst;
 {% endif -%}
 {% endfor -%}
+
+{% for item in model.channels -%}
+extern const CosmOS_PermissionsConfigurationType
+    PermissionsChannel{{item.channelId}}ReplyCfgConst;
+extern const CosmOS_PermissionsConfigurationType
+    PermissionsChannel{{item.channelId}}SendCfgConst;
+{% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**

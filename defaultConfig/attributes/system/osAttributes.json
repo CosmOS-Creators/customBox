@@ -19,9 +19,31 @@
             "type": "int",
             "placeholder": true
         },
+        "channelsNum": {
+            "type": "int",
+            "placeholder": true
+        },
         "doubleBuffersNum": {
             "type": "int",
             "placeholder": true
+        },
+        "eventSpinlockId": {
+            "type": "int",
+            "placeholder": true
+        },
+        "sysCallBytesChunk": {
+            "type": "int",
+            "label": "Bytes to copy in one go for a syscall",
+            "tooltip": "This helps system call to not block other interrupts too long, but in the other hand too fine granularity can create huge overhead",
+            "min": 0,
+            "max": 2048
+        },
+        "osEventDataPoolSize": {
+            "type": "int",
+            "label": "Os event data pool size",
+            "tooltip": "Size of the data pool array meant to be placed in the shared memory and support os event data exchange between the cores",
+            "min": 0,
+            "max": 2048
         }
     },
     "elements": {}

@@ -228,10 +228,11 @@ __SEC_START(__APPLICATION_FUNC_SECTION_START_{{item.core.CoreName}})
 __APPLICATION_FUNC_SECTION_{{item.core.CoreName}} void
 wrapped_{{thread.name}}( void )
 {
-    while ( 1 )
-    {
-        {{thread.name}}();
-    }
+    {{thread.name}}();
+    {% if thread.isIdle -%}
+    for( ;; )
+    {}
+    {% endif -%}
 };
 /* @cond S */
 __SEC_STOP(__APPLICATION_FUNC_SECTION_STOP_{{item.core.CoreName}})
