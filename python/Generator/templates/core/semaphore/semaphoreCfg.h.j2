@@ -5,13 +5,13 @@
 *********************************************************************************
 **                       DOXYGEN DOCUMENTATION INFORMATION                     **
 *****************************************************************************//**
-** @file sysDefsSpinlocks.h
+** @file semaphoreCfg.h
 *********************************************************************************
-<!--                   sysDefsSpinlocks Unit Group Definition                 -->
+<!--                    semaphoreCfg Unit Group Definition                    -->
 *********************************************************************************
-** @defgroup sysDefsSpinlocks_unit sysDefsSpinlocks Unit
-** @ingroup sysDefs_module
-** @brief sysDefsSpinlocks Unit
+** @defgroup semaphoreCfg_unit semaphoreCfg Unit
+** @ingroup os_module
+** @brief semaphoreCfg Unit
 ** @details lorem
 *********************************************************************************
 <!--                           Version Information                            -->
@@ -25,29 +25,31 @@
 ** @warning Modifying code can lead to unexpected behaviour of the whole system
 ** @copyright MIT License
 *********************************************************************************
-<!--                sysDefsSpinlocks Unit Global Group Definition             -->
+<!--                semaphoreCfg Unit Global Group Definition                 -->
 *********************************************************************************
-** @defgroup Global_sysDefsSpinlocks Global
-** @ingroup sysDefsSpinlocks_unit
-** @brief sysDefsSpinlocks globals
+** @defgroup Global_semaphoreCfg Global
+** @ingroup semaphoreCfg_unit
+** @brief semaphoreCfg globals
 ** @details lorem
 ********************************************************************************/
 /********************************************************************************
 **                           START OF THE HEADER FILE                          **
 ********************************************************************************/
-#ifndef __SYSDEFSSPINLOCKS_H__
-#define __SYSDEFSSPINLOCKS_H__
+#ifndef __SEMAPHORECFG_H__
+#define __SEMAPHORECFG_H__
 /********************************************************************************
 **                         START OF C++ SUPPORT SECTION                        **
 ********************************************************************************/
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 /********************************************************************************
 **                            Include Files | Start                            **
 ********************************************************************************/
 /* CORE interfaces */
+#include "sysDefs.h"
 #include "cosmosTypes.h"
+#include "memoryMapping.h"
 /********************************************************************************
 **                            Include Files | Stop                             **
 ********************************************************************************/
@@ -57,33 +59,15 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Macros_sysDefsSpinlocks_h Macros
-  * @ingroup Global_sysDefsSpinlocks
+  * @defgroup Macros_semaphoreCfg_h Macros
+  * @ingroup Global_semaphoreCfg
   * @{
 ********************************************************************************/
-{% set ns = namespace(index=0) -%}
-{{"\n"}}{% for item in model.spinlocks -%}
-#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier {{item.name}} */
-{% set ns.index = ns.index + 1 -%}
-{% endfor -%}
-
-{% for item in model.buffers -%}
-#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier for buffer {{item.name}} */
-{% set ns.index = ns.index + 1 -%}
-{% if item.isDoubleBuffer -%}
-#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier for second buffer of doubleBuffer {{item.name}} */
-{% set ns.index = ns.index + 1 -%}
-{% endif -%}
-{% endfor -%}
-
-#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier for operating system event */
-{% set ns.index = ns.index + 1 -%}
-{{"\n"}}#define SPINLOCK_NUM                                    (BitWidthType){{ns.index}}    /* Number of configured spinlocks */
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Macros_sysDefsSpinlocks_h
+/*  Macros_semaphoreCfg_h
 ********************************************************************************/
 /********************************************************************************
 **                          Macro Definitions | Stop                           **
@@ -94,15 +78,16 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Variables_sysDefsSpinlocks_h Variables
-  * @ingroup Global_sysDefsSpinlocks
+  * @defgroup Variables_semaphoreCfg_h Variables
+  * @ingroup Global_semaphoreCfg
   * @{
 ********************************************************************************/
+extern CosmOS_SemaphoreVariableType SemaphoresVar[SEMAPHORE_NUM];
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Variables_sysDefsSpinlocks_h
+/*  Variables_semaphoreCfg_h
 ********************************************************************************/
 /********************************************************************************
 **                              Variables | Stop                               **
@@ -113,47 +98,47 @@
 /********************************************************************************
   * DOXYGEN DEF GROUP                                                          **
   * *************************************************************************//**
-  * @defgroup Apis_sysDefsSpinlocks_h API's
-  * @ingroup Global_sysDefsSpinlocks
+  * @defgroup Apis_semaphoreCfg_h API's
+  * @ingroup Global_semaphoreCfg
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_sysDefsSpinlocks_h Getters
-  * @ingroup Apis_sysDefsSpinlocks_h
+  * @addtogroup Getters_semaphoreCfg_h Getters
+  * @ingroup Apis_semaphoreCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Getters_sysDefsSpinlocks_h
+/*  Getters_semaphoreCfg_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_sysDefsSpinlocks_h Setters
-  * @ingroup Apis_sysDefsSpinlocks_h
+  * @addtogroup Setters_semaphoreCfg_h Setters
+  * @ingroup Apis_semaphoreCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Setters_sysDefsSpinlocks_h
+/*  Setters_semaphoreCfg_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_sysDefsSpinlocks_h General
-  * @ingroup Apis_sysDefsSpinlocks_h
+  * @addtogroup General_semaphoreCfg_h General
+  * @ingroup Apis_semaphoreCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  General_sysDefsSpinlocks_h
+/*  General_semaphoreCfg_h
 ********************************************************************************/
 /********************************************************************************
 **                         Function Prototypes | Stop                          **
@@ -164,41 +149,41 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_sysDefsSpinlocks_h Getters
-  * @ingroup Apis_sysDefsSpinlocks_h
+  * @addtogroup Getters_semaphoreCfg_h Getters
+  * @ingroup Apis_semaphoreCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Getters_sysDefsSpinlocks_h
+/*  Getters_semaphoreCfg_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_sysDefsSpinlocks_h Setters
-  * @ingroup Apis_sysDefsSpinlocks_h
+  * @addtogroup Setters_semaphoreCfg_h Setters
+  * @ingroup Apis_semaphoreCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Setters_sysDefsSpinlocks_h
+/*  Setters_semaphoreCfg_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_sysDefsSpinlocks_h General
-  * @ingroup Apis_sysDefsSpinlocks_h
+  * @addtogroup General_semaphoreCfg_h General
+  * @ingroup Apis_semaphoreCfg_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  General_sysDefsSpinlocks_h
+/*  General_semaphoreCfg_h
 ********************************************************************************/
 /********************************************************************************
 **                        Function Definitions | Stop                          **

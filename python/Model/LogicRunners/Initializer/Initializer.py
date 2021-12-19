@@ -20,6 +20,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
                     "buffers/:compressedReadPermissionInverted",
                     "buffers/:compressedWritePermissionInverted",
                     "channels/:channelId",
+                    "channels/:semaphoreId",
                     "channels/:replyPermissions",
                     "channels/:sendPermissions",
                     "channels/:compressedReplyPermission",
@@ -59,6 +60,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
                     "schedulers/:core",
                     "schedulers/:maxTimerTick",
                     "spinlocks/:spinlockId",
+                    "semaphores/:semaphoreId",
                     "buffers/:spinlockId",
                     "buffers/:isInterCore",
                     "cpu/:systemTimerWidth",
@@ -85,10 +87,12 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
             config.scheduleTableEntries
         )  # type: List[ConfigElement]
         self.spinlocks = config.spinlocks  # type: List[ConfigElement]
+        self.semaphores = config.semaphores  # type: List[ConfigElement]
         self.cpuBitWidth = config.mcu.MCU.cpuBitWidth
         self.os = config.os.os
 
         self.highestSpinlockId = 0
+        self.highestSemaphoreId = 0
 
         # sequence of the functions must be kept
         self.assigneUniqueId()
@@ -96,7 +100,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
         self.assigneSysJobHypertick()
         self.assigneSchedulerEntries()
         self.assigneBufferSpinlocks()
-        self.assigneChannelSpinlocks()
+        self.assigneChannelSemaphores()
         self.assigneEventSpinlock()
         self.assigneMaxTimerTick()
 
@@ -168,6 +172,12 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
         for spinlock in self.spinlocks:
             spinlock.spinlockId = spinlockIterativeId
             spinlockIterativeId += 1
+
+        semaphoreIterativeId = 0
+        for semaphore in self.semaphores:
+            semaphore.semaphoreId = semaphoreIterativeId
+            semaphoreIterativeId += 1
+
         self.os.buffersNum = bufferIterativeId
         self.os.doubleBuffersNum = doubleBufferIterativeId
 
@@ -180,6 +190,10 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
         self.highestSpinlockId = sorted(
             self.spinlocks, key=lambda x: x.spinlockId, reverse=True
         )[0].spinlockId
+
+        self.highestSemaphoreId = sorted(
+            self.semaphores, key=lambda x: x.semaphoreId, reverse=True
+        )[0].semaphoreId
 
     def assigneSysJobHypertick(self):
         for core in self.cores:
@@ -217,10 +231,10 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 
             buffer.isInterCore = isInterCore
 
-    def assigneChannelSpinlocks(self):
+    def assigneChannelSemaphores(self):
         for channel in self.channels:
-            self.highestSpinlockId += 1
-            channel.spinlockId = self.highestSpinlockId
+            self.highestSemaphoreId += 1
+            channel.semaphoreId = self.highestSemaphoreId
 
     def assigneEventSpinlock(self):
         self.highestSpinlockId += 1

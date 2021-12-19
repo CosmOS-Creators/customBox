@@ -65,6 +65,7 @@ IS_INITIALIZED_TO{
 {% for thread in item.programThreads -%}
 {{"    "}}{
         NULL,    /* CosmOS_MutexVariableType *blockingMutexVar */
+        NULL,    /* CosmOS_MutexVariableType *blockingSemaphoreVar */
     },
 {% endfor -%}
 };

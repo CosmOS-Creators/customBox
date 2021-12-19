@@ -67,7 +67,7 @@
             "type": "int",
             "placeholder": true
         },
-        "spinlockId": {
+        "semaphoreId": {
             "type": "int",
             "placeholder": true
         }
