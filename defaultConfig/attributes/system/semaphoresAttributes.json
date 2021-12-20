@@ -2,9 +2,9 @@
     "version": "1.1.0",
     "checksum": "99914b932bd37a50b983c5e7c90ae93b",
     "ui_page": {
-        "spinlocks": {
+        "semaphores": {
             "view_type": "tabbed",
-            "tab_label": "Spinlocks",
+            "tab_label": "Semaphores",
             "tab_icon": "screen_lock_rotation",
             "allow_element_deletion": false,
             "allow_element_creation": false
@@ -13,11 +13,11 @@
     "attributes": {
         "name": {
             "type": "string",
-            "label": "Name of the spinlock",
-            "tooltip": "Name of the current spinlock",
+            "label": "Name of the semaphore",
+            "tooltip": "Name of the current semaphore",
             "validation": "^[A-Za-z][A-Za-z0-9_]+$"
         },
-        "spinlockId": {
+        "semaphoreId": {
             "type": "int",
             "placeholder": true
         }

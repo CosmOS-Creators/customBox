@@ -5,13 +5,13 @@
 *********************************************************************************
 **                       DOXYGEN DOCUMENTATION INFORMATION                     **
 *****************************************************************************//**
-** @file spinlockCfg.c
+** @file semaphoreCfg.c
 *********************************************************************************
-<!--                 spinlockCfg Unit Local Group Definition                  -->
+<!--                semaphoreCfg Unit Local Group Definition                  -->
 *********************************************************************************
-** @defgroup Local_spinlockCfg Local
-** @ingroup spinlockCfg_unit
-** @brief spinlockCfg locals
+** @defgroup Local_semaphoreCfg Local
+** @ingroup semaphoreCfg_unit
+** @brief semaphoreCfg locals
 ** @details lorem
 ********************************************************************************/
 /********************************************************************************
@@ -21,7 +21,7 @@
 **                            Include Files | Start                            **
 ********************************************************************************/
 /* CORE interfaces */
-#include "spinlockCfg.h"
+#include "semaphoreCfg.h"
 /********************************************************************************
 **                            Include Files | Stop                             **
 ********************************************************************************/
@@ -31,15 +31,15 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Macros_spinlockCfg Macros
-  * @ingroup Local_spinlockCfg
+  * @defgroup Macros_semaphoreCfg Macros
+  * @ingroup Local_semaphoreCfg
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Macros_spinlockCfg
+/*  Macros_semaphoreCfg
 ********************************************************************************/
 /********************************************************************************
 **                          Macro Definitions | Stop                           **
@@ -50,37 +50,27 @@
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Variables_spinlockCfg Variables
-  * @ingroup Local_spinlockCfg
+  * @defgroup Variables_semaphoreCfg Variables
+  * @ingroup Local_semaphoreCfg
   * @{
 ********************************************************************************/
 /* @cond S */
 __SEC_START(__OS_VARS_SECTION_START)
 /* @endcond*/
-CosmOS_SpinlockVariableType SpinlocksVar[SPINLOCK_NUM] __OS_VARS_SECTION
+CosmOS_SemaphoreVariableType SemaphoresVar[SEMAPHORE_NUM] __OS_VARS_SECTION
 IS_INITIALIZED_TO{
-{% for item in model.spinlocks -%}
+{% for item in model.semaphores -%}
 {{"    "}}{
-        SPINLOCK_STATE_ENUM__RELEASED,    /* BitWidthType spinlock */
+        SEMAPHORE_STATE_ENUM__RELEASED,    /* BitWidthType semaphore */
         NULL,    /* CosmOS_SchedulableConfigurationType * schedulableOwner */
     },
 {% endfor -%}
-{% for item in model.buffers -%}
+{% for item in model.channels -%}
 {{"    "}}{
-        SPINLOCK_STATE_ENUM__RELEASED,    /* BitWidthType spinlock */
+        SEMAPHORE_STATE_ENUM__RELEASED,    /* BitWidthType semaphore */
         NULL,    /* CosmOS_SchedulableConfigurationType * schedulableOwner */
     },
-{% if item.isDoubleBuffer -%}
-{{"    "}}{
-        SPINLOCK_STATE_ENUM__RELEASED,    /* BitWidthType spinlock */
-        NULL,    /* CosmOS_SchedulableConfigurationType * schedulableOwner */
-    },
-{% endif -%}
 {% endfor -%}
-{{"    "}}{
-        SPINLOCK_STATE_ENUM__RELEASED,    /* BitWidthType spinlock */
-        NULL,    /* CosmOS_SchedulableConfigurationType * schedulableOwner */
-    },
 };
 /* @cond S */
 __SEC_STOP(__OS_VARS_SECTION_STOP)
@@ -89,7 +79,7 @@ __SEC_STOP(__OS_VARS_SECTION_STOP)
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Variables_spinlockCfg
+/*  Variables_semaphoreCfg
 ********************************************************************************/
 /********************************************************************************
 **                              Variables | Stop                               **
@@ -100,47 +90,47 @@ __SEC_STOP(__OS_VARS_SECTION_STOP)
 /********************************************************************************
   * DOXYGEN DEF GROUP                                                          **
   * *************************************************************************//**
-  * @defgroup Apis_spinlockCfg_c API's
-  * @ingroup Local_spinlockCfg
+  * @defgroup Apis_semaphoreCfg_c API's
+  * @ingroup Local_semaphoreCfg
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_spinlockCfg_c Getters
-  * @ingroup Apis_spinlockCfg_c
+  * @addtogroup Getters_semaphoreCfg_c Getters
+  * @ingroup Apis_semaphoreCfg_c
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Getters_spinlockCfg_c
+/*  Getters_semaphoreCfg_c
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_spinlockCfg_c Setters
-  * @ingroup Apis_spinlockCfg_c
+  * @addtogroup Setters_semaphoreCfg_c Setters
+  * @ingroup Apis_semaphoreCfg_c
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Setters_spinlockCfg_c
+/*  Setters_semaphoreCfg_c
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_spinlockCfg_c General
-  * @ingroup Apis_spinlockCfg_c
+  * @addtogroup General_semaphoreCfg_c General
+  * @ingroup Apis_semaphoreCfg_c
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  General_spinlockCfg_c
+/*  General_semaphoreCfg_c
 ********************************************************************************/
 /********************************************************************************
 **                         Function Prototypes | Stop                          **

@@ -76,14 +76,10 @@
 {% endif -%}
 {% endfor -%}
 
-{% for item in model.channels -%}
-#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier for channel {{item.name}} */
-{% set ns.index = ns.index + 1 -%}
-{% endfor -%}
-
-#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier for core event */
+#define SPINLOCK_{{ns.index}}_ID                      (BitWidthType){{ns.index}}    /* Spinlock identifier for operating system event */
 {% set ns.index = ns.index + 1 -%}
 {{"\n"}}#define SPINLOCK_NUM                                    (BitWidthType){{ns.index}}    /* Number of configured spinlocks */
+{{"\n"}}#define SPINLOCK_NUM_PREPROCESSOR                                    {{ns.index}}    /* Number of configured spinlocks without a specific type cast */
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**

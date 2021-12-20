@@ -104,7 +104,7 @@ IS_INITIALIZED_TO{
         CHANNEL_{{item.channelId}}_REPLY_POOL_SIZE,
         &PermissionsChannel{{item.channelId}}SendCfgConst,
         &PermissionsChannel{{item.channelId}}ReplyCfgConst,
-		SPINLOCK_{{item.spinlockId}}_ID,
+		SEMAPHORE_{{item.semaphoreId}}_ID,
         &ThreadsSchedulablesCfgConst[SCHEDULABLE_THREAD_{{item.replyPermissions[0].threadId}}_PROGRAM_{{item.replyPermissions[0].program.programId}}_CORE_{{item.replyPermissions[0].program.core.coreId}}_ID],
     },
 {% endfor -%}
