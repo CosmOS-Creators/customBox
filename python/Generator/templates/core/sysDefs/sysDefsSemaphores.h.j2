@@ -72,8 +72,8 @@
 {% set ns.index = ns.index + 1 -%}
 {% endfor -%}
 
-{% set ns.index = ns.index + 1 -%}
 {{"\n"}}#define SEMAPHORE_NUM                                    (BitWidthType){{ns.index}}    /* Number of configured semaphores */
+{{"\n"}}#define SEMAPHORE_NUM_PREPROCESSOR                                    {{ns.index}}    /* Number of configured semaphores without a specific type cast */
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
