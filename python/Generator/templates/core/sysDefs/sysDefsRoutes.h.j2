@@ -48,7 +48,6 @@
 ********************************************************************************/
 /* CORE interfaces */
 #include "cosmosTypes.h"
-#include "sysDefsBuffers.h"
 /********************************************************************************
 **                            Include Files | Stop                             **
 ********************************************************************************/
@@ -63,6 +62,8 @@
   * @{
 ********************************************************************************/
 #define ROUTES_FUNC_NUM (BitWidthType){{ model.sysCallRoutes|length }}          /* Number of route RW */
+
+#define SYCALL_BYTES_CHUNK  (BitWidthType){{ model.os.os.sysCallBytesChunk }}          /* Number of bytes allowed to be copied in one system call */
 
 #define ROUTES_ID_TO_ENTITY_DUMMY (BitWidthType)0     /* Dummy it to entity */
 

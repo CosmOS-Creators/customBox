@@ -1,0 +1,76 @@
+{
+    "version": "1.1.0",
+    "checksum": "99914b932bd37a50b983c5e7c90ae93b",
+    "ui_page": {
+        "channels": {
+            "view_type": "tabbed",
+            "tab_label": "Channels",
+            "tab_icon": "inventory_2",
+            "allow_element_deletion": false,
+            "allow_element_creation": false
+        }
+    },
+    "attributes": {
+        "name": {
+            "type": "string",
+            "label": "Name of the channel",
+            "tooltip": "Name of the current channel",
+            "validation": "^[A-Za-z][A-Za-z0-9_]+$"
+        },
+        "sendPoolSize": {
+            "type": "int",
+            "label": "Send pool size",
+            "tooltip": "Size of the send pool in bytes",
+            "min": 0,
+            "max": 2048
+        },
+        "replyPoolSize": {
+            "type": "int",
+            "label": "Reply pool size",
+            "tooltip": "Size of the reply pool in bytes",
+            "min": 0,
+            "max": 2048
+        },
+        "replyPermissions": {
+            "type": "referenceList",
+            "label": "Thread that has reply access to this channel",
+            "tooltip": "Thread that fulfils a server function of the current channel",
+            "elements": [
+                "threads/:name"
+            ]
+        },
+        "sendPermissions": {
+            "type": "referenceList",
+            "label": "List of threads which have send access to this channel",
+            "tooltip": "All threads in this list fulfil the client function of the current channel",
+            "elements": [
+                "threads/:name"
+            ]
+        },
+        "compressedReplyPermission": {
+            "type": "stringList",
+            "placeholder": true
+        },
+        "compressedSendPermission": {
+            "type": "stringList",
+            "placeholder": true
+        },
+        "compressedReplyPermissionInverted": {
+            "type": "stringList",
+            "placeholder": true
+        },
+        "compressedSendPermissionInverted": {
+            "type": "stringList",
+            "placeholder": true
+        },
+        "channelId": {
+            "type": "int",
+            "placeholder": true
+        },
+        "semaphoreId": {
+            "type": "int",
+            "placeholder": true
+        }
+    },
+    "elements": {}
+}

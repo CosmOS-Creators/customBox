@@ -19,6 +19,14 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
                     "buffers/:compressedWritePermission",
                     "buffers/:compressedReadPermissionInverted",
                     "buffers/:compressedWritePermissionInverted",
+                    "channels/:channelId",
+                    "channels/:semaphoreId",
+                    "channels/:replyPermissions",
+                    "channels/:sendPermissions",
+                    "channels/:compressedReplyPermission",
+                    "channels/:compressedSendPermission",
+                    "channels/:compressedReplyPermissionInverted",
+                    "channels/:compressedSendPermissionInverted",
                     "mcu/:cpuBitWidth",
                     "cores/:coreId",
                     "cores/:coreSysJobGroups",
@@ -44,6 +52,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
                     "os/:schedulableNum",
                     "os/:buffersNum",
                     "os/:doubleBuffersNum",
+                    "os/:eventSpinlockId",
                     "scheduleTableEntries/:scheduler",
                     "scheduleTableEntries/:entryId",
                     "scheduleTableEntries/:executionTick",
@@ -51,6 +60,7 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
                     "schedulers/:core",
                     "schedulers/:maxTimerTick",
                     "spinlocks/:spinlockId",
+                    "semaphores/:semaphoreId",
                     "buffers/:spinlockId",
                     "buffers/:isInterCore",
                     "cpu/:systemTimerWidth",
@@ -67,26 +77,31 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
         self.cores = config.cores  # type: List[ConfigElement]
         self.cpus = config.cpu  # type: List[ConfigElement]
         self.programs = config.programs  # type: List[ConfigElement]
-        self.buffers = config.buffers  # type: List[ConfigElement]
         self.tasks = config.tasks  # type: List[ConfigElement]
         self.threads = config.threads  # type: List[ConfigElement]
         self.buffers = config.buffers  # type: List[ConfigElement]
+        self.channels = config.channels  # type: List[ConfigElement]
         self.sysJobs = config.sysJobs  # type: List[ConfigElement]
         self.schedulers = config.schedulers  # type: List[ConfigElement]
         self.scheduleTableEntries = (
             config.scheduleTableEntries
         )  # type: List[ConfigElement]
         self.spinlocks = config.spinlocks  # type: List[ConfigElement]
+        self.semaphores = config.semaphores  # type: List[ConfigElement]
         self.cpuBitWidth = config.mcu.MCU.cpuBitWidth
         self.os = config.os.os
 
         self.highestSpinlockId = 0
+        self.highestSemaphoreId = 0
 
+        # sequence of the functions must be kept
         self.assigneUniqueId()
         self.assigneIterativeId()
         self.assigneSysJobHypertick()
         self.assigneSchedulerEntries()
         self.assigneBufferSpinlocks()
+        self.assigneChannelSemaphores()
+        self.assigneEventSpinlock()
         self.assigneMaxTimerTick()
 
     def assigneUniqueId(self):
@@ -157,11 +172,28 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
         for spinlock in self.spinlocks:
             spinlock.spinlockId = spinlockIterativeId
             spinlockIterativeId += 1
+
+        semaphoreIterativeId = 0
+        for semaphore in self.semaphores:
+            semaphore.semaphoreId = semaphoreIterativeId
+            semaphoreIterativeId += 1
+
         self.os.buffersNum = bufferIterativeId
         self.os.doubleBuffersNum = doubleBufferIterativeId
+
+        channelIterativeId = 0
+        for channel in self.channels:
+            channel.channelId = channelIterativeId
+            channelIterativeId += 1
+
+        self.os.channelsNum = channelIterativeId
         self.highestSpinlockId = sorted(
             self.spinlocks, key=lambda x: x.spinlockId, reverse=True
         )[0].spinlockId
+
+        self.highestSemaphoreId = sorted(
+            self.semaphores, key=lambda x: x.semaphoreId, reverse=True
+        )[0].semaphoreId
 
     def assigneSysJobHypertick(self):
         for core in self.cores:
@@ -198,6 +230,15 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
                 self.highestSpinlockId += 1
 
             buffer.isInterCore = isInterCore
+
+    def assigneChannelSemaphores(self):
+        for channel in self.channels:
+            self.highestSemaphoreId += 1
+            channel.semaphoreId = self.highestSemaphoreId
+
+    def assigneEventSpinlock(self):
+        self.highestSpinlockId += 1
+        self.os.eventSpinlockId = self.highestSpinlockId
 
     def assigneMaxTimerTick(self):
         for scheduler in self.schedulers:

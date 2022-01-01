@@ -197,6 +197,68 @@ IS_INITIALIZED_TO{
 /* @cond S */
 __SEC_STOP(__OS_CONSTS_SECTION_STOP)
 /* @endcond*/
+
+{% for item in model.channels -%}
+const BitWidthType
+    BitLockChannel{{item.channelId}}ReplyCfgConst[BITLOCK_CHANNEL_{{item.channelId}}_REPLY_ELEMENTS_NUM] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
+{% for compressedPermission in item.compressedReplyPermission -%}
+{{"\t"}}0b{{compressedPermission}},
+{% endfor -%}
+};
+{% endfor -%}
+{{"\n"}}
+{% for item in model.channels -%}
+const BitWidthType
+    BitLockChannel{{item.channelId}}SendCfgConst[BITLOCK_CHANNEL_{{item.channelId}}_SEND_ELEMENTS_NUM] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
+{% for compressedPermission in item.compressedSendPermission -%}
+{{"\t"}}0b{{compressedPermission}},
+{% endfor -%}
+};
+{% endfor -%}
+{{"\n"}}
+{% for item in model.channels -%}
+const BitWidthType
+    BitLockChannel{{item.channelId}}ReplyCfgInvertedConst[BITLOCK_CHANNEL_{{item.channelId}}_REPLY_ELEMENTS_NUM] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
+{% for compressedPermission in item.compressedReplyPermissionInverted -%}
+{{"\t"}}0b{{compressedPermission}},
+{% endfor -%}
+};
+{% endfor -%}
+{{"\n"}}
+{% for item in model.channels -%}
+const BitWidthType
+    BitLockChannel{{item.channelId}}SendCfgInvertedConst[BITLOCK_CHANNEL_{{item.channelId}}_SEND_ELEMENTS_NUM] __OS_CONSTS_SECTION
+IS_INITIALIZED_TO
+{
+{% for compressedPermission in item.compressedSendPermissionInverted -%}
+{{"\t"}}0b{{compressedPermission}},
+{% endfor -%}
+};
+{% endfor -%}
+{{"\n"}}
+{% for item in model.channels -%}
+const CosmOS_PermissionsConfigurationType
+    PermissionsChannel{{item.channelId}}ReplyCfgConst __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
+    BitLockChannel{{item.channelId}}ReplyCfgConst,
+    BitLockChannel{{item.channelId}}ReplyCfgInvertedConst,
+};
+{% endfor %}
+{{"\n"}}
+{% for item in model.channels -%}
+const CosmOS_PermissionsConfigurationType
+    PermissionsChannel{{item.channelId}}SendCfgConst __OS_CONSTS_SECTION
+IS_INITIALIZED_TO{
+    BitLockChannel{{item.channelId}}SendCfgConst,
+    BitLockChannel{{item.channelId}}SendCfgInvertedConst,
+};
+{% endfor -%}
+/* @cond S */
+__SEC_STOP(__OS_CONSTS_SECTION_STOP)
+/* @endcond*/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**

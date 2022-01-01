@@ -85,6 +85,14 @@ extern "C" {
 {% for spinlock in model.spinlocks -%}
 #define {{spinlock.name}}_id SPINLOCK_{{spinlock.spinlockId}}_ID
 {% endfor -%}
+
+{% for semaphore in model.semaphores -%}
+#define {{semaphore.name}}_id SEMAPHORE_{{semaphore.semaphoreId}}_ID
+{% endfor -%}
+
+{% for channel in model.channels -%}
+#define {{channel.name}}_id CHANNEL_{{channel.channelId}}_ID
+{% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
