@@ -289,14 +289,13 @@ class ParentReference_element(Ui_element):
         else:
             label = "Parent element"
         self.label = QLabel(label, parent)
-        configuration = attribute.parent.parent.parent
-        possible_choices = list()
-        for subconfig in configuration.configs.values():
-            for element in subconfig.elements.values():
-                possible_choices.append(element.link)
-        self.set_ui_element(LinkerWidget(parent, attribute.value.link, possible_choices, self.relink_parent))
+        self.set_ui_element(LinkerWidget(parent, attribute.value.link, self.__possible_choices, self.relink_parent))
+
+    def __possible_choices(self):
+        return self.attribute.elements
 
     def relink_parent(self, new_element):
+        self.attribute.relink(new_parent=new_element)
         print(type(new_element))
         print(new_element)
 

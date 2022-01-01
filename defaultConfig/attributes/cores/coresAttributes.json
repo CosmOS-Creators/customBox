@@ -104,7 +104,8 @@
             "placeholder": true
         },
         "cpu": {
-            "type": "parentReference"
+            "type": "parentReference",
+            "elements": "cpu"
         },
         "coreId": {
             "type": "int",

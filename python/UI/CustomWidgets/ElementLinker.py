@@ -38,15 +38,22 @@ class RelinkDialog(QDialog):
 
 
 class LinkerWidget(QWidget):
-    def __init__(self, parent: QWidget, current_link: Link, link_options: List[Link], relink_callback) -> None:
+    def __init__(self, parent: QWidget, current_link: Link, get_link_options_callback, relink_callback) -> None:
         super().__init__(parent=parent)
-        self.link_options = link_options
+        self.get_link_options = get_link_options_callback
         self.relink_callback = relink_callback
+        self.setContentsMargins(0,0,0,0)
+        self.setStyleSheet("background-color: 3px solid red;")
+
         layout = QHBoxLayout(self)
-        layout.addWidget(QLabel(str(current_link), self))
-        layout.addWidget(QPushButton("Change Parent", self, clicked=self.open_relink_dialog))
+        layout.setContentsMargins(0, 0, 0, 0)
+        label = QLabel(str(current_link), self)
+        button = QPushButton("Change Parent", self, clicked=self.open_relink_dialog)
+        layout.addWidget(label, 0)
+        layout.addWidget(button, 1)
 
     def open_relink_dialog(self):
-        dialog = RelinkDialog(self, self.link_options, self.relink_callback)
+        link_options = self.get_link_options()
+        dialog = RelinkDialog(self, link_options, self.relink_callback)
         dialog.exec()
         dialog.deleteLater()

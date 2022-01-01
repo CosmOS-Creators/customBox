@@ -931,7 +931,18 @@ class AttributeInstance(serializer.serializeable):
         return self.__attribute.serialize_value(self.value, own_subconfig)
 
     def ResolveValueLink(self):
-        self.__attribute.link(self.__configLookup, self)
+        if(self.attributeDefinition.needsLinking):
+            self.__attribute.link(self.__configLookup, self)
+
+    def relink(self, new_value):
+        self.__attribute.relink(self.__configLookup, self, new_value)
+
+    def unlink(self):
+        self.__attribute.unlink(self.__configLookup, self)
+
+    @property
+    def elements(self):
+        return self.__attribute.get_elements(self.__configLookup)
 
     def populate(self, value, isPlaceholder: bool = True):
         """

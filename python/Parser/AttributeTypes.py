@@ -101,7 +101,35 @@ class AttributeType:
         objConfig: ConfigTypes.Configuration,
         attributeInstance: ConfigTypes.AttributeInstance,
     ):
-        pass
+        raise NotImplementedError(
+            f'Error in attribute "{self.globalID}": link method for attributes of type "{self._comparison_type}" is not supported'
+        )
+
+    def unlink(
+        self,
+        obj_config: ConfigTypes.Configuration,
+        attributeInstance: ConfigTypes.AttributeInstance
+    ):
+        raise NotImplementedError(
+            f'Error in attribute "{self.globalID}": unlink method for attributes of type "{self._comparison_type}" is not supported'
+        )
+
+
+    def relink(
+        self,
+        obj_config: ConfigTypes.Configuration,
+        attributeInstance: ConfigTypes.AttributeInstance,
+        new_value: Link
+    ):
+        raise NotImplementedError(
+            f'Error in attribute "{self.globalID}": relink method for attributes of type "{self._comparison_type}" is not supported'
+        )
+
+    def get_elements(self, obj_config: ConfigTypes.Configuration):
+        raise NotImplementedError(
+            f'Error in attribute "{self.globalID}": get_elements method for attributes of type "{self._comparison_type}" is not supported'
+        )
+
 
     def checkForForbiddenKeys(self, listOfAllowedKeys: List[str]):
         global baseKeys
@@ -777,13 +805,14 @@ class ParentReferenceType(AttributeType):
 
     Will create a link between the attribute and the referenced entity. The link created will go both ways. This means that in the entity referenced by this attribute will get a reference to this attribute and vice versa.
 
-    Will be rendered in the UI as a placeholder text for now because relinking these elemntes is not yet supported.
+    Will be rendered in the UI as a placeholder text for now because relinking these elements is not yet supported.
 
     """
 
 
     _comparison_type = const.ATTRIB_TYPE_PARENT_REFERENCE
     _needs_linking = True
+    _typeSpecificKeys = [const.ELEMENTS_LIST_KEY]
 
     @overrides(AttributeType)
     def __init__(self, attribute_definition: dict, globalID: str):
@@ -794,6 +823,30 @@ class ParentReferenceType(AttributeType):
             raise KeyError(
                 f'Attributes of type parent reference are not allowed to contain either the "{const.HIDDEN_KEY}" nor the "{const.PLACEHOLDER_KEY}" key.'
             )
+        self.__objConfig = None
+        if(const.ELEMENTS_LIST_KEY in attribute_definition):
+            elements: Union[Link, list[Link]] = attribute_definition[
+                const.ELEMENTS_LIST_KEY
+            ]
+
+            if(isinstance(elements, list)):
+                self.__elements: list[Link] = list()
+                for item in elements:
+                    if isinstance(item, str):
+                        self.__elements.append(Link(item))
+                    else:
+                        raise TypeError(
+                            f'At least one element in the "elements" property list is of the unsupported type "{type(item).__name__}". Only str types are allowed'
+                        )
+            elif(isinstance(elements, str)):
+                self.__elements = Link(elements, Link.EMPHASIZE_CONFIG)
+            else:
+                raise TypeError(
+                    f'The "elements" property was of unsupported type "{type(elements).__name__}" but only str or list types are allowed'
+                )
+        else:
+            self.__elements = None
+
         super().__init__(attribute_definition, globalID)
 
     @overrides(AttributeType)
@@ -829,6 +882,46 @@ class ParentReferenceType(AttributeType):
         )
         targetedElement.getObjReference(attributeInstance.parent)
         attributeInstance.setValueDirect(targetedElement)
+
+    @overrides(AttributeType)
+    def unlink(
+        self,
+        objConfig: ConfigTypes.Configuration,
+        attributeInstance: ConfigTypes.AttributeInstance
+    ):
+        linkTarget = Link.force(attributeInstance.value, Link.EMPHASIZE_ELEMENT)
+        selfElement = attributeInstance.link.resolveElement(objConfig)
+        targetedElement = linkTarget.resolveElement(objConfig)
+        targetedElement.addReferenceObject(
+            attributeInstance.link.config, attributeInstance.link.element, selfElement
+        )
+        targetedElement.getObjReference(attributeInstance.parent)
+        attributeInstance.setValueDirect(targetedElement)
+
+    @overrides(AttributeType)
+    def relink(
+        self,
+        objConfig: ConfigTypes.Configuration,
+        attributeInstance: ConfigTypes.AttributeInstance,
+        new_parent: Link
+    ):
+        self.unlink()
+        attributeInstance.setValueDirect(new_parent)
+        self.link(objConfig, attributeInstance)
+
+    @overrides(AttributeType)
+    def get_elements(self, obj_config: ConfigTypes.Configuration):
+        elements: List[Link] = list()
+        if(obj_config is not None):
+            if(self.__elements is not None):
+                if(isinstance(self.__elements, Link)):
+                    for element in self.__elements.resolveSubconfig(obj_config).elements.values():
+                        elements.append(element.link)
+            else:
+                for subconfig in obj_config.configs.values():
+                    for element in subconfig.elements.values():
+                        elements.append(element.link)
+        return elements
 
     @overrides(AttributeType)
     def _serialize_value(self, value: ConfigTypes.ConfigElement):
