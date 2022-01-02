@@ -34,8 +34,8 @@
         },
         "size": {
             "type": "int",
-            "label": "Size of the program memory",
-            "tooltip": "Size of the program data memory",
+            "label": "Size of the program memory section",
+            "tooltip": "Size of the program memory section consisting of initialized, uninitialized data and heap",
             "min": 0
         },
         "heapSize": {
@@ -68,8 +68,8 @@
             "placeholder": true
         },
         "memory": {
-            "label": "Memory location of the Program",
-            "tooltip": "Memory location of the Program, all the program data will be stored here",
+            "label": "Memory location of the program memory section",
+            "tooltip": "Memory location of the program memory section where data and heap are stored",
             "inherit": "memoriesAttributes/:memory"
         }
     },
