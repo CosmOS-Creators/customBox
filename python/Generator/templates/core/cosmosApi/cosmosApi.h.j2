@@ -93,6 +93,10 @@ extern "C" {
 {% for channel in model.channels -%}
 #define {{channel.name}}_id CHANNEL_{{channel.channelId}}_ID
 {% endfor -%}
+
+{% for interrupt in model.interrupts -%}
+#define {{interrupt.name}}_id INTERRUPT_{{interrupt.interruptId}}_ID
+{% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**

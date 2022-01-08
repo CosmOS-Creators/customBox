@@ -85,7 +85,7 @@
         },
         "unmappedDataSize": {
             "type": "int",
-            "label": "Unmapped data section size",
+            "label": "Unmapped variable data section size",
             "tooltip": "Size of the unmapped data section (used mainly for libraries and startup code, not protected by MPU)",
             "min": 0
         },
@@ -140,15 +140,17 @@
             "placeholder": true
         },
         "userCodeMemory": {
-            "label": "Memory location of the user code - advised local core flash memory bank for improving performance",
+            "label": "Memory location of the user code",
+            "tooltip": "Memory location of the application code, advised local core flash memory bank for improving performance",
             "inherit": "memoriesAttributes/:memory"
         },
         "staticDataMemory": {
-            "label": "Memory location of the static data - local core flash memory bank",
+            "label": "Memory location of the unmapped code and static data",
+            "tooltip":  "Memory location of the unmapped code and static data, advised local core flash memory bank for improving performance",
             "inherit": "memoriesAttributes/:memory"
         },
         "unmappedDataMemory": {
-            "label": "Memory location of the unmapped data",
+            "label": "Memory location of the unmapped variable data and heap",
             "inherit": "memoriesAttributes/:memory"
         }
     },

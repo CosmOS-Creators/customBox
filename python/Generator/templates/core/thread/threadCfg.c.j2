@@ -80,7 +80,7 @@ const CosmOS_ThreadConfigurationType
 IS_INITIALIZED_TO{
 {% for thread in item.programThreads -%}
 {{"    "}}{
-        &ThreadsProgram{{thread.program.programId}}Core{{thread.program.core.coreId}}Var[THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],    /* const CosmOS_ThreadVariableType * const cfg */
+        &ThreadsProgram{{thread.program.programId}}Core{{thread.program.core.coreId}}Var[THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],    /* const CosmOS_ThreadVariableType * const var */
         &ThreadsSchedulablesCfgConst[SCHEDULABLE_THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_ID],    /* const CosmOS_SchedulableConfigurationType * const schedulable */
         THREAD_{{thread.threadId}}_PROGRAM_{{thread.program.programId}}_CORE_{{thread.program.core.coreId}}_PRIORITY,    /* const BitWidthType priority */
     },

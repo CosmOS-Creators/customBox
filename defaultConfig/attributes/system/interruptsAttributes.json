@@ -1,0 +1,37 @@
+{
+    "version": "1.1.0",
+    "checksum": "99914b932bd37a50b983c5e7c90ae93b",
+    "ui_page": {
+        "interrupts": {
+            "view_type": "tabbed",
+            "tab_label": "Interrupts",
+            "tab_icon": "alt_route",
+            "allow_element_deletion": false,
+            "allow_element_creation": false
+        }
+    },
+    "attributes": {
+        "name": {
+            "type": "string",
+            "label": "Name of the interrupt",
+            "tooltip": "Name of the current interrupt",
+            "validation": "^[A-Za-z][A-Za-z0-9_]+$"
+        },
+        "interruptHandlerFunc": {
+            "type": "string",
+            "label": "Name of the ISR handler function",
+            "tooltip": "Name of the ISR handler function, this function will be generated",
+            "validation": "^[A-Za-z][A-Za-z0-9_]*$"
+        },
+        "thread": {
+            "type": "selection",
+            "label": "Thread",
+            "elements": "threads/:name"
+        },
+        "interruptId": {
+            "type": "int",
+            "placeholder": true
+        }
+    },
+    "elements": {}
+}

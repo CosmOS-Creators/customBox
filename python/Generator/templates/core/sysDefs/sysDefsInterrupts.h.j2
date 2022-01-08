@@ -5,13 +5,13 @@
 *********************************************************************************
 **                       DOXYGEN DOCUMENTATION INFORMATION                     **
 *****************************************************************************//**
-** @file bufferDoubleCfg.h
+** @file sysDefsInterrupt.h
 *********************************************************************************
-<!--                   bufferDoubleCfg Unit Group Definition                  -->
+<!--                  sysDefsInterrupt Unit Group Definition                  -->
 *********************************************************************************
-** @defgroup bufferDoubleCfg_unit bufferDoubleCfg Unit
-** @ingroup buffer_module
-** @brief bufferDoubleCfg Unit
+** @defgroup sysDefsInterrupt_unit sysDefsInterrupt Unit
+** @ingroup sysDefs_module
+** @brief sysDefsInterrupt Unit
 ** @details lorem
 *********************************************************************************
 <!--                           Version Information                            -->
@@ -25,31 +25,29 @@
 ** @warning Modifying code can lead to unexpected behaviour of the whole system
 ** @copyright MIT License
 *********************************************************************************
-<!--                bufferDoubleCfg Unit Global Group Definition              -->
+<!--              sysDefsInterrupt Unit Global Group Definition               -->
 *********************************************************************************
-** @defgroup Global_bufferDoubleCfg Global
-** @ingroup bufferDoubleCfg_unit
-** @brief bufferDoubleCfg globals
+** @defgroup Global_sysDefsInterrupt Global
+** @ingroup sysDefsInterrupt_unit
+** @brief sysDefsInterrupt globals
 ** @details lorem
 ********************************************************************************/
 /********************************************************************************
 **                           START OF THE HEADER FILE                          **
 ********************************************************************************/
-#ifndef __BUFFERDOUBLECFG_H__
-#define __BUFFERDOUBLECFG_H__
+#ifndef __SYSDEFSINTERRUPTS_H__
+#define __SYSDEFSINTERRUPTS_H__
 /********************************************************************************
 **                         START OF C++ SUPPORT SECTION                        **
 ********************************************************************************/
 #ifdef __cplusplus
-extern "C" {
+ extern "C" {
 #endif
 /********************************************************************************
 **                            Include Files | Start                            **
 ********************************************************************************/
 /* CORE interfaces */
-#include "sysDefs.h"
 #include "cosmosTypes.h"
-#include "memoryMapping.h"
 /********************************************************************************
 **                            Include Files | Stop                             **
 ********************************************************************************/
@@ -59,15 +57,20 @@ extern "C" {
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Macros_bufferDoubleCfg_h Macros
-  * @ingroup Global_bufferDoubleCfg
+  * @defgroup Macros_sysDefsInterrupt_h Macros
+  * @ingroup Global_sysDefsInterrupt
   * @{
 ********************************************************************************/
+#define INTERRUPT_NUM (BitWidthType){{ model.interrupts|length }}          /* Number of interrupts */
+
+{% for item in model.interrupts -%}
+#define INTERRUPT_{{item.interruptId}}_ID (BitWidthType){{ item.interruptId }}          /* Interrupt {{item.name}} identifier */
+{% endfor -%}
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Macros_bufferDoubleCfg_h
+/*  Macros_sysDefsInterrupt_h
 ********************************************************************************/
 /********************************************************************************
 **                          Macro Definitions | Stop                           **
@@ -78,26 +81,15 @@ extern "C" {
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @defgroup Variables_bufferDoubleCfg_h Variables
-  * @ingroup Global_bufferDoubleCfg
+  * @defgroup Variables_sysDefsInterrupt_h Variables
+  * @ingroup Global_sysDefsInterrupt
   * @{
 ********************************************************************************/
-{% for buffer in model.buffers -%}
-{% if buffer.isDoubleBuffer -%}
-extern const CosmOS_BufferDoublePairConfigurationType
-    BuffersDoublePair{{buffer.doubleBufferId}}Cfg[BUFFER_PAIR_NUM];
-{% endif -%}
-{% endfor -%}
-
-{{"\n"}}extern const CosmOS_BufferDoubleConfigurationType
-    BuffersDoubleCfg[BUFFER_DOUBLE_NUM];
-
-extern CosmOS_BufferDoubleVariableType BuffersDoubleVar[BUFFER_DOUBLE_NUM];
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Variables_bufferDoubleCfg_h
+/*  Variables_sysDefsInterrupt_h
 ********************************************************************************/
 /********************************************************************************
 **                              Variables | Stop                               **
@@ -108,47 +100,47 @@ extern CosmOS_BufferDoubleVariableType BuffersDoubleVar[BUFFER_DOUBLE_NUM];
 /********************************************************************************
   * DOXYGEN DEF GROUP                                                          **
   * *************************************************************************//**
-  * @defgroup Apis_bufferDoubleCfg_h API's
-  * @ingroup Global_bufferDoubleCfg
+  * @defgroup Apis_sysDefsInterrupt_h API's
+  * @ingroup Global_sysDefsInterrupt
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_bufferDoubleCfg_h Getters
-  * @ingroup Apis_bufferDoubleCfg_h
+  * @addtogroup Getters_sysDefsInterrupt_h Getters
+  * @ingroup Apis_sysDefsInterrupt_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Getters_bufferDoubleCfg_h
+/*  Getters_sysDefsInterrupt_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_bufferDoubleCfg_h Setters
-  * @ingroup Apis_bufferDoubleCfg_h
+  * @addtogroup Setters_sysDefsInterrupt_h Setters
+  * @ingroup Apis_sysDefsInterrupt_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Setters_bufferDoubleCfg_h
+/*  Setters_sysDefsInterrupt_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_bufferDoubleCfg_h General
-  * @ingroup Apis_bufferDoubleCfg_h
+  * @addtogroup General_sysDefsInterrupt_h General
+  * @ingroup Apis_sysDefsInterrupt_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  General_bufferDoubleCfg_h
+/*  General_sysDefsInterrupt_h
 ********************************************************************************/
 /********************************************************************************
 **                         Function Prototypes | Stop                          **
@@ -159,41 +151,41 @@ extern CosmOS_BufferDoubleVariableType BuffersDoubleVar[BUFFER_DOUBLE_NUM];
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Getters_bufferDoubleCfg_h Getters
-  * @ingroup Apis_bufferDoubleCfg_h
+  * @addtogroup Getters_sysDefsInterrupt_h Getters
+  * @ingroup Apis_sysDefsInterrupt_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Getters_bufferDoubleCfg_h
+/*  Getters_sysDefsInterrupt_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup Setters_bufferDoubleCfg_h Setters
-  * @ingroup Apis_bufferDoubleCfg_h
+  * @addtogroup Setters_sysDefsInterrupt_h Setters
+  * @ingroup Apis_sysDefsInterrupt_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  Setters_bufferDoubleCfg_h
+/*  Setters_sysDefsInterrupt_h
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN START GROUP                                                        **
   * *************************************************************************//**
-  * @addtogroup General_bufferDoubleCfg_h General
-  * @ingroup Apis_bufferDoubleCfg_h
+  * @addtogroup General_sysDefsInterrupt_h General
+  * @ingroup Apis_sysDefsInterrupt_h
   * @{
 ********************************************************************************/
 /********************************************************************************
   * DOXYGEN STOP GROUP                                                         **
   * *************************************************************************//**
   * @} */
-/*  General_bufferDoubleCfg_h
+/*  General_sysDefsInterrupt_h
 ********************************************************************************/
 /********************************************************************************
 **                        Function Definitions | Stop                          **
