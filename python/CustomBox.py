@@ -16,12 +16,16 @@ if __name__ == "__main__":
     workspace = Parser.Workspace(args.WORKSPACE, args.workspace_root)
     parser = Parser.ConfigParser(workspace)
     systemModel = parser.parse()
-    configGenerator = ConfigurationGenerator.configGenerator(workspace)
     Interface = Configurator(
         Configurator.THEME_STYLE_DARK, Configurator.THEME_COLOR_BLUE
     )
 
     mainUI = Interface.buildMainWindow(systemModel, "CustomBox", "custombox-icon")
+
+    UILogger = ConfigurationGenerator.GeneratorPlugins.UILoggerPlugin(mainUI)
+    configGenerator = ConfigurationGenerator.configGenerator(workspace, UILogger)
+    # UILogger.register_cancel_callback(configGenerator.cancel_generation)
+
     generator_call = lambda: configGenerator.generate(systemModel)
     mainUI.register_generate_callback(lambda: wrap_generator(generator_call, mainUI))
 

@@ -5,8 +5,11 @@ from Model import InitializerLogic, MemoryMapperLogic, PermissionerLogic, Schedu
 
 
 class configGenerator:
-    def __init__(self, workspace: Parser.Workspace):
-        self.loggerPlugin = GeneratorPlugins.loggerPlugin()
+    def __init__(self, workspace: Parser.Workspace, customLogger: GeneratorPlugins.loggerPlugin = None):
+        if(customLogger is None):
+            self.loggerPlugin = GeneratorPlugins.loggerPlugin()
+        else:
+            self.loggerPlugin = customLogger
         self.sectionPlugin = GeneratorPlugins.sectionParserPlugin()
         self.logicRunnerPlugin = GeneratorPlugins.logicRunnerPlugin()
         self.timestampPlugin = GeneratorPlugins.timeStampPlugin()
@@ -39,6 +42,9 @@ class configGenerator:
 
     def generate_from_files(self):
         self.__generator.generate()
+
+    def cancel_generation(self):
+        self.__generator.cancel_generation()
 
 
 if __name__ == "__main__":

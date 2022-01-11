@@ -24,7 +24,7 @@ from Parser.AttributeTypes import (
 )
 from Parser.ConfigTypes import AttributeInstance, ConfigElement
 from Parser.LinkElement import Link
-from UI.CustomWidgets import hexInput, customSpinner
+from UI.CustomWidgets import hexInput, customSpinner, LinkerWidget
 from UI.support import icons
 from UI.CustomWidgets import ListBuilderWidget
 from Parser import ValidationError
@@ -289,7 +289,15 @@ class ParentReference_element(Ui_element):
         else:
             label = "Parent element"
         self.label = QLabel(label, parent)
-        self.set_ui_element(QLabel(str(attribute.value.link), parent))
+        self.set_ui_element(LinkerWidget(parent, attribute.value.link, self.__possible_choices, self.relink_parent))
+
+    def __possible_choices(self):
+        return self.attribute.elements
+
+    def relink_parent(self, new_element):
+        self.attribute.relink(new_parent=new_element)
+        print(type(new_element))
+        print(new_element)
 
 
 avaliable_ui_elements: List[Ui_element] = [

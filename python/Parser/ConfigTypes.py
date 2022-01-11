@@ -419,15 +419,15 @@ class Configuration(dynamicObject, serializer.serializeable):
                         attribute.value = attribute.attributeDefinition.getDefault()
 
     def _serialize(self):
-        serialized_data = dict()
+        serialized_data:Dict[Path, Tuple[str, str]] = dict()
         for subconfig in self.configs.values():
             Data = serializer.serialize(subconfig)
             serialized_data[subconfig.source_file] = (
                 subconfig,
-                json.dumps(Data, indent=4),
+                json.dumps(Data, indent=4, default=serializer.serialize),
             )
         for config_file, (subconfig, data) in serialized_data.items():
-            with config_file.open("w") as fp:
+            with config_file.open("w", newline='\n') as fp:
                 fp.write(data)
             subconfig._file_elements_hash = subconfig.elements_hash
 
@@ -931,7 +931,18 @@ class AttributeInstance(serializer.serializeable):
         return self.__attribute.serialize_value(self.value, own_subconfig)
 
     def ResolveValueLink(self):
-        self.__attribute.link(self.__configLookup, self)
+        if(self.attributeDefinition.needsLinking):
+            self.__attribute.link(self.__configLookup, self)
+
+    def relink(self, new_value):
+        self.__attribute.relink(self.__configLookup, self, new_value)
+
+    def unlink(self):
+        self.__attribute.unlink(self.__configLookup, self)
+
+    @property
+    def elements(self):
+        return self.__attribute.get_elements(self.__configLookup)
 
     def populate(self, value, isPlaceholder: bool = True):
         """
