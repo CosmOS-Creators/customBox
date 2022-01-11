@@ -105,7 +105,7 @@
         },
         "cpu": {
             "type": "parentReference",
-            "elements": "cpu"
+            "elements": "cpu/"
         },
         "coreId": {
             "type": "int",
@@ -146,7 +146,7 @@
         },
         "staticDataMemory": {
             "label": "Memory location of the unmapped code and static data",
-            "tooltip":  "Memory location of the unmapped code and static data, advised local core flash memory bank for improving performance",
+            "tooltip": "Memory location of the unmapped code and static data, advised local core flash memory bank for improving performance",
             "inherit": "memoriesAttributes/:memory"
         },
         "unmappedDataMemory": {

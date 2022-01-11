@@ -382,3 +382,6 @@ class Link:
                     f'A link part is not allowed to contain a "/" or a ":" character. But the attribute part "{value}" does.'
                 )
         self.__attribute = value
+
+    def _serialize(self):
+        return self.getLink()

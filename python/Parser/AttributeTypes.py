@@ -2,6 +2,7 @@ from collections import OrderedDict
 import re
 import Parser.ConfigTypes as ConfigTypes
 from Parser.ParserExceptions import ValidationError
+from Parser.Serializer import serialize
 import Parser.helpers as helpers
 import Parser.constants as const
 from typing import List, Union
@@ -654,7 +655,7 @@ class SelectionType(AttributeType):
                 const.ELEMENTS_LIST_KEY
             ]
             self.resolvedElements: Union[
-                None,
+                None, List
             ] = None
             self.targetedAttribute = None
             if type(self.elements) is list:
@@ -823,7 +824,6 @@ class ParentReferenceType(AttributeType):
             raise KeyError(
                 f'Attributes of type parent reference are not allowed to contain either the "{const.HIDDEN_KEY}" nor the "{const.PLACEHOLDER_KEY}" key.'
             )
-        self.__objConfig = None
         if(const.ELEMENTS_LIST_KEY in attribute_definition):
             elements: Union[Link, list[Link]] = attribute_definition[
                 const.ELEMENTS_LIST_KEY
@@ -930,6 +930,13 @@ class ParentReferenceType(AttributeType):
                 f"Serialization of attribute {self.globalID.attribute} failed as it is of type {self._comparison_type} and is not allowed to be None."
             )
         return str(value.link)
+
+    @overrides(AttributeType)
+    def _get_serialization_specifics(self):
+        specifics = OrderedDict()
+        if self.__elements is not None:
+            specifics[const.ELEMENTS_LIST_KEY] = self.__elements
+        return specifics
 
 
 attributeTypeList = [

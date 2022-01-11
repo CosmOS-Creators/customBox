@@ -419,15 +419,15 @@ class Configuration(dynamicObject, serializer.serializeable):
                         attribute.value = attribute.attributeDefinition.getDefault()
 
     def _serialize(self):
-        serialized_data = dict()
+        serialized_data:Dict[Path, Tuple[str, str]] = dict()
         for subconfig in self.configs.values():
             Data = serializer.serialize(subconfig)
             serialized_data[subconfig.source_file] = (
                 subconfig,
-                json.dumps(Data, indent=4),
+                json.dumps(Data, indent=4, default=serializer.serialize),
             )
         for config_file, (subconfig, data) in serialized_data.items():
-            with config_file.open("w") as fp:
+            with config_file.open("w", newline='\n') as fp:
                 fp.write(data)
             subconfig._file_elements_hash = subconfig.elements_hash
 
