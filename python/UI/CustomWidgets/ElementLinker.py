@@ -1,6 +1,6 @@
 from typing import List
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QDialogButtonBox, QFrame, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QDialog, QDialogButtonBox, QFrame, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QMessageBox, QPushButton, QVBoxLayout, QWidget
 from Parser.LinkElement import Link
 
 
@@ -14,8 +14,8 @@ class RelinkDialog(QDialog):
         QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
 
         self.buttonBox = QDialogButtonBox(QBtn)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
+        self.buttonBox.accepted.connect(self.relink)
+        self.buttonBox.rejected.connect(self.abort)
 
         self.layout1 = QVBoxLayout(self)
         self.listWidget = QListWidget(self)
@@ -29,12 +29,14 @@ class RelinkDialog(QDialog):
         self.layout1.addWidget(self.listWidget)
         self.layout1.addWidget(self.buttonBox)
 
-    def accept(self):
-        self.relink_callback(self.listWidget.selectedItems()[0].data(Qt.UserRole))
-        self.close()
+    def relink(self):
+        QMessageBox.information(self, "Not yet implemented", "Relinking items is not yet implemented")
+        #TODO: reenable once relinking items is implemented
+        # self.relink_callback(self.listWidget.selectedItems()[0].data(Qt.UserRole))
+        self.accept()
 
-    def reject(self):
-        self.close()
+    def abort(self):
+        self.reject()
 
 
 class LinkerWidget(QWidget):
