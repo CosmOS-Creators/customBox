@@ -431,6 +431,13 @@ class Configuration(dynamicObject, serializer.serializeable):
                 fp.write(data)
             subconfig._file_elements_hash = subconfig.elements_hash
 
+    def is_valid(self):
+        for subconfig in self.configs.values():
+            valid, error = subconfig.is_valid()
+            if not valid:
+                return False, error
+        return True, ""
+
 
 class Subconfig(dynamicObject, serializer.serializeable):
     def __init__(
@@ -598,6 +605,13 @@ class Subconfig(dynamicObject, serializer.serializeable):
                     raise ValueError(
                         f'The subconfig "{self.__link}" was assigned to a UI page named "{self.__ui_page_assignment}" but a page with that name does not exist'
                     )
+
+    def is_valid(self):
+        for element in self.elements.values():
+            valid, error = element.is_valid()
+            if not valid:
+                return False, error
+        return True, ""
 
 
 class ConfigElement(dynamicObject, serializer.serializeable):
@@ -865,6 +879,12 @@ class ConfigElement(dynamicObject, serializer.serializeable):
                 )
                 raise AttributeError(error_msg.format(name))
 
+    def is_valid(self):
+        for attributeInstance in self.attributeInstances.values():
+            valid, error = attributeInstance.isValid()
+            if not valid:
+                return False, f'´Value of attribute "{self.link}" is invalid: {error}'
+        return True, ""
 
 class AttributeInstance(serializer.serializeable):
     def __init__(
@@ -927,6 +947,10 @@ class AttributeInstance(serializer.serializeable):
 
     @overrides(serializer.serializeable)
     def _serialize(self) -> Dict:
+        is_valid, exception = self.isValid()
+        if(not is_valid):
+            raise Exception(f'Attribute "{self.link}" has an invalid value: {exception}')
+
         own_subconfig = self.parent.parent.link
         return self.__attribute.serialize_value(self.value, own_subconfig)
 

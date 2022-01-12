@@ -1,4 +1,4 @@
-from UI import Configurator, MainWindow
+from UI import Configurator, MainWindow, UILoggerPlugin
 import sys
 import Parser
 import ConfigurationGenerator
@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     mainUI = Interface.buildMainWindow(systemModel, "CustomBox", "custombox-icon")
 
-    UILogger = ConfigurationGenerator.GeneratorPlugins.UILoggerPlugin(mainUI)
+    UILogger = UILoggerPlugin(mainUI)
     configGenerator = ConfigurationGenerator.configGenerator(workspace, UILogger)
     # UILogger.register_cancel_callback(configGenerator.cancel_generation)
 

@@ -1,5 +1,4 @@
 from Generator.GeneratorCorePlugins.Logger import loggerPlugin
-from Generator.GeneratorCorePlugins.UILogger import UILoggerPlugin
 from Generator.GeneratorCorePlugins.SectionParser import sectionParserPlugin
 from Generator.GeneratorCorePlugins.LogicRunner import logicRunnerPlugin
 from Generator.GeneratorCorePlugins.FileCleaner import fileCleanerPlugin

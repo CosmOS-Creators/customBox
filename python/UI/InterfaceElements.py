@@ -258,7 +258,9 @@ class Selection_element(Ui_element):
         super().__init__(parent, attribute)
         self.attributeDef: SelectionType
         self.label = QLabel(self.attributeDef.label, parent)
-        self.set_ui_element(QComboBox(parent))
+        selection_combobox = QComboBox(parent)
+        selection_combobox.wheelEvent = lambda event: None
+        self.set_ui_element(selection_combobox)
         self.ui_element: QComboBox
         if type(self.attributeDef.elements) is list:
             for selectionElement in self.attributeDef.elements:
@@ -273,6 +275,9 @@ class Selection_element(Ui_element):
                     self.attributeDef.targetedAttribute
                 )
                 self.ui_element.setCurrentText(selected_attrib.value)
+            else:
+                self.ui_element.setCurrentIndex(-1)
+                self.setValidity(False, "Please select an item")
 
         self._get_current_value_func = self.ui_element.currentData
         self.ui_element.currentIndexChanged.connect(self.saveToConfigObject)
@@ -283,13 +288,18 @@ class ParentReference_element(Ui_element):
 
     def __init__(self, parent: QWidget, attribute: AttributeInstance):
         super().__init__(parent, attribute)
+        self.ui_element: LinkerWidget
         self.attributeDef: ParentReferenceType
         if self.attributeDef.label:
             label = self.attributeDef.label
         else:
             label = "Parent element"
         self.label = QLabel(label, parent)
-        self.set_ui_element(LinkerWidget(parent, attribute.value.link, self.__possible_choices, self.relink_parent))
+        if(attribute.value is None):
+            dest_link = None
+        else:
+            dest_link = attribute.value.link
+        self.set_ui_element(LinkerWidget(parent, dest_link, self.__possible_choices, self.relink_parent, self.link_parent))
 
     def __possible_choices(self):
         return self.attribute.elements
@@ -298,6 +308,10 @@ class ParentReference_element(Ui_element):
         self.attribute.relink(new_parent=new_element)
         print(type(new_element))
         print(new_element)
+
+    def link_parent(self, new_element):
+        self.saveToConfigObject(new_element)
+        self.ui_element.set_linked_state(True, new_element)
 
 
 avaliable_ui_elements: List[Ui_element] = [

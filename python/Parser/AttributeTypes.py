@@ -738,6 +738,8 @@ class SelectionType(AttributeType):
             return value
         else:
             attr = self.targetedAttribute
+            if(value is None):
+                raise ValueError(f'For attribute "{self.globalID}" no option was selected but a selection is required.')
             return str(value.getAttribute(attr).value)
 
     @overrides(AttributeType)

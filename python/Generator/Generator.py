@@ -276,6 +276,9 @@ class Generator:
             )
         except Exception as e:
             raise Exception(f"The generator config was not valid: \n{str(e)}") from e
+        config_is_valid, error_message = systemConfig.is_valid()
+        if(not config_is_valid):
+            raise Exception(f"The generator config has at least one validation error: \n{error_message}")
         self.__callPreGenerationPluginHooks(
             systemConfig, self.total_num_generated_files
         )
