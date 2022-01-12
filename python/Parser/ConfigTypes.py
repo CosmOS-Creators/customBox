@@ -927,6 +927,10 @@ class AttributeInstance(serializer.serializeable):
 
     @overrides(serializer.serializeable)
     def _serialize(self) -> Dict:
+        is_valid, exception = self.isValid()
+        if(not is_valid):
+            raise Exception(f'Attribute "{self.link}" has an invalid value: {exception}')
+
         own_subconfig = self.parent.parent.link
         return self.__attribute.serialize_value(self.value, own_subconfig)
 
