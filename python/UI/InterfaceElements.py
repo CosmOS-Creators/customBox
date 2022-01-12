@@ -258,7 +258,9 @@ class Selection_element(Ui_element):
         super().__init__(parent, attribute)
         self.attributeDef: SelectionType
         self.label = QLabel(self.attributeDef.label, parent)
-        self.set_ui_element(QComboBox(parent))
+        selection_combobox = QComboBox(parent)
+        selection_combobox.wheelEvent = lambda event: None
+        self.set_ui_element(selection_combobox)
         self.ui_element: QComboBox
         if type(self.attributeDef.elements) is list:
             for selectionElement in self.attributeDef.elements:
