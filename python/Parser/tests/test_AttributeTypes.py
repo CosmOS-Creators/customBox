@@ -189,9 +189,10 @@ class TestClassLinkFunctions:
         subc = mocked_basic_cores_config_structure.getSubconfig("cores")
         element = subc.getElement("core_0")
         attribInst = element.getAttributeInstance("coreName")
-        missconfiguredType.link(
-            mocked_basic_cores_config_structure, attribInst
-        )  # does nothing
+        with pytest.raises(NotImplementedError):  # link method from the base class should not be called as it is not implemented
+            missconfiguredType.link(
+                mocked_basic_cores_config_structure, attribInst
+            )
 
     def test_parentReference_Link_method(
         self, mocked_cores_program_config_structure: ConfigTypes.Configuration
