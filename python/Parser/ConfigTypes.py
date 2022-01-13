@@ -849,15 +849,12 @@ class ConfigElement(dynamicObject, serializer.serializeable):
             if name in own_attribs:
                 object.__setattr__(self, name, value)
             else:
-                try:
-                    items = object.__getattribute__(self, "dynamic_items")
-                    requested_item = items[name]
-                    if(isinstance(requested_item, AttributeInstance)):
-                        requested_item.value = value
-                    else:
-                        raise AttributeError(f'Tried to set an attribute called {name} on the element "{self.link}" but this attribute should not be changed by the user.')
-                except (KeyError, AttributeError):
-                    object.__setattr__(self, name, value)
+                items = object.__getattribute__(self, "dynamic_items")
+                requested_item = items[name]
+                if(isinstance(requested_item, AttributeInstance)):
+                    requested_item.value = value
+                else:
+                    raise AttributeError(f'Tried to set an attribute called {name} on the element "{self.link}" but this attribute should not be changed by the user.')
         else:
             object.__setattr__(self, name, value)
 

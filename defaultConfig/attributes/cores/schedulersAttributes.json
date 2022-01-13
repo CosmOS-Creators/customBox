@@ -16,7 +16,8 @@
             "label": "Hyper tick of this scheduler",
             "tooltip": "Hyper period for the current scheduler",
             "min": 0,
-            "max": 2048
+            "max": 2048,
+            "placeholder": true
         },
         "sync": {
             "type": "bool",

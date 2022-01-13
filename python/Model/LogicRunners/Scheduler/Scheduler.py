@@ -108,8 +108,8 @@ class SchedulerLogic(logicRunnerPlugin.logicRunner):
 
                                 newElement = self.scheduleTableEntries.createElement(f"element_{elementCounter}")
                                 newElement.executionTick = tmpStartTime
-                                newElement.scheduler = task.program.core.schedulers[0]
-                                newElement.task = task
+                                newElement.getAttributeInstance("scheduler").populate(task.program.core.schedulers[0], False)
+                                newElement.getAttributeInstance("task").populate(task, False)
                                 elementCounter += 1
 
                                 tmpStartTime += task.period
