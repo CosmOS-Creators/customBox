@@ -5,7 +5,7 @@
         "channels": {
             "view_type": "tabbed",
             "tab_label": "Channels",
-            "tab_icon": "inventory_2",
+            "tab_icon": "import_export",
             "allow_element_deletion": false,
             "allow_element_creation": false
         }

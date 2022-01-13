@@ -29,7 +29,8 @@
             "tooltip": "API headers providing definitions of sysJobs used in the current group"
         },
         "core": {
-            "type": "parentReference"
+            "type": "parentReference",
+            "elements": "cores/"
         },
         "groupId": {
             "type": "int",

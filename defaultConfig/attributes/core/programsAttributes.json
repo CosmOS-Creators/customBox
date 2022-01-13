@@ -13,6 +13,7 @@
     "element_restrictions": {
         "program_restrictions": {
             "requires": [
+                "core",
                 "name",
                 "size",
                 "heapSize",
@@ -53,7 +54,8 @@
             "placeholder": true
         },
         "core": {
-            "type": "parentReference"
+            "type": "parentReference",
+            "elements": "cores/:CoreName"
         },
         "programId": {
             "type": "int",

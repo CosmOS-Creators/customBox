@@ -35,7 +35,10 @@
         "cores": {
             "type": "referenceList",
             "label": "CPU access",
-            "tooltip": "CPU access of the current memory consistent with the current MCU datasheet"
+            "tooltip": "CPU access of the current memory consistent with the current MCU datasheet",
+            "elements": [
+                "cores/:CoreName"
+            ]
         },
         "freeChunks": {
             "type": "referenceList",
