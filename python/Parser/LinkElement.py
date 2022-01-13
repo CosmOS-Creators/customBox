@@ -232,7 +232,7 @@ class Link:
 
     def resolveAttribute(
         self, config: ConfigTypes.Configuration
-    ) -> AttributeTypes.AttributeType:
+    ) -> ConfigTypes.AttributeInstance:
         if self.__config and self.__attribute and self.__element:
             subconfig = config.getSubconfig(self)
             element = subconfig.getElement(self)
