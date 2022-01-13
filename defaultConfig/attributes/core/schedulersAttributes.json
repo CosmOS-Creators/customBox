@@ -27,6 +27,7 @@
         "syncTicks": {
             "type": "int",
             "tooltip": "Synchronization period",
+            "hidden": true,
             "min": 0,
             "max": 2048
         },
@@ -50,7 +51,8 @@
             "max": 2048
         },
         "core": {
-            "type": "parentReference"
+            "type": "parentReference",
+            "elements": "cores/:CoreName"
         },
         "table": {
             "type": "referenceList",

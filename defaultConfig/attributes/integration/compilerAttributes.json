@@ -28,7 +28,8 @@
             "tooltip": "List of compiler defines for the current CPU"
         },
         "core": {
-            "type": "parentReference"
+            "type": "parentReference",
+            "elements": "cores/:CoreName"
         }
     },
     "elements": {}

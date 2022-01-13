@@ -5,7 +5,7 @@
         "spinlocks": {
             "view_type": "tabbed",
             "tab_label": "Spinlocks",
-            "tab_icon": "screen_lock_rotation",
+            "tab_icon": "lock_reset",
             "allow_element_deletion": false,
             "allow_element_creation": false
         }

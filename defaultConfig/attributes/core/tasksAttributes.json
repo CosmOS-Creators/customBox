@@ -2,10 +2,10 @@
     "version": "1.1.0",
     "checksum": "99914b932bd37a50b983c5e7c90ae93b",
     "ui_page": {
-        "threads": {
+        "tasks": {
             "view_type": "tabbed",
-            "tab_label": "Threads",
-            "tab_icon": "date_range",
+            "tab_label": "Tasks",
+            "tab_icon": "task_alt",
             "allow_element_deletion": false,
             "allow_element_creation": false
         }
@@ -13,9 +13,19 @@
     "attributes": {
         "name": {
             "type": "string",
-            "label": "Name of the thread",
-            "tooltip": "Name of the thread, be aware that the thread name is used also as a function name",
+            "label": "Name of the task",
+            "tooltip": "Name of the task, be aware that the task name is used also as a function name",
             "validation": "^[A-Za-z][A-Za-z0-9_]*$"
+        },
+        "wcet": {
+            "type": "int",
+            "label": "Worst case execution time",
+            "tooltip": "Worst case execution time in ticks"
+        },
+        "period": {
+            "type": "int",
+            "label": "Scheduling period",
+            "tooltip": "Scheduling period in ticks"
         },
         "floatingPoint": {
             "type": "bool",
@@ -24,18 +34,18 @@
         },
         "isIdle": {
             "type": "bool",
-            "label": "Is thread idle",
-            "tooltip": "Is the thread idle"
+            "label": "Is the task an idle task",
+            "tooltip": "Is the task an idle task"
+        },
+        "isSysJob": {
+            "type": "bool",
+            "label": "Is the task a sysJob wrapper",
+            "tooltip": "Is the task a sysJob wrapper"
         },
         "stackSize": {
             "type": "int",
-            "label": "Stack size",
-            "tooltip": "Stack size of the current thread"
-        },
-        "priority": {
-            "type": "int",
-            "label": "Priority",
-            "tooltip": "Priority of the current thread - must be unique across all threads under same core"
+            "label": "Stack size of the task",
+            "tooltip": "Stack size of the current task"
         },
         "peripheralAccessLowAddress": {
             "type": "hex",
@@ -53,7 +63,8 @@
             "placeholder": true
         },
         "program": {
-            "type": "parentReference"
+            "type": "parentReference",
+            "elements": "programs/:name"
         },
         "lowAddress": {
             "type": "int",
@@ -63,11 +74,7 @@
             "type": "int",
             "placeholder": true
         },
-        "threadId": {
-            "type": "int",
-            "placeholder": true
-        },
-        "alarmId": {
+        "taskId": {
             "type": "int",
             "placeholder": true
         }

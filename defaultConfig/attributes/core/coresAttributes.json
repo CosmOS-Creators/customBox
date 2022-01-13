@@ -6,8 +6,8 @@
             "view_type": "carded",
             "tab_label": "Cores",
             "tab_icon": "memory",
-            "allow_element_deletion": true,
-            "allow_element_creation": true
+            "allow_element_deletion": false,
+            "allow_element_creation": false
         }
     },
     "element_restrictions": {

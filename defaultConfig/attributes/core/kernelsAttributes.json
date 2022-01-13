@@ -3,7 +3,7 @@
     "checksum": "99914b932bd37a50b983c5e7c90ae93b",
     "ui_page": {
         "kernels": {
-            "view_type": "tabbed",
+            "view_type": "carded",
             "tab_label": "Kernels",
             "tab_icon": "source",
             "allow_element_deletion": false,
@@ -27,7 +27,8 @@
             "placeholder": true
         },
         "core": {
-            "type": "parentReference"
+            "type": "parentReference",
+            "elements": "cores/:CoreName"
         }
     },
     "elements": {}
