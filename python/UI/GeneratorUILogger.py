@@ -39,6 +39,7 @@ class UILoggerPlugin(PluginSkeleton.GeneratorPlugin):
     @overrides(PluginSkeleton.GeneratorPlugin)
     def postFileGeneration(self, file_path: Path, file_content: str):
         self.pd.setValue(self.pd.value() + 1)
+        self.pd.show()
         return True
 
     def register_cancel_callback(self, cancel_callback):
