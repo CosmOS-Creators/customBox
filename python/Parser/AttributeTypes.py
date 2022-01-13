@@ -918,7 +918,10 @@ class ParentReferenceType(AttributeType):
             if(self.__elements is not None):
                 if(isinstance(self.__elements, Link)):
                     for element in self.__elements.resolveSubconfig(obj_config).elements.values():
-                        elements.append(element.link)
+                        if(self.__elements.hasAttribute()):
+                            elements.append(element.getAttribute(self.__elements.attribute).value)
+                        else:
+                            elements.append(element.link)
             else:
                 for subconfig in obj_config.configs.values():
                     for element in subconfig.elements.values():
