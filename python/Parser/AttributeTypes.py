@@ -17,12 +17,14 @@ class AttributeType:
 
     The following keys can be handled by every type of attribute:
 
-    - Required: |TYPE_KEY|
-    - Optional: |TOOLTIP_KEY|
-    - Optional: |LABEL_KEY|
-    - Optional: |PLACEHOLDER_KEY|
-    - Optional: |HIDDEN_KEY|
-    - Optional: |INHERIT_KEY|
+    :Required:
+        - |TYPE_KEY|
+    :Optional:
+        - |TOOLTIP_KEY|
+        - |LABEL_KEY|
+        - |PLACEHOLDER_KEY|
+        - |HIDDEN_KEY|
+        - |INHERIT_KEY|
     """
 
     _comparison_type = None
@@ -232,7 +234,8 @@ class StringType(AttributeType):
 
     Supports the following additional keys:
 
-    - Optional: |VALIDATION_KEY| takes a regular expression as value and uses it to validate any input.
+    :Optional:
+        - |VALIDATION_KEY| takes a regular expression as value and uses it to validate any input.
 
     """
 
@@ -324,19 +327,22 @@ class IntType(AttributeType):
 
     Supports the following additional keys:
 
-    - Optional: |MIN_KEY| constraints the input value to not be lower than the provided value.
-    - Optional: |MAX_KEY| constraints the input value to not be higher than the provided value.
+    :Optional:
+        - |MIN_KEY| constraints the input value to not be lower than the provided value.
+        - |MAX_KEY| constraints the input value to not be higher than the provided value.
+        - |UNIT_KEY| shows a prefix in the UI spinner element.
 
     """
 
     _comparison_type = const.ATTRIB_TYPE_INT
-    _typeSpecificKeys = [const.MIN_KEY, const.MAX_KEY]
+    _typeSpecificKeys = [const.MIN_KEY, const.MAX_KEY, const.UNIT_KEY]
 
     @overrides(AttributeType)
     def __init__(self, attribute_definition: dict, globalID: str):
         super().__init__(attribute_definition, globalID)
         self.min = self.checkForKey(const.MIN_KEY, None)
         self.max = self.checkForKey(const.MAX_KEY, None)
+        self.unit = self.checkForKey(const.UNIT_KEY, None)
 
     def _checkMinMax(self, value):
         if type(value) is int or type(value) is float:
@@ -371,6 +377,8 @@ class IntType(AttributeType):
             specifics[const.MIN_KEY] = self.min
         if self.max is not None:
             specifics[const.MAX_KEY] = self.max
+        if self.unit is not None:
+            specifics[const.UNIT_KEY] = self.unit
         return specifics
 
 
@@ -385,8 +393,10 @@ class FloatType(IntType):
 
     Supports the following additional keys:
 
-    - Optional: |MIN_KEY| constraints the input value to not be lower than the provided value.
-    - Optional: |MAX_KEY| constraints the input value to not be higher than the provided value.
+    :Optional:
+        - |MIN_KEY| constraints the input value to not be lower than the provided value.
+        - |MAX_KEY| constraints the input value to not be higher than the provided value.
+        - |UNIT_KEY| shows a prefix in the UI spinner element.
 
     """
 
@@ -412,9 +422,10 @@ class HexType(AttributeType):
 
     Supports the following additional keys:
 
-    - Optional: |MIN_KEY| constraints the input value to not be lower than the provided value.
-    - Optional: |MAX_KEY| constraints the input value to not be higher than the provided value.
-    - Optional: |ALIGNMENT_KEY| constraints the input value to be aligned to the provided value in the form of :math:`{alignmentValue}^{inputValue}`.
+    :Optional:
+        - |MIN_KEY| constraints the input value to not be lower than the provided value.
+        - |MAX_KEY| constraints the input value to not be higher than the provided value.
+        - |ALIGNMENT_KEY| constraints the input value to be aligned to the provided value in the form of :math:`{alignmentValue}^{inputValue}`.
 
     """
 
@@ -493,7 +504,8 @@ class ReferenceListType(AttributeType):
 
     Supports the following additional keys:
 
-    - OPTIONAL: |ELEMENTS_LIST_KEY| constraints the options to choose from to be the ones defined in this property.
+    :OPTIONAL:
+        - |ELEMENTS_LIST_KEY| constraints the options to choose from to be the ones defined in this property.
 
     """
 
@@ -791,9 +803,10 @@ class SliderType(IntType):
 
     Supports the following additional keys:
 
-    - Optional: |MIN_KEY| constraints the input value to not be lower than the provided value.
-    - Optional: |MAX_KEY| constraints the input value to not be higher than the provided value.
-    - Optional: |STEP_KEY| defines the step size for the slider.
+    :Optional:
+        - |MIN_KEY| constraints the input value to not be lower than the provided value.
+        - |MAX_KEY| constraints the input value to not be higher than the provided value.
+        - |STEP_KEY| defines the step size for the slider.
 
     """
 

@@ -92,6 +92,7 @@ class String_element(Ui_element):
         self.attributeDef: StringType
         self.label = QLabel(self.attributeDef.label, parent)
         self.set_ui_element(QLineEdit(parent))
+        self.ui_element: QLineEdit
         if self.attributeDef.validation:
             self.ui_element.setValidator(
                 QRegularExpressionValidator(
@@ -112,6 +113,7 @@ class Bool_element(Ui_element):
         self.attributeDef: BoolType
         self.label = QLabel(self.attributeDef.label, parent)
         self.set_ui_element(QCheckBox(parent))
+        self.ui_element: QCheckBox
         self.ui_element.setChecked(attribute.value)
 
         self._get_current_value_func = self.ui_element.isChecked
@@ -126,10 +128,13 @@ class Int_element(Ui_element):
         self.attributeDef: IntType
         self.label = QLabel(self.attributeDef.label, parent)
         self.set_ui_element(customSpinner(parent))
+        self.ui_element: customSpinner
         if self.attributeDef.min is not None:
             self.ui_element.setMinimum(self.attributeDef.min)
         if self.attributeDef.max is not None:
             self.ui_element.setMaximum(self.attributeDef.max)
+        if self.attributeDef.unit is not None:
+            self.ui_element.setSuffix(f' {self.attributeDef.unit}')
         self.ui_element.setSingleStep(1)
         self.ui_element.setValue(attribute.value)
 
@@ -137,23 +142,13 @@ class Int_element(Ui_element):
         self.ui_element.valueChanged.connect(self.saveToConfigObject)
 
 
-class Float_element(Ui_element):
+class Float_element(Int_element):
     comparisonType = FloatType._comparison_type
 
     def __init__(self, parent: QWidget, attribute: AttributeInstance):
         super().__init__(parent, attribute)
         self.attributeDef: FloatType
-        self.label = QLabel(self.attributeDef.label, parent)
-        self.set_ui_element(customSpinner(parent))
-        if self.attributeDef.min is not None:
-            self.ui_element.setMinimum(self.attributeDef.min)
-        if self.attributeDef.max is not None:
-            self.ui_element.setMaximum(self.attributeDef.max)
-        self.ui_element.setValue(attribute.value)
         self.ui_element.setSingleStep(0.1)
-
-        self._get_current_value_func = self.ui_element.value
-        self.ui_element.valueChanged.connect(self.saveToConfigObject)
 
 
 class Hex_element(Ui_element):
@@ -187,7 +182,6 @@ class ReferenceList_element(Ui_element):
         self.label = QLabel(self.attributeDef.label, parent)
         avaliableOptions = list()
         selectedOptions = list()
-        attribute_targets: Dict[str, str] = dict()
         if len(self.attribute.elements) > 0:
             for label, link in self.attribute.elements:
                 avaliableOptions.append((label, link.resolveElement(self.configuration)))
@@ -288,6 +282,7 @@ class ParentReference_element(Ui_element):
         else:
             dest_link = attribute.value.link
         self.set_ui_element(LinkerWidget(parent, dest_link, self.__possible_choices, self.relink_parent, self.link_parent))
+        self.ui_element: LinkerWidget
 
     def __possible_choices(self):
         return self.attribute.elements

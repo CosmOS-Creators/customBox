@@ -14,6 +14,7 @@ ELEMENTS_LIST_KEY = "elements"  #: [ |JSON_PROPERTY_TYPE_LIST|, REQUIRED in cert
 STEP_KEY = "step"  #: [ |JSON_PROPERTY_TYPE_NUMBER|, default = 1 ] Used to specify a the step value for this attribute definition which will define how a spinner UI element will behave when the user clicks on the up or down arrow. If the value is an integer, the spinner will behave as a integer spinner. If the value is a float, the spinner will behave as a float spinner.
 MIN_KEY = "min"  #: [ |JSON_PROPERTY_TYPE_NUMBER|, default = None ] Used to specify a the minimum value for this attribute definition which will define the minimum value for a spinner UI element.
 MAX_KEY = "max"  #: [ |JSON_PROPERTY_TYPE_NUMBER|, default = None ] Used to specify a the maximum value for this attribute definition which will define the maximum value for a spinner UI element.
+UNIT_KEY = "unit"  #: [ |JSON_PROPERTY_TYPE_STRING|, default = None ] Used to specify the unit of a value UI element. This will be shown as a prefix in the number spinner.
 ALIGNMENT_KEY = "alignment"  #: [ |JSON_PROPERTY_TYPE_NUMBER|, default = None ] Used to specify a alignment value for this attribute definition which will define make sure any input is a multiple of this number.
 
 baseKeys = [LABEL_KEY, TOOLTIP_KEY, HIDDEN_KEY, PLACEHOLDER_KEY, TYPE_KEY]
