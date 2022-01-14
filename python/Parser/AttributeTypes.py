@@ -669,10 +669,6 @@ class SelectionType(AttributeType):
         super().__init__(attribute_definition, globalID)
         self.__elements: Union[Link, list[str]] = self.checkForKey(const.ELEMENTS_LIST_KEY, None)
         if self.__elements is not None:
-            self.resolvedElements: Union[
-                None, List
-            ] = None
-            self.targetedAttribute = None
             if isinstance(self.__elements, list):
                 self._needs_linking = False
             elif isinstance(self.__elements, str):
@@ -686,6 +682,10 @@ class SelectionType(AttributeType):
             raise AttributeError(
                 f'Property "{const.ELEMENTS_LIST_KEY}" is required for type "{self._comparison_type}" but was missing for attribute "{self.globalID}"'
             )
+
+    @property
+    def targetedAttribute(self):
+        return self.__elements.attribute
 
     @overrides(AttributeType)
     def checkValue(self, valueInput: str):
@@ -711,7 +711,7 @@ class SelectionType(AttributeType):
             foundMatch = False
             link = self.__elements
             try:
-                subconfig = link.resolveSubconfig(objConfig)
+                subconfig = self.__elements.resolveSubconfig(objConfig)
             except AttributeError as e:
                 raise AttributeError(
                     f'Error for attribute definition "{self.globalID}" while resolving references: {str(e)}'
@@ -738,11 +738,7 @@ class SelectionType(AttributeType):
                         targetValue.parent.getObjReference(attributeInstance)
                     )
                     foundMatch = True
-                    if self.resolvedElements is not None:
-                        break
-            if self.resolvedElements is None:
-                self.resolvedElements = possibleValues
-                self.targetedAttribute = link.attribute
+                    break
             if foundMatch == False:
                 raise NameError(
                     f'"{attributeInstance.value}" is not a valid choice for Attribute instances of "{self.globalID}". Valid choices are: {possibleValues}'
@@ -771,7 +767,7 @@ class SelectionType(AttributeType):
         if type(value) is str:
             return value
         else:
-            attr = self.targetedAttribute
+            attr = self.__elements.attribute
             if(value is None):
                 raise ValueError(f'For attribute "{self.globalID}" no option was selected but a selection is required.')
             return str(value.getAttribute(attr).value)

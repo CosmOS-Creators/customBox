@@ -6,8 +6,28 @@
             "view_type": "tabbed",
             "tab_label": "Tasks",
             "tab_icon": "task_alt",
-            "allow_element_deletion": false,
-            "allow_element_creation": false
+            "allow_element_deletion": true,
+            "allow_element_creation": true
+        }
+    },
+    "element_restrictions": {
+        "tasks_restrictions": {
+            "requires": [
+                "name",
+                "wcet",
+                "period",
+                "floatingPoint",
+                "isIdle",
+                "isSysJob",
+                "stackSize",
+                "peripheralAccessLowAddress",
+                "peripheralAccessSize",
+                "uniqueId",
+                "program",
+                "lowAddress",
+                "highAddress",
+                "taskId"
+            ]
         }
     },
     "attributes": {

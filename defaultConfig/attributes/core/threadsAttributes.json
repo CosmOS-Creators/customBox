@@ -6,8 +6,27 @@
             "view_type": "tabbed",
             "tab_label": "Threads",
             "tab_icon": "date_range",
-            "allow_element_deletion": false,
-            "allow_element_creation": false
+            "allow_element_deletion": true,
+            "allow_element_creation": true
+        }
+    },
+    "element_restrictions": {
+        "threads_restrictions": {
+            "requires": [
+                "name",
+                "floatingPoint",
+                "isIdle",
+                "stackSize",
+                "priority",
+                "peripheralAccessLowAddress",
+                "peripheralAccessSize",
+                "uniqueId",
+                "program",
+                "lowAddress",
+                "highAddress",
+                "threadId",
+                "alarmId"
+            ]
         }
     },
     "attributes": {
@@ -30,7 +49,8 @@
         "stackSize": {
             "type": "int",
             "label": "Stack size",
-            "tooltip": "Stack size of the current thread"
+            "tooltip": "Stack size of the current thread",
+            "min": 1
         },
         "priority": {
             "type": "int",
