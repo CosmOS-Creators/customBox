@@ -50,8 +50,10 @@ class SchedulerLogic(logicRunnerPlugin.logicRunner):
     def lcmm(self, numbers):
         if len(numbers) > 1:
             return reduce(self.lcm, numbers)
-        else:
+        elif len(numbers) > 0:
             return numbers[0]
+        else:
+            return 0
 
     def clearScheduleTable(self):
         elementNames = []
@@ -72,7 +74,8 @@ class SchedulerLogic(logicRunnerPlugin.logicRunner):
                     if task.period and task.program.core == core
                 ]
             )
-            core.schedulers[0].hyperTick = hyperPeriod
+            for scheduler in core.schedulers:
+                scheduler.hyperTick = hyperPeriod
             for task in self.tasks:
                 if task.program.core == core and task.period:
                     for startTime in range(0, task.period - 1):

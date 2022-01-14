@@ -119,21 +119,22 @@ class MemoryMapperLogic(logicRunnerPlugin.logicRunner):
                         taskWithMaxStackSize = task
                         maxStackSize = task.stackSize
             stackMemory = core.cpu.stackMemory
-            lowAddress, highAddress = self.allocateMemory(
-                stackMemory, taskWithMaxStackSize.stackSize
-            )
-            if not lowAddress or not highAddress:
-                raise ValueError(
-                    f"Task {taskWithMaxStackSize.name} stack with size :{taskWithMaxStackSize.stackSize} bytes cannot be allocated in the {stackMemory}\
-									cause it has only {self.returnFreeBytes(stackMemory)} free bytes"
+            if(taskWithMaxStackSize is not None):
+                lowAddress, highAddress = self.allocateMemory(
+                    stackMemory, taskWithMaxStackSize.stackSize
                 )
-            else:
-                taskWithMaxStackSize.lowAddress = lowAddress
-                taskWithMaxStackSize.highAddress = highAddress
-            for task in self.tasks:
-                if task.program.core == taskWithMaxStackSize.program.core:
-                    task.lowAddress = taskWithMaxStackSize.highAddress - task.stackSize
-                    task.highAddress = taskWithMaxStackSize.highAddress
+                if not lowAddress or not highAddress:
+                    raise ValueError(
+                        f"Task {taskWithMaxStackSize.name} stack with size :{taskWithMaxStackSize.stackSize} bytes cannot be allocated in the {stackMemory}\
+                                        cause it has only {self.returnFreeBytes(stackMemory)} free bytes"
+                    )
+                else:
+                    taskWithMaxStackSize.lowAddress = lowAddress
+                    taskWithMaxStackSize.highAddress = highAddress
+                for task in self.tasks:
+                    if task.program.core == taskWithMaxStackSize.program.core:
+                        task.lowAddress = taskWithMaxStackSize.highAddress - task.stackSize
+                        task.highAddress = taskWithMaxStackSize.highAddress
 
     def mapThreadStacks(self):
         for thread in self.threads:
