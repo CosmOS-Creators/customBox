@@ -197,9 +197,10 @@ class InitializerLogic(logicRunnerPlugin.logicRunner):
 
     def assigneSysJobHypertick(self):
         for core in self.cores:
-            core.coreSysJobHyperTick = max(
-                SysJobGroup.tickMultiplicator for SysJobGroup in core.coreSysJobGroups
-            )
+            if len(core.coreSysJobGroups):
+                core.coreSysJobHyperTick = max(
+                    SysJobGroup.tickMultiplicator for SysJobGroup in core.coreSysJobGroups
+                )
 
     def assigneSchedulerEntries(self):
         for scheduler in self.schedulers:

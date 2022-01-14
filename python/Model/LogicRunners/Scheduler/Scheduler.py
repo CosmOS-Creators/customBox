@@ -48,7 +48,10 @@ class SchedulerLogic(logicRunnerPlugin.logicRunner):
         return tmp
 
     def lcmm(self, numbers):
-        return reduce(self.lcm, numbers)
+        if len(numbers) > 1:
+            return reduce(self.lcm, numbers)
+        else:
+            return numbers[0]
 
     def clearScheduleTable(self):
         elementNames = []
