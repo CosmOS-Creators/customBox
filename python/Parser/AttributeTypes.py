@@ -78,6 +78,10 @@ class AttributeType:
         self.hidden = self.checkForKey(const.HIDDEN_KEY, False)
         self.label = self.checkForKey(const.LABEL_KEY, "")
 
+    def __repr__(self):
+        return f'AttributeType:{self._comparison_type}({self.globalID})'
+
+
     def __new__(cls, *args, **kwargs):
         """Prevent the instantiation of the base class"""
         if cls is AttributeType:
@@ -500,19 +504,21 @@ class ReferenceListType(AttributeType):
     @overrides(AttributeType)
     def __init__(self, attribute_definition: dict, globalID: str):
         super().__init__(attribute_definition, globalID)
-        self.__elements: List[Link] = self.checkForKey(const.ELEMENTS_LIST_KEY, None)
-        if not self.__elements is None:
-            elements = helpers.forceList(self.__elements)
+        self.__elements_def: List[Link] = self.checkForKey(const.ELEMENTS_LIST_KEY, None)
+        if not self.__elements_def is None:
+            elements = helpers.forceList(self.__elements_def)
             elementLinks = []
             for i, element in enumerate(elements):
                 try:
-                    link = Link.force(element)
+                    link = Link.force(element, Link.EMPHASIZE_CONFIG)
                 except Exception as e:
                     raise Exception(
                         f'Every list item of the elements property of the attribute "{self.globalID}" has to be a link but parsing of item {i} was unsuccessful: {str(e)}'
                     ) from e
                 elementLinks.append(link)
             self.__elements = elementLinks
+        else:
+            self.__elements = []
 
     @overrides(AttributeType)
     def checkValue(self, valueInput: List[Union[str, Link, ConfigTypes.ConfigElement]]):
@@ -550,11 +556,10 @@ class ReferenceListType(AttributeType):
                 f'Values for elements of reference list attribute types must be of type list but found type "{type(attributeInstance.value)}" instead'
             )
         linkedTargets = []
-        if not self.__elements is None:
-            objConfig.require(self.__elements)
+        objConfig.require(self.__elements)
         for targetLink in attributeInstance.value:
             link = Link.force(targetLink)
-            if not self.__elements is None:
+            if len(self.__elements) > 0:
                 linkFoundMatch = False
                 for element in self.__elements:
                     if element.config == link.config:
@@ -599,11 +604,8 @@ class ReferenceListType(AttributeType):
     @overrides(AttributeType)
     def _get_serialization_specifics(self):
         specifics = OrderedDict()
-        if self.elements is not None:
-            elements_str = list()
-            for elementLink in self.elements:
-                elements_str.append(str(elementLink))
-            specifics[const.ELEMENTS_LIST_KEY] = elements_str
+        if self.__elements_def is not None:
+            specifics[const.ELEMENTS_LIST_KEY] = self.__elements_def
         return specifics
 
 

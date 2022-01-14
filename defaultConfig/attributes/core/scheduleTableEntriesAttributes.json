@@ -23,9 +23,9 @@
     "attributes": {
         "executionTick": {
             "type": "int",
+            "placeholder": true,
             "min": 0,
-            "max": 2048,
-            "placeholder": true
+            "max": 2048
         },
         "scheduler": {
             "type": "parentReference"

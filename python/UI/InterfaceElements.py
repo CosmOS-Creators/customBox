@@ -196,18 +196,13 @@ class ReferenceList_element(Ui_element):
                 for element in subconfig.elements.values():
                     avaliableOptions.append((str(element.link), element))
         for selection in attribute.value:
-            if len(attribute_targets) > 0:
-                if selection.link.config in attribute_targets:
-                    attribute_target_link = Link.construct(
-                        config=selection.link.config,
-                        element=selection.link.element,
-                        attribute=attribute_targets[selection.link.config],
-                    )
-                    selectedAttribute_str = attribute_target_link.resolveAttribute(
-                        self.configuration
-                    )
-                    selectedOptions.append((selectedAttribute_str.value, selection))
-            else:
+            found_match = False
+            for label, option_element in avaliableOptions:
+                if(option_element.link == selection.link):
+                    selectedOptions.append((label, selection))
+                    found_match = True
+                    break
+            if found_match == False:
                 selectedOptions.append((str(selection.link), selection))
         self.set_ui_element(
             ListBuilderWidget(parent, avaliableOptions, selectedOptions)
