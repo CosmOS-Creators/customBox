@@ -880,7 +880,7 @@ class ConfigElement(dynamicObject, serializer.serializeable):
         for attributeInstance in self.attributeInstances.values():
             valid, error = attributeInstance.isValid()
             if not valid:
-                return False, f'´Value of attribute "{self.link}" is invalid: {error}'
+                return False, f'Value of attribute "{self.link}" is invalid: {error}'
         return True, ""
 
 class AttributeInstance(serializer.serializeable):

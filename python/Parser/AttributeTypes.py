@@ -5,7 +5,7 @@ from Parser.ParserExceptions import ValidationError
 from Parser.Serializer import serialize
 import Parser.helpers as helpers
 import Parser.constants as const
-from typing import List, Union
+from typing import List, Tuple, Union
 from Parser.helpers import overrides
 from Parser.LinkElement import Link
 
@@ -126,11 +126,10 @@ class AttributeType:
             f'Error in attribute "{self.globalID}": relink method for attributes of type "{self._comparison_type}" is not supported'
         )
 
-    def get_elements(self, obj_config: ConfigTypes.Configuration):
+    def get_elements(self, obj_config: ConfigTypes.Configuration) -> List[Tuple[str, Link]]:
         raise NotImplementedError(
             f'Error in attribute "{self.globalID}": get_elements method for attributes of type "{self._comparison_type}" is not supported'
         )
-
 
     def checkForForbiddenKeys(self, listOfAllowedKeys: List[str]):
         global baseKeys
@@ -501,14 +500,11 @@ class ReferenceListType(AttributeType):
     @overrides(AttributeType)
     def __init__(self, attribute_definition: dict, globalID: str):
         super().__init__(attribute_definition, globalID)
-        self.elements: List[Link] = self.checkForKey(const.ELEMENTS_LIST_KEY, None)
-        if not self.elements is None:
-            if not type(self.elements) is list:
-                raise TypeError(
-                    f'The elements property must always be a list for reference list attribute types but found type "{type(self.elements)}" instead for attribute "{self.globalID}"'
-                )
+        self.__elements: List[Link] = self.checkForKey(const.ELEMENTS_LIST_KEY, None)
+        if not self.__elements is None:
+            elements = helpers.forceList(self.__elements)
             elementLinks = []
-            for i, element in enumerate(self.elements):
+            for i, element in enumerate(elements):
                 try:
                     link = Link.force(element)
                 except Exception as e:
@@ -516,7 +512,7 @@ class ReferenceListType(AttributeType):
                         f'Every list item of the elements property of the attribute "{self.globalID}" has to be a link but parsing of item {i} was unsuccessful: {str(e)}'
                     ) from e
                 elementLinks.append(link)
-            self.elements = elementLinks
+            self.__elements = elementLinks
 
     @overrides(AttributeType)
     def checkValue(self, valueInput: List[Union[str, Link, ConfigTypes.ConfigElement]]):
@@ -554,13 +550,13 @@ class ReferenceListType(AttributeType):
                 f'Values for elements of reference list attribute types must be of type list but found type "{type(attributeInstance.value)}" instead'
             )
         linkedTargets = []
-        if not self.elements is None:
-            objConfig.require(self.elements)
+        if not self.__elements is None:
+            objConfig.require(self.__elements)
         for targetLink in attributeInstance.value:
             link = Link.force(targetLink)
-            if not self.elements is None:
+            if not self.__elements is None:
                 linkFoundMatch = False
-                for element in self.elements:
+                for element in self.__elements:
                     if element.config == link.config:
                         linkFoundMatch = True
                         break
@@ -576,6 +572,22 @@ class ReferenceListType(AttributeType):
                 ) from e
             linkedTargets.append(targetElement.getObjReference(linkedTargets))
         attributeInstance.setValueDirect(linkedTargets)
+
+    @overrides(AttributeType)
+    def get_elements(self, obj_config: ConfigTypes.Configuration):
+        elements: List[Tuple[str,Link]] = list()
+        if(obj_config is not None and self.__elements is not None):
+            for element_link in self.__elements:
+                if(element_link.hasAttribute()):
+                    attrib_list = element_link.resolveAttributeList(obj_config)
+                    for attrib_inst, config_element in attrib_list:
+                        elements.append((attrib_inst.value, config_element.link))
+                else:
+                    subconfig = element_link.resolveSubconfig(obj_config)
+                    for config_element in subconfig.elements.values():
+                        config_element_link = config_element.link
+                        elements.append((config_element_link.getLink(), config_element_link))
+        return elements
 
     @overrides(AttributeType)
     def _serialize_value(self, value: List[ConfigTypes.ConfigElement]):
@@ -639,7 +651,10 @@ class SelectionType(AttributeType):
 
     Supports the following additional keys:
 
-    - Required: |ELEMENTS_LIST_KEY| constraints the options to choose from to be the ones defined in this property.
+    :Required:
+        - |ELEMENTS_LIST_KEY| constraints the options to choose from to be the ones defined in this property.
+            :type: list[str] or str
+            :behaviour: If a list of strings, every list entry will show up as an option as is. If a string, the string will be interpreted as a link.
 
     """
 
@@ -650,21 +665,20 @@ class SelectionType(AttributeType):
     @overrides(AttributeType)
     def __init__(self, attribute_definition: dict, globalID: str):
         super().__init__(attribute_definition, globalID)
-        if const.ELEMENTS_LIST_KEY in attribute_definition:
-            self.elements: Union[str, list[str]] = attribute_definition[
-                const.ELEMENTS_LIST_KEY
-            ]
+        self.__elements: Union[Link, list[str]] = self.checkForKey(const.ELEMENTS_LIST_KEY, None)
+        if self.__elements is not None:
             self.resolvedElements: Union[
                 None, List
             ] = None
             self.targetedAttribute = None
-            if type(self.elements) is list:
+            if isinstance(self.__elements, list):
                 self._needs_linking = False
-            elif type(self.elements) is str:
+            elif isinstance(self.__elements, str):
+                self.__elements = Link.force(self.__elements, emphasize=Link.EMPHASIZE_CONFIG)
                 self._needs_linking = True
             else:
                 raise TypeError(
-                    f'Attribute "{self.globalID}" only allows string and list types for "{const.ELEMENTS_LIST_KEY}" property but found type "{type(self.elements)}"'
+                    f'Attribute "{self.globalID}" only allows string and list types for "{const.ELEMENTS_LIST_KEY}" property but found type "{type(self.__elements)}"'
                 )
         else:
             raise AttributeError(
@@ -673,10 +687,10 @@ class SelectionType(AttributeType):
 
     @overrides(AttributeType)
     def checkValue(self, valueInput: str):
-        if type(self.elements) is list:
-            if not valueInput in self.elements:
+        if isinstance(self.__elements, list):
+            if not valueInput in self.__elements:
                 reportValidationError(
-                    f"The input value ({valueInput}) does not match any of the specified elements ({self.elements})"
+                    f"The input value ({valueInput}) does not match any of the specified elements ({self.__elements})"
                 )
         return valueInput
 
@@ -693,7 +707,7 @@ class SelectionType(AttributeType):
         if self._needs_linking:
             possibleValues = []
             foundMatch = False
-            link = Link(self.elements, Link.EMPHASIZE_ELEMENT)
+            link = self.__elements
             try:
                 subconfig = link.resolveSubconfig(objConfig)
             except AttributeError as e:
@@ -733,6 +747,24 @@ class SelectionType(AttributeType):
                 )
 
     @overrides(AttributeType)
+    def get_elements(self, obj_config: ConfigTypes.Configuration):
+        elements: List[Tuple[str,Link]] = list()
+        if(self.__elements is not None):
+            if(isinstance(self.__elements, Link)):
+                if(self.__elements.hasAttribute()):
+                    options = self.__elements.resolveAttributeList(obj_config)
+                    for attrib_inst, config_element in options:
+                        elements.append((attrib_inst.value, attrib_inst.link))
+                else:
+                    subconfig = self.__elements.resolveSubconfig(obj_config)
+                    for element in subconfig.elements.values():
+                        element_link = element.link
+                        elements.append((element_link.getLink(), element_link))
+            elif(isinstance(self.__elements, list)):
+                elements = [(e, e) for e in self.__elements]
+        return elements
+
+    @overrides(AttributeType)
     def _serialize_value(self, value: Union[ConfigTypes.ConfigElement, str]):
         if type(value) is str:
             return value
@@ -745,8 +777,8 @@ class SelectionType(AttributeType):
     @overrides(AttributeType)
     def _get_serialization_specifics(self):
         specifics = OrderedDict()
-        if self.elements is not None:
-            specifics[const.ELEMENTS_LIST_KEY] = self.elements
+        if self.__elements is not None:
+            specifics[const.ELEMENTS_LIST_KEY] = self.__elements
         return specifics
 
 
@@ -913,19 +945,21 @@ class ParentReferenceType(AttributeType):
 
     @overrides(AttributeType)
     def get_elements(self, obj_config: ConfigTypes.Configuration):
-        elements: List[Link] = list()
+        elements: List[Tuple[str,Link]] = list()
         if(obj_config is not None):
             if(self.__elements is not None):
                 if(isinstance(self.__elements, Link)):
                     for element in self.__elements.resolveSubconfig(obj_config).elements.values():
                         if(self.__elements.hasAttribute()):
-                            elements.append(element.getAttribute(self.__elements.attribute).value)
+                            link_text = element.getAttribute(self.__elements.attribute).value
                         else:
-                            elements.append(element.link)
+                            link_text = element.link.getLink()
+                        elements.append((link_text, element.link))
             else:
                 for subconfig in obj_config.configs.values():
                     for element in subconfig.elements.values():
-                        elements.append(element.link)
+                        link = element.link
+                        elements.append(link.getLink(), link)
         return elements
 
     @overrides(AttributeType)

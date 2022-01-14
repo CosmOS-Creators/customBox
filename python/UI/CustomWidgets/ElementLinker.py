@@ -1,11 +1,11 @@
-from typing import List
+from typing import List, Tuple
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QDialog, QDialogButtonBox, QFrame, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QMessageBox, QPushButton, QVBoxLayout, QWidget
 from Parser.LinkElement import Link
 
 
 class RelinkDialog(QDialog):
-    def __init__(self, parent: QWidget, options: List[Link], link_callback, supported = False):
+    def __init__(self, parent: QWidget, options: List[Tuple[str, Link]], link_callback, supported = False):
         super().__init__(parent)
         self.link_callback = link_callback
         self.__supported_operation = supported
@@ -21,10 +21,10 @@ class RelinkDialog(QDialog):
         self.layout1 = QVBoxLayout(self)
         self.listWidget = QListWidget(self)
         self.listWidget.setSelectionMode(QListWidget.SelectionMode.SingleSelection)
-        for option in options:
+        for option_str, option in options:
             newItem = QListWidgetItem()
             newItem.setData(Qt.UserRole, option)
-            newItem.setText(str(option))
+            newItem.setText(option_str)
             self.listWidget.addItem(newItem)
         self.layout1.addWidget(QLabel("Select the new item you want to set as a Parent"))
         self.layout1.addWidget(self.listWidget)

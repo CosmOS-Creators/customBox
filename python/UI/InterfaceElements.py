@@ -188,17 +188,9 @@ class ReferenceList_element(Ui_element):
         avaliableOptions = list()
         selectedOptions = list()
         attribute_targets: Dict[str, str] = dict()
-        if self.attributeDef.elements:
-            for referencedElement in self.attributeDef.elements:
-                if referencedElement.config not in attribute_targets:
-                    attribute_targets[
-                        referencedElement.config
-                    ] = referencedElement.attribute
-                avaliableChoices = referencedElement.resolveAttributeList(
-                    self.configuration
-                )
-                for attrib_inst, conf_element in avaliableChoices:
-                    avaliableOptions.append((attrib_inst.value, conf_element))
+        if len(self.attribute.elements) > 0:
+            for label, link in self.attribute.elements:
+                avaliableOptions.append((label, link.resolveElement(self.configuration)))
         else:
             for subconfig in self.configuration.configs.values():
                 for element in subconfig.elements.values():
@@ -260,15 +252,12 @@ class Selection_element(Ui_element):
         self.label = QLabel(self.attributeDef.label, parent)
         selection_combobox = QComboBox(parent)
         selection_combobox.wheelEvent = lambda event: None
+        config_object = attribute.parent.parent.parent
         self.set_ui_element(selection_combobox)
         self.ui_element: QComboBox
-        if type(self.attributeDef.elements) is list:
-            for selectionElement in self.attributeDef.elements:
-                self.ui_element.addItem(selectionElement, selectionElement)
-            self.ui_element.setCurrentText(attribute.value)
-        else:
-            for selectionElement in self.attributeDef.resolvedElements:
-                self.ui_element.addItem(selectionElement.value, selectionElement)
+        if self.attributeDef.needsLinking:
+            for label, element_link in self.attribute.elements:
+                self.ui_element.addItem(label, element_link.resolveAttribute(config_object))
             selected_element: ConfigElement = attribute.value
             if selected_element is not None:
                 selected_attrib = selected_element.getAttribute(
@@ -278,6 +267,10 @@ class Selection_element(Ui_element):
             else:
                 self.ui_element.setCurrentIndex(-1)
                 self.setValidity(False, "Please select an item")
+        else:
+            for label, data in self.attribute.elements:
+                self.ui_element.addItem(label, data)
+            self.ui_element.setCurrentText(attribute.value)
 
         self._get_current_value_func = self.ui_element.currentData
         self.ui_element.currentIndexChanged.connect(self.saveToConfigObject)
