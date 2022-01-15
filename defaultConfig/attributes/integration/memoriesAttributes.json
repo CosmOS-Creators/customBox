@@ -36,7 +36,8 @@
         "size": {
             "type": "hex",
             "label": "Size of the memory",
-            "tooltip": "Size of the current memory consistent with the current MCU datasheet"
+            "tooltip": "Size of the current memory consistent with the current MCU datasheet",
+            "unit": "bytes"
         },
         "lowAddress": {
             "type": "hex",

@@ -36,7 +36,7 @@ class sidebar(QWidget):
             + styleExtensions.SIDEBAR_ICON_PADDING_LEFT
             + styleExtensions.SIDEBAR_ICON_PADDING_RIGHT
         )
-        self.isCollapsed = True
+        self.isCollapsed = False
 
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setObjectName("sideMenu")

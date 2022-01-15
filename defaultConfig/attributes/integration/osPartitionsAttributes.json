@@ -20,7 +20,8 @@
         "size": {
             "type": "hex",
             "label": "Size of the current partition",
-            "tooltip": "Size in bytes for the current partition"
+            "tooltip": "Size in bytes for the current partition",
+            "unit": "bytes"
         },
         "boot": {
             "type": "bool",
