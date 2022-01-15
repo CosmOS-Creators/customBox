@@ -36,6 +36,7 @@ class sidebar(QWidget):
             + styleExtensions.SIDEBAR_ICON_PADDING_LEFT
             + styleExtensions.SIDEBAR_ICON_PADDING_RIGHT
         )
+        self.isCollapsed = True
 
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setObjectName("sideMenu")
@@ -67,7 +68,6 @@ class sidebar(QWidget):
 
         self.numStaticButtons = self.sidebar_layout.count() - 1
         self.current_index = 0
-        self.isCollapsed = True
 
         self.toggle_animation_1 = QPropertyAnimation(self, b"minimumWidth")
         self.toggle_animation_1.setEasingCurve(QEasingCurve.InOutQuart)
@@ -79,9 +79,6 @@ class sidebar(QWidget):
         self.anim_group.addAnimation(self.toggle_animation_1)
         self.anim_group.addAnimation(self.toggle_animation_2)
         self.anim_group.finished.connect(self.setSidebarButtonText)
-
-        self.setMaximumWidth(self.collapsedWidth)
-        self.setMinimumWidth(self.collapsedWidth)
 
     def _addMenuButton(self, text: str, icon: str, action=None):
         if action is not None:
@@ -141,6 +138,12 @@ class sidebar(QWidget):
         button.adjustSize()
         if self.expandedWidth < button.width():
             self.expandedWidth = button.width()
+        if self.isCollapsed == False:
+            self.setMaximumWidth(self.expandedWidth)
+            self.setMinimumWidth(self.expandedWidth)
+        else:
+            self.setMaximumWidth(self.collapsedWidth)
+            self.setMinimumWidth(self.collapsedWidth)
 
     def toggleSidebar(self):
         if self.isCollapsed:
