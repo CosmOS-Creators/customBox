@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QProgressDialog, QWidget
+from PySide6.QtWidgets import QApplication, QProgressDialog, QWidget
 
 
 import Generator.GeneratorPluginSkeleton as PluginSkeleton
@@ -23,6 +23,7 @@ class UILoggerPlugin(PluginSkeleton.GeneratorPlugin):
         else:
             self.pd.canceled.connect(self.cancel)
         self.pd.setWindowModality(Qt.WindowModal)
+        self.pd.setModal(True)
         self.pd.show()
 
     @overrides(PluginSkeleton.GeneratorPlugin)
@@ -39,7 +40,7 @@ class UILoggerPlugin(PluginSkeleton.GeneratorPlugin):
     @overrides(PluginSkeleton.GeneratorPlugin)
     def postFileGeneration(self, file_path: Path, file_content: str):
         self.pd.setValue(self.pd.value() + 1)
-        self.pd.show()
+        QApplication.processEvents()
         return True
 
     def register_cancel_callback(self, cancel_callback):
