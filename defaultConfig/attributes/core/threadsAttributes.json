@@ -50,7 +50,8 @@
             "type": "int",
             "label": "Stack size",
             "tooltip": "Stack size of the current thread",
-            "min": 1
+            "min": 1,
+            "unit": "bytes"
         },
         "priority": {
             "type": "int",
@@ -66,7 +67,8 @@
             "type": "int",
             "label": "Peripheral access size",
             "tooltip": "In the case task needs access to the peripheral memory region, the size needs to be set",
-            "min": 0
+            "min": 0,
+            "unit": "bytes"
         },
         "uniqueId": {
             "type": "int",

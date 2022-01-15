@@ -37,13 +37,15 @@
             "type": "int",
             "label": "Size of the program memory section",
             "tooltip": "Size of the program memory section consisting of initialized, uninitialized data and heap",
-            "min": 0
+            "min": 0,
+            "unit": "bytes"
         },
         "heapSize": {
             "type": "int",
             "label": "Size of the program heap",
             "tooltip": "Size of the program heap placed in the program memory",
-            "min": 0
+            "min": 0,
+            "unit": "bytes"
         },
         "lowAddress": {
             "type": "int",

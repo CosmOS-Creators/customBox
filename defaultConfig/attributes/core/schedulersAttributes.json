@@ -49,7 +49,7 @@
             "tooltip": "Preempt period for the threads",
             "min": 0,
             "max": 2048,
-            "unit": "tick"
+            "unit": "ticks"
         },
         "core": {
             "type": "parentReference",

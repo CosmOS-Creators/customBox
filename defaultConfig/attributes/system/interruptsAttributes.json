@@ -6,8 +6,18 @@
             "view_type": "tabbed",
             "tab_label": "Interrupts",
             "tab_icon": "flash_on",
-            "allow_element_deletion": false,
-            "allow_element_creation": false
+            "allow_element_deletion": true,
+            "allow_element_creation": true
+        }
+    },
+    "element_restrictions": {
+        "interrupt_restrictions": {
+            "requires": [
+                "name",
+                "interruptHandlerFunc",
+                "thread",
+                "interruptId"
+            ]
         }
     },
     "attributes": {

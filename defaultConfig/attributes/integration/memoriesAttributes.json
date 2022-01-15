@@ -6,8 +6,19 @@
             "view_type": "tabbed",
             "tab_label": "Memories",
             "tab_icon": "sd_card",
-            "allow_element_deletion": false,
-            "allow_element_creation": false
+            "allow_element_deletion": true,
+            "allow_element_creation": true
+        }
+    },
+    "element_restrictions": {
+        "memory_restrictions": {
+            "requires": [
+                "name",
+                "size",
+                "lowAddress",
+                "cores",
+                "freeChunks"
+            ]
         }
     },
     "attributes": {

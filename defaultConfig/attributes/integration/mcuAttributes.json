@@ -10,6 +10,17 @@
             "allow_element_creation": false
         }
     },
+    "element_restrictions": {
+        "mcu_restrictions": {
+            "requires": [
+                "mcuName",
+                "cpuBitWidth",
+                "systemTimerTickCount",
+                "addressBitWidth",
+                "architecture"
+            ]
+        }
+    },
     "attributes": {
         "mcuName": {
             "type": "string",
@@ -20,12 +31,14 @@
         "cpuBitWidth": {
             "type": "int",
             "label": "Bit width of the CPU architecture",
-            "tooltip": "CPU bitwidth defined by datasheet"
+            "tooltip": "CPU bitwidth defined by datasheet",
+            "unit": "bits"
         },
         "addressBitWidth": {
             "type": "int",
             "label": "Bit width of the address bus",
-            "tooltip": "Address width defined by datasheet"
+            "tooltip": "Address width defined by datasheet",
+            "unit": "bits"
         },
         "architecture": {
             "type": "string",

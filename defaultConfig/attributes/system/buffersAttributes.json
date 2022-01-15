@@ -6,8 +6,27 @@
             "view_type": "tabbed",
             "tab_label": "Buffers",
             "tab_icon": "inventory_2",
-            "allow_element_deletion": false,
-            "allow_element_creation": false
+            "allow_element_deletion": true,
+            "allow_element_creation": true
+        }
+    },
+    "element_restrictions": {
+        "buffer_restrictions": {
+            "requires": [
+                "name",
+                "size",
+                "isDoubleBuffer",
+                "readPermissions",
+                "writePermissions",
+                "compressedReadPermission",
+                "compressedWritePermission",
+                "compressedReadPermissionInverted",
+                "compressedWritePermissionInverted",
+                "bufferId",
+                "doubleBufferId",
+                "spinlockId",
+                "isInterCore"
+            ]
         }
     },
     "attributes": {
@@ -22,7 +41,8 @@
             "label": "Buffer size",
             "tooltip": "Size of the current buffer in bytes",
             "min": 0,
-            "max": 2048
+            "max": 2048,
+            "unit": "bytes"
         },
         "isDoubleBuffer": {
             "type": "bool",

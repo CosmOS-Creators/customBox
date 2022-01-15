@@ -40,12 +40,14 @@
         "wcet": {
             "type": "int",
             "label": "Worst case execution time",
-            "tooltip": "Worst case execution time in ticks"
+            "tooltip": "Worst case execution time in ticks",
+            "unit": "ticks"
         },
         "period": {
             "type": "int",
             "label": "Scheduling period",
-            "tooltip": "Scheduling period in ticks"
+            "tooltip": "Scheduling period in ticks",
+            "unit": "ticks"
         },
         "floatingPoint": {
             "type": "bool",
@@ -65,7 +67,8 @@
         "stackSize": {
             "type": "int",
             "label": "Stack size of the task",
-            "tooltip": "Stack size of the current task"
+            "tooltip": "Stack size of the current task",
+            "unit": "bytes"
         },
         "peripheralAccessLowAddress": {
             "type": "hex",
@@ -76,7 +79,8 @@
             "type": "int",
             "label": "Peripheral access size",
             "tooltip": "In the case task needs access to the peripheral memory region, the size needs to be set",
-            "min": 0
+            "min": 0,
+            "unit": "bytes"
         },
         "uniqueId": {
             "type": "int",

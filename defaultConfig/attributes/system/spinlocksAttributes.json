@@ -6,8 +6,16 @@
             "view_type": "tabbed",
             "tab_label": "Spinlocks",
             "tab_icon": "lock_reset",
-            "allow_element_deletion": false,
-            "allow_element_creation": false
+            "allow_element_deletion": true,
+            "allow_element_creation": true
+        }
+    },
+    "element_restrictions": {
+        "spinlock_restrictions": {
+            "requires": [
+                "name",
+                "spinlockId"
+            ]
         }
     },
     "attributes": {

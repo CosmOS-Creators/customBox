@@ -60,7 +60,8 @@
         "userCodeSize": {
             "type": "int",
             "label": "User code section size",
-            "tooltip": "Size of the user code section in the local core flash memory bank"
+            "tooltip": "Size of the user code section in the local core flash memory bank",
+            "unit": "bytes"
         },
         "userCodeLowAddress": {
             "type": "int",
@@ -73,7 +74,8 @@
         "staticDataSize": {
             "type": "int",
             "label": "Unmapped code section size",
-            "tooltip": "Size of the static data section in the local core flash memory bank"
+            "tooltip": "Size of the static data section in the local core flash memory bank",
+            "unit": "bytes"
         },
         "staticDataLowAddress": {
             "type": "int",
@@ -87,13 +89,15 @@
             "type": "int",
             "label": "Unmapped variable data section size",
             "tooltip": "Size of the unmapped data section (used mainly for libraries and startup code, not protected by MPU)",
-            "min": 0
+            "min": 0,
+            "unit": "bytes"
         },
         "unmappedHeapSize": {
             "type": "int",
             "label": "Unmapped heap section size",
             "tooltip": "Size of the unmapped heap section (used mainly for libraries and startup code, not protected by MPU)",
-            "min": 0
+            "min": 0,
+            "unit": "bytes"
         },
         "unmappedDataLowAddress": {
             "type": "int",

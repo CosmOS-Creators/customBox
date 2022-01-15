@@ -6,8 +6,25 @@
             "view_type": "tabbed",
             "tab_label": "Channels",
             "tab_icon": "import_export",
-            "allow_element_deletion": false,
-            "allow_element_creation": false
+            "allow_element_deletion": true,
+            "allow_element_creation": true
+        }
+    },
+    "element_restrictions": {
+        "channel_restrictions": {
+            "requires": [
+                "name",
+                "sendPoolSize",
+                "replyPoolSize",
+                "replyPermissions",
+                "sendPermissions",
+                "compressedReplyPermission",
+                "compressedSendPermission",
+                "compressedReplyPermissionInverted",
+                "compressedSendPermissionInverted",
+                "channelId",
+                "semaphoreId"
+            ]
         }
     },
     "attributes": {
@@ -22,14 +39,16 @@
             "label": "Send pool size",
             "tooltip": "Size of the send pool in bytes",
             "min": 0,
-            "max": 2048
+            "max": 2048,
+            "unit": "bytes"
         },
         "replyPoolSize": {
             "type": "int",
             "label": "Reply pool size",
             "tooltip": "Size of the reply pool in bytes",
             "min": 0,
-            "max": 2048
+            "max": 2048,
+            "unit": "bytes"
         },
         "replyPermissions": {
             "type": "referenceList",

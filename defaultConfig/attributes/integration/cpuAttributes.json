@@ -6,23 +6,37 @@
             "view_type": "tabbed",
             "tab_label": "CPUs",
             "tab_icon": "memory",
-            "allow_element_deletion": false,
-            "allow_element_creation": false
+            "allow_element_deletion": true,
+            "allow_element_creation": true
+        }
+    },
+    "element_restrictions": {
+        "cpu_restrictions": {
+            "requires": [
+                "systemTimerWidth",
+                "systemTimerFrequency",
+                "systemTimerTickCount",
+                "memoryProtection",
+                "stackMemory",
+                "flashMemory"
+            ]
         }
     },
     "attributes": {
         "systemTimerWidth": {
             "type": "int",
-            "label": "System Timer bit width"
+            "label": "System Timer bit width",
+            "unit": "bits"
         },
         "systemTimerFrequency": {
             "type": "int",
-            "label": "System timer frequency in Hz"
+            "label": "System timer frequency in Hz",
+            "unit": "Hz"
         },
         "systemTimerTickCount": {
             "type": "int",
-            "label": "System timer one tick count",
-            "tooltip": "Defines load value of the one tick for the system timer"
+            "label": "System timer one tick load",
+            "tooltip": "Defines load value of the one operating system tick for the system timer, timer load = 1 system tick"
         },
         "memoryProtection": {
             "type": "bool",

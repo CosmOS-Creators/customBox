@@ -6,8 +6,16 @@
             "view_type": "tabbed",
             "tab_label": "Semaphores",
             "tab_icon": "sync_lock",
-            "allow_element_deletion": false,
-            "allow_element_creation": false
+            "allow_element_deletion": true,
+            "allow_element_creation": true
+        }
+    },
+    "element_restrictions": {
+        "semaphore_restrictions": {
+            "requires": [
+                "name",
+                "semaphoreId"
+            ]
         }
     },
     "attributes": {

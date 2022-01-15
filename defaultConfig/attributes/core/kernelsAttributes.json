@@ -16,7 +16,8 @@
             "label": "Stack size",
             "tooltip": "Stack size of the current kernel",
             "min": 0,
-            "max": 2048
+            "max": 2048,
+            "unit": "bytes"
         },
         "lowAddress": {
             "type": "int",

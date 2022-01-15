@@ -6,8 +6,17 @@
             "view_type": "tabbed",
             "tab_label": "OS events",
             "tab_icon": "alt_route",
-            "allow_element_deletion": false,
-            "allow_element_creation": false
+            "allow_element_deletion": true,
+            "allow_element_creation": true
+        }
+    },
+    "element_restrictions": {
+        "osEvent_restrictions": {
+            "requires": [
+                "eventHandlerFunc",
+                "apiHeader",
+                "eventName"
+            ]
         }
     },
     "attributes": {

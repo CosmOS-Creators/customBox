@@ -6,8 +6,19 @@
             "view_type": "tabbed",
             "tab_label": "Sys Jobs",
             "tab_icon": "work_outline",
-            "allow_element_deletion": false,
-            "allow_element_creation": false
+            "allow_element_deletion": true,
+            "allow_element_creation": true
+        }
+    },
+    "element_restrictions": {
+        "sysJobs_restrictions": {
+            "requires": [
+                "tickMultiplicator",
+                "handlers",
+                "apiHeaders",
+                "core",
+                "groupId"
+            ]
         }
     },
     "attributes": {
@@ -16,7 +27,8 @@
             "label": "System job group task period multiplicator",
             "tooltip": "Multiplicator of the sysJob task tick for the current group, this group will be triggered with tick multiplicator*tick of sysJob task",
             "min": 0,
-            "max": 2048
+            "max": 2048,
+            "unit": "ticks"
         },
         "handlers": {
             "type": "stringList",
