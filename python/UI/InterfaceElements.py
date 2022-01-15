@@ -167,6 +167,8 @@ class Hex_element(Ui_element):
             self.ui_element.setMaximum(self.attributeDef.max)
         if self.attributeDef.alignment is not None:
             self.ui_element.setAlignment(self.attributeDef.alignment)
+        if self.attributeDef.unit is not None:
+            self.ui_element.setSuffix(f' {self.attributeDef.unit}')
 
         self._get_current_value_func = self.ui_element.value
         self.ui_element.valueChanged.connect(self.saveToConfigObject)

@@ -430,7 +430,7 @@ class HexType(AttributeType):
     """
 
     _comparison_type = const.ATTRIB_TYPE_HEX
-    _typeSpecificKeys = [const.MIN_KEY, const.MAX_KEY, const.ALIGNMENT_KEY]
+    _typeSpecificKeys = [const.MIN_KEY, const.MAX_KEY, const.ALIGNMENT_KEY, const.UNIT_KEY]
 
     @overrides(AttributeType)
     def __init__(self, attribute_definition: dict, globalID: str):
@@ -442,6 +442,7 @@ class HexType(AttributeType):
         self.min = helpers.toInt(min)
         self.max = helpers.toInt(max)
         self.alignment = self.checkForKey(const.ALIGNMENT_KEY, None)
+        self.unit = self.checkForKey(const.UNIT_KEY, None)
 
     def __ensure_hex_consistency(self, value):
         if isinstance(value, str):
@@ -490,6 +491,8 @@ class HexType(AttributeType):
             specifics[const.MAX_KEY] = self.max
         if self.alignment is not None:
             specifics[const.ALIGNMENT_KEY] = self.alignment
+        if self.unit is not None:
+            specifics[const.UNIT_KEY] = self.unit
         return specifics
 
 
