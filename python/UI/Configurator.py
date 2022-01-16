@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import QApplication, QSplashScreen
+from PySide6.QtCore import Qt
 from qt_material import apply_stylesheet
 from pathlib import Path
 from UI.support import icons
@@ -8,6 +9,7 @@ import UI.PageBuilder as pageBuilder
 import os
 
 os.environ["QT_FONT_DPI"] = "96"  # FIX Problem for High DPI and Scale above 100%
+os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 
 
 class Configurator:
@@ -32,6 +34,9 @@ class Configurator:
             )
             icons.set_default_color("white")
         self.app = QApplication([])
+        self.app.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+        self.app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+
         self.splash = QSplashScreen(
             icons.Amimation("custombox-logo-animation").pixmap(200)
         )
