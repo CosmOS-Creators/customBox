@@ -1,9 +1,8 @@
 import json
 import os
-import Parser.VersionHandling as vh
 import Parser.AttributeTypes as AttributeTypes
 import Parser.ConfigTypes as ConfigTypes
-import Parser.WorkspaceParser as WorkspaceParser
+import Parser.EnvironmentParser as EnvironmentParser
 import Parser.constants as const
 from pathlib import Path
 from typing import Dict, List, Union, NewType
@@ -94,21 +93,22 @@ def discoverConfigFiles(configPath: Union[str, List[str]]) -> List[Path]:
 class ConfigParser:
     def __init__(
         self,
-        workspace: Union[
-            WorkspaceParser.Workspace, Union[Union[str, Path], List[Union[str, Path]]]
+        environment: Union[
+            EnvironmentParser.Environment,
+            Union[Union[str, Path], List[Union[str, Path]]],
         ],
     ):
         self.__configs = None
-        if isinstance(workspace, WorkspaceParser.Workspace):
-            workspace.requireFolder(["config"])
-            self.__workspace = workspace
+        if isinstance(environment, EnvironmentParser.Environment):
+            environment.requireFolder(["config"])
+            self.__environment = environment
             return
-        if isinstance(workspace, str) or isinstance(workspace, Path):
-            workspace = [workspace]
-        if isinstance(workspace, list):
-            self.__workspace = None
+        if isinstance(environment, str) or isinstance(environment, Path):
+            environment = [environment]
+        if isinstance(environment, list):
+            self.__environment = None
             self.__configs: List[Path] = list()
-            for config in workspace:
+            for config in environment:
                 if isinstance(config, str):
                     self.__configs.append(Path(config))
                 elif isinstance(config, Path):
@@ -119,16 +119,16 @@ class ConfigParser:
                     )
         else:
             raise TypeError(
-                f"Only supported types as a config input are List[str | Path] but got {type(workspace)} instead."
+                f"Only supported types as a config input are List[str | Path] but got {type(environment)} instead."
             )
 
     @property
-    def workspace(self):
-        return self.__workspace
+    def environment(self):
+        return self.__environment
 
     def parse(self) -> ConfigTypes.Configuration:
-        if self.__workspace is not None:
-            configFiles = discoverConfigFiles(self.__workspace.config)
+        if self.__environment is not None:
+            configFiles = discoverConfigFiles(self.__environment.config)
         elif self.__configs is not None:
             configFiles = discoverConfigFiles(self.__configs)
         else:
@@ -175,10 +175,10 @@ class ConfigParser:
 
 
 if __name__ == "__main__":
-    parser = WorkspaceParser.Workspace.getReqiredArgparse()
+    parser = EnvironmentParser.Environment.getReqiredArgparse()
     args = parser.parse_args()
-    workspace = WorkspaceParser.Workspace(args.WORKSPACE)
-    parser = ConfigParser(workspace)
+    environment = EnvironmentParser.Environment(args.ENVIRONMENT_CONFIG)
+    parser = ConfigParser(environment)
     fullConfig = parser.parse()
     fullConfig.require(["tasks/task_0:uniqueId"])
     fullConfig.tasks.task_0.uniqueId = 5

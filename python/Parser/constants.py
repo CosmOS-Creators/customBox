@@ -21,16 +21,16 @@ baseKeys = [LABEL_KEY, TOOLTIP_KEY, HIDDEN_KEY, PLACEHOLDER_KEY, TYPE_KEY]
 
 # attribute types:
 ###################################################
-ATTRIB_TYPE_STRING = "string" #: defines an attribute that is a string. For further information see |STRING_ATTRIB|
-ATTRIB_TYPE_INT = "int" #: defines an attribute that is an integer. For further information see |INT_ATTRIB|
-ATTRIB_TYPE_FLOAT = "float" #: defines an attribute that is a float. For further information see |FLOAT_ATTRIB|
-ATTRIB_TYPE_BOOL = "bool" #: defines an attribute that is a boolean. For further information see |BOOL_ATTRIB|
-ATTRIB_TYPE_HEX = "hex" #: defines an attribute that is a hexadecimal number. For further information see |HEX_ATTRIB|
-ATTRIB_TYPE_REFERENCE_LIST = "referenceList" #: defines an attribute that is a list of references. For further information see |REFERENCE_LIST_ATTRIB|
-ATTRIB_TYPE_STRING_LIST = "stringList" #: defines an attribute that is a list of strings. For further information see |STRING_LIST_ATTRIB|
-ATTRIB_TYPE_SELECTION = "selection" #: defines an attribute that is a selection. For further information see |SELECTION_ATTRIB|
-ATTRIB_TYPE_SLIDER = "slider" #: defines an attribute that is a slider. For further information see |SLIDER_ATTRIB|
-ATTRIB_TYPE_PARENT_REFERENCE = "parentReference" #: defines an attribute that is a reference to a parent attribute. For further information see |PARENT_REFERENCE_ATTRIB|
+ATTRIB_TYPE_STRING = "string"  #: defines an attribute that is a string. For further information see |STRING_ATTRIB|
+ATTRIB_TYPE_INT = "int"  #: defines an attribute that is an integer. For further information see |INT_ATTRIB|
+ATTRIB_TYPE_FLOAT = "float"  #: defines an attribute that is a float. For further information see |FLOAT_ATTRIB|
+ATTRIB_TYPE_BOOL = "bool"  #: defines an attribute that is a boolean. For further information see |BOOL_ATTRIB|
+ATTRIB_TYPE_HEX = "hex"  #: defines an attribute that is a hexadecimal number. For further information see |HEX_ATTRIB|
+ATTRIB_TYPE_REFERENCE_LIST = "referenceList"  #: defines an attribute that is a list of references. For further information see |REFERENCE_LIST_ATTRIB|
+ATTRIB_TYPE_STRING_LIST = "stringList"  #: defines an attribute that is a list of strings. For further information see |STRING_LIST_ATTRIB|
+ATTRIB_TYPE_SELECTION = "selection"  #: defines an attribute that is a selection. For further information see |SELECTION_ATTRIB|
+ATTRIB_TYPE_SLIDER = "slider"  #: defines an attribute that is a slider. For further information see |SLIDER_ATTRIB|
+ATTRIB_TYPE_PARENT_REFERENCE = "parentReference"  #: defines an attribute that is a reference to a parent attribute. For further information see |PARENT_REFERENCE_ATTRIB|
 
 
 # config file root level keys:
@@ -51,9 +51,9 @@ TARGET_KEY = "target"  #:
 VALUE_KEY = "value"  #:
 TARGET_NAME_OVERWRITE_KEY = "targetNameOverwrite"  #:
 
-# workspace keys:
+# environment file keys:
 ###################################################
-WORKSPACE_PLACEHOLDER = "workspace"  #:
+ENVIRONMENT_PLACEHOLDER = "environment"  #:
 
 # user interface keys:
 ###################################################

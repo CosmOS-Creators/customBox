@@ -12,9 +12,9 @@ def wrap_generator(call, mainWindow: MainWindow):
 
 
 if __name__ == "__main__":
-    args = Parser.Workspace.getReqiredArgparse().parse_args()
-    workspace = Parser.Workspace(args.WORKSPACE, args.workspace_root)
-    parser = Parser.ConfigParser(workspace)
+    args = Parser.Environment.getReqiredArgparse().parse_args()
+    environment = Parser.Environment(args.ENVIRONMENT_CONFIG, args.environment_root)
+    parser = Parser.ConfigParser(environment)
     systemModel = parser.parse()
     Interface = Configurator(
         Configurator.THEME_STYLE_DARK, Configurator.THEME_COLOR_BLUE
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     mainUI = Interface.buildMainWindow(systemModel, "CustomBox", "custombox-icon")
 
     UILogger = UILoggerPlugin(mainUI)
-    configGenerator = ConfigurationGenerator.configGenerator(workspace, UILogger)
+    configGenerator = ConfigurationGenerator.configGenerator(environment, UILogger)
     # UILogger.register_cancel_callback(configGenerator.cancel_generation)
 
     generator_call = lambda: configGenerator.generate(systemModel)

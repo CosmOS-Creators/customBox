@@ -1,11 +1,11 @@
 import pytest
-from Parser import Workspace, ConfigParser
+from Parser import Environment, ConfigParser
 
 
 @pytest.fixture
-def test_workspace():
-    return Workspace(
-        "./Cosmos/customBox/python/Parser/tests/testConfigs/workspaces/BasicConfig.json"
+def test_environment():
+    return Environment(
+        "./Cosmos/customBox/python/Parser/tests/testConfigs/environments/BasicConfig.json"
     )
 
 

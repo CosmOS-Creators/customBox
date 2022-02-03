@@ -1,4 +1,3 @@
-from genericpath import isfile
 import os
 import json
 import argparse
@@ -9,37 +8,37 @@ from pathlib import Path
 from typing import List, Union
 
 
-class Workspace:
-    workspace = os.getcwd()
+class Environment:
+    environment = os.getcwd()
 
-    def __init__(self, WorkspaceFile: str, workspace_path: str = None):
-        if workspace_path is not None:
-            self.workspace = workspace_path
-        self.workspaceFilePath = WorkspaceFile
-        self.placeholders = [const.WORKSPACE_PLACEHOLDER]
+    def __init__(self, environment_file: str, environment_path: str = None):
+        if environment_path is not None:
+            self.environment = environment_path
+        self.environmentFilePath = environment_file
+        self.placeholders = [const.ENVIRONMENT_PLACEHOLDER]
 
-        with open(WorkspaceFile, "r") as file:
-            workspaceFile = json.load(file)
+        with open(environment_file, "r") as file:
+            environmentFile = json.load(file)
         # first add all elements as they are
-        for key in workspaceFile:
+        for key in environmentFile:
             if key in self.__dict__ or key in self.placeholders:
                 raise KeyError(
-                    f'Workspace file contained the key "{key}" which is reserved and not permitted to be used'
+                    f'Environment file contained the key "{key}" which is reserved and not permitted to be used'
                 )
-            if type(workspaceFile[key]) is list:
+            if type(environmentFile[key]) is list:
                 resolvedPathsList = []
-                for path in workspaceFile[key]:
+                for path in environmentFile[key]:
                     resolvedPathsList.append(path)
                 setattr(self, key, resolvedPathsList)
-            elif type(workspaceFile[key]) is str:
-                setattr(self, key, workspaceFile[key])
+            elif type(environmentFile[key]) is str:
+                setattr(self, key, environmentFile[key])
             else:
                 raise TypeError(
-                    f'Format of the workspace file "{WorkspaceFile}" is invalid. The only supported items are list and str but found {type(workspaceFile[key])}.'
+                    f'Format of the Environment file "{environment_file}" is invalid. The only supported items are list and str but found {type(environmentFile[key])}.'
                 )
             self.placeholders.append(key)
         # then do placeholder replacement
-        for key in workspaceFile:
+        for key in environmentFile:
             property = getattr(self, key)
             if type(property) is list:
                 for i, path in enumerate(property):
@@ -58,7 +57,7 @@ class Workspace:
                     ) from e
             else:
                 raise TypeError(
-                    f'Format of the workspace file "{WorkspaceFile}" is invalid. The only supported items are list and str but found {type(property)}.'
+                    f'Format of the Environment file "{environment_file}" is invalid. The only supported items are list and str but found {type(property)}.'
                 )
             self.placeholders.append(key)
 
@@ -98,7 +97,7 @@ class Workspace:
                 folderPaths = getattr(self, key)
             except AttributeError:
                 raise AttributeError(
-                    f'Workspace "{self.workspaceFilePath}" has no attribute "{key}" but it was listed as required.'
+                    f'Environment "{self.environmentFilePath}" has no attribute "{key}" but it was listed as required.'
                 )
             if type(folderPaths) is str:
                 folderPaths = [folderPaths]
@@ -134,7 +133,7 @@ class Workspace:
                 filePaths = getattr(self, key)
             except AttributeError:
                 raise AttributeError(
-                    f'Workspace "{self.workspaceFilePath}" has no attribute "{key}" but it was listed as required.'
+                    f'Environment "{self.environmentFilePath}" has no attribute "{key}" but it was listed as required.'
                 )
             if type(filePaths) is str:
                 filePaths = [filePaths]
@@ -157,28 +156,32 @@ class Workspace:
         return requiredFiles
 
     def require(self, requiredKeys: Union[List[str], str]):
-        """Check that a key exists in the workspace file"""
+        """Check that a key exists in the environment file"""
         requiredKeys = helpers.forceStrList(requiredKeys)
         for key in requiredKeys:
             try:
                 getattr(self, key)
             except AttributeError:
                 raise AttributeError(
-                    f'Workspace "{self.workspaceFilePath}" has no attribute "{key}" but it was listed as required.'
+                    f'Environment "{self.environmentFilePath}" has no attribute "{key}" but it was listed as required.'
                 )
 
     @staticmethod
     def getReqiredArgparse(Argparser: argparse.ArgumentParser = None):
         if Argparser is None:
             Argparser = argparse.ArgumentParser()
-        Argparser.add_argument("WORKSPACE", help="Input workspace file path", type=str)
+        Argparser.add_argument(
+            "ENVIRONMENT_CONFIG",
+            help="File path to the environment config JSON file",
+            type=str,
+        )
         Argparser.add_argument(
             "-w",
-            "--workspace-root",
-            dest="workspace_root",
+            "--environment-root",
+            dest="environment_root",
             required=False,
             default=None,
-            help="Directory to the workspace root path, if not given cwd will be used for this",
+            help="Directory to the environment root path, if not given cwd will be used for this",
             type=str,
         )
         return Argparser
