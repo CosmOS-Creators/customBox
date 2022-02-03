@@ -5,8 +5,12 @@ from Model import InitializerLogic, MemoryMapperLogic, PermissionerLogic, Schedu
 
 
 class configGenerator:
-    def __init__(self, workspace: Parser.Workspace, customLogger: GeneratorPlugins.loggerPlugin = None):
-        if(customLogger is None):
+    def __init__(
+        self,
+        environment: Parser.Environment,
+        customLogger: GeneratorPlugins.loggerPlugin = None,
+    ):
+        if customLogger is None:
             self.loggerPlugin = GeneratorPlugins.loggerPlugin()
         else:
             self.loggerPlugin = customLogger
@@ -14,7 +18,7 @@ class configGenerator:
         self.logicRunnerPlugin = GeneratorPlugins.logicRunnerPlugin()
         self.timestampPlugin = GeneratorPlugins.timeStampPlugin()
         self.FileCleaner = GeneratorPlugins.fileCleanerPlugin(
-            [workspace.ApplicationGeneratedDir, workspace.CoreGeneratedDir]
+            [environment.ApplicationGeneratedDir, environment.CoreGeneratedDir]
         )
 
         self.logicRunnerPlugin.registerLogic(
@@ -25,7 +29,7 @@ class configGenerator:
                 PermissionerLogic(),
             ]
         )
-        self.__generator = FileGenerator.Generator(workspace)
+        self.__generator = FileGenerator.Generator(environment)
         self.__generator.registerPlugin(
             [
                 self.loggerPlugin,
@@ -48,7 +52,7 @@ class configGenerator:
 
 
 if __name__ == "__main__":
-    args = Parser.Workspace.getReqiredArgparse().parse_args()
-    workspace = Parser.Workspace(args.WORKSPACE)
-    myGenerator = configGenerator(workspace)
+    args = Parser.Environment.getReqiredArgparse().parse_args()
+    environment = Parser.Environment(args.ENVIRONMENT_CONFIG)
+    myGenerator = configGenerator(environment)
     myGenerator.generate_from_files()

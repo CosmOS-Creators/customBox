@@ -1,8 +1,8 @@
 from pathlib import Path
 import pytest
-from Parser import Workspace, ConfigParser, ConfigTypes, constants
+from Parser import Environment, ConfigParser, ConfigTypes, constants
 from Parser.tests.test_setup import (
-    test_workspace,
+    test_environment,
     parsed_config,
     element_creation_config,
 )
@@ -96,7 +96,6 @@ class TestClassBasicFunctions:
         for ref in ref_dict.values():
             assert ref == reference_test_0_configElement
 
-
     def test_referenceTypes_test_reference_indexing(
         self, parsed_config: ConfigTypes.Configuration
     ):
@@ -174,11 +173,11 @@ class TestCreatingElementCreationAndDeletion:
 
 class TestChecksumFunctionality:
     @pytest.fixture
-    def config_file(self, test_workspace):
-        workspace = Workspace(
-            "./Cosmos/customBox/python/Parser/tests/testConfigs/workspaces/BasicConfig.json"
+    def config_file(self, test_environment):
+        environment = Environment(
+            "./Cosmos/customBox/python/Parser/tests/testConfigs/environments/BasicConfig.json"
         )
-        configFolders = workspace.requireFolder("config")
+        configFolders = environment.requireFolder("config")
         for configFolder in configFolders:
             basicTypesConfig = configFolder.joinpath("basicTypes.json")
             if basicTypesConfig.exists():

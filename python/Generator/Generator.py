@@ -158,22 +158,22 @@ class generationElement:
 class Generator:
     __pluginList: List[GeneratorPlugins.GeneratorPlugin] = []
 
-    def __init__(self, workspace: Parser.Workspace):
+    def __init__(self, environment: Parser.Environment):
         try:
-            workspace.requireFolder(["config", "TemplateDir"])
-            workspace.requireFile(["GeneratorConfig"])
+            environment.requireFolder(["config", "TemplateDir"])
+            environment.requireFile(["GeneratorConfig"])
         except AttributeError as e:
             raise AttributeError(
-                f"Workspace file is missing some required keys: {str(e)}"
+                f"Environment file is missing some required keys: {str(e)}"
             ) from e
-        self.__workspace = workspace
+        self.__environment = environment
         self.cancel_requested = False
 
     def __parseGeneratorConfig(
-        self, workspace: Parser.Workspace, SysConfig: configTypes.Configuration
+        self, environment: Parser.Environment, SysConfig: configTypes.Configuration
     ):
         self.total_num_generated_files = 0
-        filepath = workspace.GeneratorConfig
+        filepath = environment.GeneratorConfig
         with open(filepath, "r") as file:
             jsonData = json.load(file)
         GeneratorConfig: List[generationElement] = []
@@ -193,12 +193,14 @@ class Generator:
             for template in templates:
                 foundMatch = False
                 try:
-                    workspaceTemplateDirs = helpers.forceStrList(workspace.TemplateDir)
+                    environmentTemplateDirs = helpers.forceStrList(
+                        environment.TemplateDir
+                    )
                 except TypeError as e:
                     raise TypeError(
-                        f'Error in the workspace config for values of the "TemplateDir" property: {str(e)}'
+                        f'Error in the environment config for values of the "TemplateDir" property: {str(e)}'
                     ) from e
-                for templateDir in workspaceTemplateDirs:
+                for templateDir in environmentTemplateDirs:
                     templateFileDir = Path(template).parent
                     testpath = Path.joinpath(Path(templateDir), templateFileDir)
                     if testpath.is_dir():
@@ -210,7 +212,7 @@ class Generator:
                         parsedTemplates.append(file)
             self.total_num_generated_files += len(parsedTemplates)
             try:
-                outputPath = Path(workspace.resolvePath(config[OUTPUT_DIR_KEY]))
+                outputPath = Path(environment.resolvePath(config[OUTPUT_DIR_KEY]))
             except TypeError as e:
                 raise TypeError(f"Error in generator config: {str(e)}") from e
             newElement = generationElement(outputPath, parsedTemplates)
@@ -266,25 +268,27 @@ class Generator:
     def generate(self, systemConfig: configTypes.Configuration = None):
         if systemConfig is None:
             try:
-                parser = Parser.ConfigParser(self.__workspace)
+                parser = Parser.ConfigParser(self.__environment)
                 systemConfig = parser.parse()
             except Exception as e:
                 raise Exception(f"The input config was not valid: \n{str(e)}") from e
         try:
             self.__genConfig = self.__parseGeneratorConfig(
-                self.__workspace, systemConfig
+                self.__environment, systemConfig
             )
         except Exception as e:
             raise Exception(f"The generator config was not valid: \n{str(e)}") from e
         config_is_valid, error_message = systemConfig.is_valid()
-        if(not config_is_valid):
-            raise Exception(f"The generator config has at least one validation error: \n{error_message}")
+        if not config_is_valid:
+            raise Exception(
+                f"The generator config has at least one validation error: \n{error_message}"
+            )
         self.__callPreGenerationPluginHooks(
             systemConfig, self.total_num_generated_files
         )
         generatedFiles = []
         for genConf in self.__genConfig:
-            if(self.cancel_requested is False):
+            if self.cancel_requested is False:
                 generatedFiles += genConf.generate(systemConfig)
         self.__callPostGenerationPluginHooks(generatedFiles)
         self.cancel_requested = False
@@ -309,7 +313,7 @@ class Generator:
 
 
 if __name__ == "__main__":
-    args = Parser.Workspace.getReqiredArgparse().parse_args()
-    workspace = Parser.Workspace(args.WORKSPACE)
-    myGenerator = Generator(workspace)
+    args = Parser.Environment.getReqiredArgparse().parse_args()
+    environment = Parser.Environment(args.ENVIRONMENT_CONFIG)
+    myGenerator = Generator(environment)
     myGenerator.generate()
